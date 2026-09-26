@@ -1,0 +1,1560 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Global Handset Value Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --panel:#EFF2F1; --card:#FFFFFF; --ink:#1A3C34; --ink-2:#44546A; --muted:#5F6F6A;
+  --line:#DCE3E0; --line-2:#C5D0CC; --grid:#E7ECEA;
+  --action:#00C473; --action-ink:#0B2A22; --warn-bg:#FFF1E6; --warn-ink:#8A3A06; --ok-bg:#E3F7EE; --ok-ink:#0B5A39;
+  --s1:#0E9F63; --s2:#2A6FD6; --s3:#E8A200; --s4:#17A5B8; --s5:#E0582A; --cost:#8391A3;
+  --heat:14,159,99;
+  --radius:8px;
+  font-family:"Nunito Sans","Source Sans 3","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0D1A17; --panel:#132521; --card:#10201C; --ink:#E3EEEA; --ink-2:#B5C2CE; --muted:#93A69F;
+    --line:#223A34; --line-2:#2F4B44; --grid:#1B302B;
+    --action:#00C473; --action-ink:#06251B; --warn-bg:#3A2413; --warn-ink:#FFC49A; --ok-bg:#12352A; --ok-ink:#8BE3BD;
+    --s1:#14B06F; --s2:#4C86E8; --s3:#C08A00; --s4:#1AA0B2; --s5:#E8683A; --cost:#8C9AB0;
+    --heat:20,176,111;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1A17; --panel:#132521; --card:#10201C; --ink:#E3EEEA; --ink-2:#B5C2CE; --muted:#93A69F;
+  --line:#223A34; --line-2:#2F4B44; --grid:#1B302B;
+  --action:#00C473; --action-ink:#06251B; --warn-bg:#3A2413; --warn-ink:#FFC49A; --ok-bg:#12352A; --ok-ink:#8BE3BD;
+  --s1:#14B06F; --s2:#4C86E8; --s3:#C08A00; --s4:#1AA0B2; --s5:#E8683A; --cost:#8C9AB0;
+  --heat:20,176,111;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:26px;font-weight:800;letter-spacing:-.01em}
+h2{font-size:16px;font-weight:800}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.foot{font-size:12px;color:var(--muted)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.5}
+:focus-visible{outline:2px solid var(--action);outline-offset:2px}
+.btn{border:1px solid var(--line-2);background:var(--card);border-radius:var(--radius);padding:7px 12px;font-weight:700;font-size:13px;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--ink)}
+.btn.primary{background:var(--action);border-color:var(--action);color:var(--action-ink)}
+.btn.small{padding:4px 9px;font-size:12px}
+.btn.danger{color:var(--warn-ink)}
+select,input[type=number],input[type=text],textarea{background:var(--card);border:1px solid var(--line-2);border-radius:6px;padding:6px 8px;width:100%;min-width:0}
+input::placeholder{color:var(--muted);opacity:.85}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.lede{color:var(--muted);max-width:74ch;margin:4px 0 0}
+.scen-now{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.scen-now .nm{font-weight:800}
+@media (max-width:700px){.scen-now{align-items:flex-start}}
+
+/* sticky kpi strip */
+.kpis{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.kpi{background:var(--card);padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+.kpi .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:11.5px;color:var(--muted)}
+.kpi.lead .v{color:var(--s1)}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:600px){.kpis{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel{background:var(--panel);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline}
+
+/* library */
+.lib{display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);gap:16px}
+@media (max-width:820px){.lib{grid-template-columns:minmax(0,1fr)}}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f>label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.liblist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--card);max-height:320px;overflow:auto}
+.li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:9px 12px;border-bottom:1px solid var(--line);align-items:center}
+.li:last-child{border-bottom:0}
+.li.on{background:var(--ok-bg)}
+.li .n{font-weight:700;overflow-wrap:anywhere}
+.li .m{font-size:12px;color:var(--muted);grid-column:1}
+.li .a{grid-row:1 / span 2;grid-column:2;display:flex;gap:6px}
+.status{font-size:12px;color:var(--muted);min-height:1.2em}
+.status.err{color:var(--warn-ink)}
+
+/* tabs */
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:8px 12px;font-weight:700;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--action)}
+.tabdesc{color:var(--ink-2);font-size:13px;max-width:90ch;margin:0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{padding:5px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--card);z-index:1}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;vertical-align:bottom;white-space:normal;min-width:64px}
+th .u{display:block;text-transform:none;letter-spacing:0;font-weight:400}
+td input[type=number]{width:74px;padding:4px 6px;text-align:right;font-variant-numeric:tabular-nums}
+td input.pin{border-color:var(--action);background:var(--ok-bg);color:var(--ok-ink);font-weight:800}
+td input.varies{border-style:dashed;background:var(--panel);cursor:help}
+td input.varies::placeholder{color:var(--ink-2);font-style:italic;opacity:1}
+.impact{border:1px solid var(--line);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.impact.off{opacity:.6}
+.imp-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.imp-name{flex:1 1 220px;font-weight:800}
+.imp-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:10px}
+.imp-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+@media (max-width:640px){.imp-grid{grid-template-columns:minmax(0,1fr)}}
+.flab{font-size:12px;font-weight:700;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.ichip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer;background:var(--card)}
+.ichip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ichip input{margin:0;accent-color:var(--action)}
+.istrip{display:flex;gap:2px;flex-wrap:wrap}
+.istrip span{min-width:28px;text-align:center;font-size:10.5px;padding:3px 0;border-radius:3px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.itime{display:grid;gap:3px 2px;align-items:center;font-size:11px}
+.itime .nm{font-weight:700;font-size:12px;padding-right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.itime .c{height:18px;border-radius:2px;border:1px solid var(--line)}
+.itime .yr{text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.testbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border:1px solid var(--action);background:var(--ok-bg);color:var(--ok-ink);border-radius:var(--radius);padding:10px 14px;font-size:13px}
+.testbar div{flex:1 1 420px;max-width:110ch}
+.yearbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:var(--panel);border-radius:6px;padding:8px 10px}
+.yearbar select{width:auto}
+.pininfo{font-size:12px;color:var(--ink-2);flex:1 1 280px;min-width:0}
+.tabs .n{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;border-radius:999px;padding:0 6px;background:var(--ok-bg);color:var(--ok-ink)}
+.key-pin{display:inline-block;width:18px;height:12px;border:1px solid var(--action);background:var(--ok-bg);border-radius:3px;vertical-align:-1px}
+.key-var{display:inline-block;width:18px;height:12px;border:1px dashed var(--line-2);background:var(--panel);border-radius:3px;vertical-align:-1px}
+tr.tot td{font-weight:800;border-top:2px solid var(--line-2)}
+.chip{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800}
+.chip.ok{background:var(--ok-bg);color:var(--ok-ink)}
+.chip.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.gridg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.f .h{font-size:11px;color:var(--muted)}
+
+/* results */
+.res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.res .wide{grid-column:1 / -1}
+@media (max-width:980px){.res{grid-template-columns:minmax(0,1fr)}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{fill:var(--muted);font-size:11px;font-family:inherit;font-variant-numeric:tabular-nums}
+.tip{position:fixed;pointer-events:none;background:var(--card);border:1px solid var(--line-2);border-radius:6px;padding:8px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:20;min-width:190px}
+.tip .r{display:flex;justify-content:space-between;gap:16px}
+.tip .r b{font-variant-numeric:tabular-nums}
+.tip hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.seg-toggle{display:flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.seg-toggle button{border:0;background:transparent;padding:6px 10px;font-size:12px;font-weight:700;color:var(--muted)}
+.seg-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.cbar{display:grid;grid-template-columns:150px minmax(0,1fr) 80px;gap:10px;align-items:center;font-size:13px}
+.cbar .track{height:12px;background:var(--panel);border-radius:3px;overflow:hidden;display:flex;gap:2px}
+.cbar .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+@media (max-width:480px){.cbar{grid-template-columns:100px minmax(0,1fr) 64px}}
+.fate{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.fate div{background:var(--panel);border-radius:6px;padding:10px 12px}
+.fate b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.fate span{font-size:12px;color:var(--muted)}
+td.heat{color:var(--ink)}
+.method{color:var(--ink-2);font-size:13px;max-width:82ch}
+.method p{margin:.4em 0}
+details summary{cursor:pointer;font-weight:800}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">FDM CCS Insight · Device lifecycle economics</div>
+      <h1>Global Handset Value Model</h1>
+      <p class="lede">Enter handset sales by region and year, set how devices move between owners, drawers, refurbishers, countries and recyclers, and see the total value every device generates for the telecoms industry over its life.</p>
+    </div>
+    <div class="scen-now">
+      <span class="foot">Current scenario</span>
+      <span class="nm" id="curName"></span>
+      <button class="btn" id="libToggle" aria-expanded="false" aria-controls="library">Scenario library</button>
+    </div>
+  </header>
+
+  <section class="testbar" id="testBanner" aria-label="About this test version">
+    <div><b>Test version.</b> All figures are illustrative placeholders, not FDM CCS Insight data. Try the inputs, examples and impact scenarios, and tell us what's missing or unclear. Scenarios you save stay in your own browser; use <i>Scenario library → Copy or paste as text</i> to send one to someone.</div>
+    <button class="btn primary" id="feedbackBtn" hidden>Leave feedback</button>
+  </section>
+  <section class="panel" id="library" hidden aria-label="Scenario library">
+    <div class="lib">
+      <div class="col" style="display:flex;flex-direction:column;gap:10px">
+        <h2>Save this scenario</h2>
+        <div class="f"><label for="sc-name">Name</label><input type="text" id="sc-name" maxlength="80"></div>
+        <div class="f"><label for="sc-notes">Notes for colleagues</label><textarea id="sc-notes" rows="3" maxlength="600"></textarea></div>
+        <div class="row"><button class="btn primary" id="saveBtn">Save</button><button class="btn" id="saveNewBtn">Save as new</button></div>
+        <div class="status" id="libStatus" role="status"></div>
+        <details>
+          <summary style="font-size:13px">Copy or paste as text</summary>
+          <div class="row" style="margin-top:8px"><button class="btn small" id="copyJson">Copy scenario</button><button class="btn small" id="loadJson">Load pasted text</button></div>
+          <textarea id="jsonBox" rows="3" aria-label="Scenario as text" style="margin-top:8px"></textarea>
+        </details>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div class="head"><h2 id="libTitle">Shared scenarios</h2><span class="foot" id="libMode"></span></div>
+        <div class="liblist" id="libList"></div>
+        <h2 style="margin-top:6px">Examples</h2>
+        <div class="liblist" id="exList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kpis" id="kpis" aria-label="Headline results"></section>
+
+  <!-- INPUTS -->
+  <section class="card" aria-label="Model inputs">
+    <div class="head"><h2>Inputs</h2><span class="foot">Blank cells use the value shown in grey. Percent splits that don't total 100 are scaled to 100.</span></div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <p class="tabdesc" id="tabDesc"></p>
+    <div class="yearbar" id="yearBar">
+      <label for="yearSel" class="foot" style="font-weight:700;color:var(--ink-2)">Showing values for</label>
+      <select id="yearSel"></select>
+      <span class="pininfo" id="pinInfo"></span>
+      <button class="btn small" id="clearTabPins">Clear by-year values on this tab</button>
+    </div>
+    <div id="tabBody"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <div class="row" style="justify-content:space-between">
+    <h2>Results</h2>
+    <div class="row">
+      <label for="fReg" class="foot">First sold in</label>
+      <select id="fReg" style="width:auto"></select>
+      <label for="fBrand" class="foot" id="fBrandL">Brand</label>
+      <select id="fBrand" style="width:auto"></select>
+      <label for="fImp" class="foot" id="fImpL">Impacts</label>
+      <select id="fImp" style="width:auto"><option value="all">Applied</option><option value="none">Not applied</option></select>
+      <label for="fCur" class="foot">Currency</label>
+      <select id="fCur" style="width:auto"></select>
+      <label for="fTier" class="foot">Price tier</label>
+      <select id="fTier" style="width:auto"></select>
+    </div>
+  </div>
+  <div class="res">
+    <div class="card wide">
+      <div class="head"><div><h2>Industry value by year</h2><div class="foot">All cohorts combined. Revenue above the line, costs below; the dot is net value.</div></div><div class="legend" id="lgValue"></div></div>
+      <div class="chart" id="valueChart"></div>
+    </div>
+    <div class="card wide" id="impCard" hidden>
+      <div class="head"><div><h2>Impact scenarios</h2><div class="foot">What the active impacts do to this scenario, measured against the same scenario with no impacts. The region, brand, tier and currency choices above apply.</div></div></div>
+      <div class="fate" id="impTiles"></div>
+      <div class="res">
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><div class="head"><h2 style="font-size:14px">Net value by year</h2><div class="legend"><span><i class="sw" style="background:var(--cost)"></i>Without impacts (dashed)</span><span><i class="sw" style="background:var(--s1)"></i>With impacts</span></div></div><div class="chart" id="impChart"></div><h2 style="font-size:14px;margin-top:4px">Change in net value by year</h2><div class="chart" id="impDelta"></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;min-width:0"><div class="head"><h2 style="font-size:14px">Effect of each impact on net value</h2></div><div class="legend"><span><i class="sw" style="background:var(--s5)"></i>Reduces value</span><span><i class="sw" style="background:var(--s2)"></i>Adds value</span></div><div id="impBars" style="display:flex;flex-direction:column;gap:8px"></div><div class="foot" id="impNote"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px"><h2 style="font-size:14px">When each impact bites</h2><div class="foot">Shading shows the share of full effect in each year. Hover for the levers.</div><div class="tbl"><div class="itime" id="impTime"></div></div></div>
+      <details><summary style="font-size:13px">Year-by-year effect</summary><div class="tbl" style="margin-top:8px"><table id="impTbl"></table></div></details>
+    </div>
+    <div class="card wide" id="cohCard">
+      <div class="head">
+        <div><h2>Value by launch year</h2><div class="foot">Lifetime value of the handsets sold in each year, from first sale to the end of their last life. Realised is what they had earned by the end of the last year of actual data.</div></div>
+        <div class="seg-toggle" role="group" aria-label="Measure"><button id="cohModeTot" aria-pressed="true">Total net value</button><button id="cohModePer" aria-pressed="false">Per handset</button></div>
+      </div>
+      <div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Realised to date</span><span><i class="sw" style="background:var(--s1);opacity:.35"></i>Still to come (forecast)</span></div>
+      <div class="chart" id="cohChart"></div>
+      <div class="head" style="margin-top:6px"><h2 style="font-size:14px">Compare two launch years</h2>
+        <div class="row"><label for="cohA" class="foot">A</label><select id="cohA" style="width:auto"></select><label for="cohB" class="foot">B</label><select id="cohB" style="width:auto"></select></div></div>
+      <div id="cohCmp"></div>
+      <details><summary style="font-size:13px">All launch years</summary><div class="tbl" style="margin-top:8px"><table id="cohTbl"></table></div></details>
+    </div>
+    <div class="card wide" id="cmpCard">
+      <div class="head">
+        <div><h2>Compare scenarios</h2><div class="foot">The current scenario (A) against any example or saved scenario (B), using the same region and tier filters.</div></div>
+        <div class="row"><label for="cmpB" class="foot">Compare with</label><select id="cmpB" style="width:auto;max-width:320px"></select></div>
+      </div>
+      <div id="cmpBody"></div>
+    </div>
+    <div class="card wide" id="brandCard">
+      <div class="head"><div><h2>Value by brand</h2><div class="foot">Net value, revenue per handset sold, and how each brand's value splits across price tiers</div></div></div>
+      <div class="res"><div id="brandBars" style="display:flex;flex-direction:column;gap:8px"></div><div class="tbl"><table id="btTbl"></table></div></div>
+    </div>
+    <div class="card">
+      <div class="head"><div><h2>Devices in circulation</h2><div class="foot">Average for each year, millions</div></div><div class="legend" id="lgBase"></div></div>
+      <div class="chart" id="baseChart"></div>
+    </div>
+    <div class="card">
+      <div class="head"><div><h2>Where the value lands</h2><div class="foot">Net value by region, split by first owner and later lives</div></div></div>
+      <div class="legend"><span><i class="sw" style="background:var(--s2)"></i>First owner</span><span><i class="sw" style="background:var(--s3)"></i>Later lives</span></div>
+      <div id="regBars" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="card">
+      <div class="head"><h2>How devices end up</h2><span class="foot" id="fateNote"></span></div>
+      <div class="fate" id="fate"></div>
+    </div>
+    <div class="card">
+      <div class="head"><div><h2>Value by price tier</h2><div class="foot">Net value, and revenue per handset sold in each tier</div></div></div>
+      <div id="tierBars" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="card wide">
+      <div class="head"><div><h2>Refurbished device flows</h2><div class="foot">Millions of units, from the region where traded in (rows) to where resold (columns)</div></div></div>
+      <div class="tbl"><table id="flowTbl"></table></div>
+    </div>
+    <div class="card wide">
+      <div class="head"><h2>Year-by-year detail</h2><button class="btn" id="copyCsv">Copy as CSV</button></div>
+      <div class="tbl"><table id="yearTbl"></table></div>
+    </div>
+    <details class="card wide">
+      <summary>How the model works</summary>
+      <div class="method">
+        <p>Each year's sales in each region form a cohort, sold evenly through the year. The model follows every cohort month by month. At the end of each life, the devices split across the routes you set: traded in and refurbished, sold privately, passed on, put in a drawer, recycled or lost. Paths that end in the same place at the same time are merged, so every combination of routes, countries and owners is covered without listing them one by one.</p>
+        <p><b>New device sales</b> are units × average selling price. Bundled contracts add the operator's handset subsidy as a cost. <b>Finance interest</b> uses an amortising loan on the financed share at the blended APR; a 0% APR mix pulls the blended rate down.</p>
+        <p><b>Airtime &amp; service</b> is devices in use × the plan-weighted ARPU of the region they are in, times the attribution %. ARPU trends by year. New and second-hand owners have separate plan mixes, so a share of second-hand devices can be unconnected.</p>
+        <p><b>Secondary market</b> is the refurbisher's resale revenue, or the marketplace fee on a private sale. Resale prices come from the cohort's selling price × (1 − annual decline)^age × the destination's price index. Trade-in payouts, refurbishment, and logistics &amp; duties into a new region are costs. <b>Material recovery</b> is booked at formal recycling, less collection cost.</p>
+        <p><b>Price tiers</b> split each region's sales into premium, mid-range and budget handsets with their own prices. Each tier can hold its value better or worse than the global rate, and scales the first owner's keeping time, the share traded in after the first owner, the share bought on finance and the first owner's ARPU. When more or fewer devices are traded in, the other routes are scaled so the split still totals 100%. Later owners use the regional inputs whatever the tier.</p>
+        <p><b>History and forecast.</b> Launch years can start as early as you like. Prices and ARPU are entered for one stated year, and their trends run backwards and forwards from it. Years up to the last year of actual data are shaded as history. Enter real volumes for those years so the realised value can be checked against reported figures. Present value discounts or compounds every year to the stated price year.</p>
+        <p><b>Launch years.</b> Each year's sales are followed to the end of their last life, so the launch-year view shows the full lifetime value of, say, 2015 handsets against 2022 handsets, and how much of it had been realised by the end of the actual data.</p>
+        <p><b>Brands</b> (Apple, Premium Android, Other Android, Other) split each region's sales. Each brand has its own tier mix, so the region's tier mix follows from its brand mix. A brand's price index scales the regional tier price, its value decline replaces the tier's when set, and its other multipliers are applied on top of the tier's. Scenarios saved before brands existed keep brands switched off and give the same results as before.</p>
+        <p><b>Inputs by year.</b> On the Brands, Price tiers, Airtime, Buying and Routes tabs, any cell can be given values for chosen years. Years in between are interpolated in a straight line, and the value holds flat before the first and after the last year set. The first time a cell is given a year, the single value is kept as the first launch year's value so the change ramps from it. Brand, tier, price, buying and route settings follow each handset's launch year for its whole life. Plan mix and ARPU follow the calendar year the device is in use. Prices and ARPUs set by year are used as entered; the others follow their yearly trend.</p>
+        <p><b>Impacts</b> are events layered on top of a scenario. Each one changes chosen levers by a percentage at full strength, with a timing shape that sets how much of that applies in each year. Sales, prices, buying, trade-in, lifetime and value-decline effects follow the launch year; ARPU effects follow the calendar year; refurbishment and logistics effects follow the launch year of the devices being handled. The impact results compare the scenario with and without its impacts, and show each impact on its own.</p>
+        <p><b>Comparison</b> runs scenario B through the same engine with the same filters and shows the difference from the current scenario.</p>
+        <p>Devices still in use when tracking stops are counted as still in circulation. After the maximum number of lives, owner routes are redirected to recycled or lost in the same proportion as those two routes.</p>
+        <p>All default figures are illustrative placeholders, not FDM CCS Insight data. Replace them before quoting any output.</p>
+      </div>
+    </details>
+  </div>
+  <p class="foot" id="curFoot"></p>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(() => {
+const REG = [['NA','North America'],['EU1','Europe Tier 1'],['EU2','Europe Tier 2'],['CN','China'],['IN','India'],['APAC','Rest of Asia-Pacific'],['LATAM','Latin America'],['ME','Middle East'],['AF','Africa']];
+const RK = REG.map(r=>r[0]); const RN = Object.fromEntries(REG);
+const zip = (keys, rows) => Object.fromEntries(RK.map((r,i) => [r, Object.fromEntries(keys.map((k,j)=>[k, rows[i][j]]))]));
+
+/* ---------- illustrative default scenario ---------- */
+function baseline(){
+  return {
+    name:'Illustrative global baseline', notes:'Placeholder figures for structure only. Replace with FDM data.',
+    g:{firstYear:2015, cohorts:16, baseYear:2026, lastActual:2025, useBrands:true, maxLives:6, track:20, dep:30, attr:100, disc:8, tradeIn:55, privFactor:85, material:4, collection:2},
+    vol: zip(['base','growth','asp','aspTr'], [[150,0.5,800,2],[130,0,650,1.5],[60,1,350,1.5],[280,0.5,450,2],[150,4,250,3],[200,2,300,2],[130,1.5,260,2],[50,2,420,2],[90,4,160,2]]),
+    volY: Object.fromEntries(RK.map(r=>[r,{}])),
+    svc: zip(['c','s','p','tr','nc','ns','np','nn','sc','ss','sp','sn'], [
+      [55,32,25,1, 70,20,10,0, 20,45,25,10],[22,12,9,-0.5, 45,40,15,0, 10,55,25,10],[11,7,5,1, 35,35,30,0, 10,40,45,5],
+      [12,8,5,1, 60,20,20,0, 20,30,45,5],[3.5,3,2.5,5, 10,0,90,0, 0,5,90,5],[10,7,4,1.5, 30,20,50,0, 10,20,65,5],
+      [10,7,4,2, 20,10,70,0, 5,10,80,5],[20,12,8,1, 35,15,50,0, 10,25,60,5],[6,4,3,2, 5,5,90,0, 0,5,90,5]]),
+    buy: zip(['fin','apr','term','dep','bund','subs'], [[55,3,24,0,15,40],[50,4,24,0,15,30],[35,12,24,10,10,25],[30,6,12,0,20,25],[25,16,9,10,0,0],[25,12,12,10,5,20],[40,30,12,0,10,20],[30,10,12,10,10,20],[10,25,12,20,0,0]]),
+    life: zip(['first','second','drawer','px','refurb','imp','fee'], [[2.8,2,2,1,45,15,8],[3,2.2,2,1,45,12,10],[3.3,2.5,1.5,.9,30,10,8],[2.6,2,2,.9,25,10,5],[3,2.5,1,.8,15,20,5],[3,2.3,1.5,.85,25,10,6],[3.2,2.5,1.5,.85,25,20,8],[2.8,2.2,1.5,.95,30,10,6],[3.5,3,1,.8,20,15,5]]),
+    r1: zip(['refurb','private','passed','drawer','recycled','lost'], [[30,10,15,35,5,5],[30,15,15,30,7,3],[15,25,25,25,5,5],[25,15,15,35,5,5],[10,35,30,15,2,8],[15,25,25,25,5,5],[10,30,30,20,2,8],[20,20,20,30,5,5],[5,35,35,10,1,14]]),
+    r2: zip(['refurb','private','passed','drawer','recycled','lost'], [[10,10,15,40,10,15],[10,15,15,35,15,10],[8,20,20,30,10,12],[10,15,15,35,10,15],[5,30,25,15,5,20],[8,20,20,30,7,15],[5,25,25,20,5,20],[8,20,20,30,7,15],[3,30,30,10,2,25]]),
+    dx: zip(['refurb','recycled','lost'], [[20,35,45],[20,45,35],[15,30,55],[20,35,45],[25,10,65],[15,25,60],[15,15,70],[15,25,60],[20,5,75]]),
+    flow: Object.fromEntries(RK.map(o => [o, Object.fromEntries(RK.map(d=>[d,0]))])),
+    tiers: zip(['sp','sm','sb','ap','am','ab'], [[55,30,15,1100,450,180],[45,35,20,1000,420,170],[25,40,35,900,350,150],[35,40,25,900,380,150],[10,35,55,800,250,110],[20,40,40,900,320,130],[15,40,45,950,300,130],[30,35,35,1000,380,150],[5,25,70,800,250,90]]),
+    tierB: defaultTierB(),
+    brand: defaultBrand(),
+    brandB: defaultBrandB()
+  };
+}
+// Illustrative market shape only: every region follows one global index (2026 = 1,240m units).
+const HIST = {2015:1430,2016:1470,2017:1465,2018:1400,2019:1370,2020:1290,2021:1350,2022:1210,2023:1170,2024:1240,2025:1250,2026:1240};
+function withHistory(s){
+  RK.forEach(r => { const b26 = s.vol[r].base; s.vol[r].base = Math.round(b26*HIST[2015]/1240*10)/10;
+    for (let y=2016;y<=2026;y++) s.volY[r][y] = Math.round(b26*HIST[y]/1240*10)/10; });
+  return s;
+}
+function defaultTierB(){ return {P:{dep:22,life:1.15,tradein:1.4,fin:1.3,arpu:1.25}, M:{dep:null,life:1,tradein:1,fin:1,arpu:1}, B:{dep:40,life:0.9,tradein:0.3,fin:0.5,arpu:0.85}}; }
+const TIERS = ['P','M','B'], TN = {P:'Premium', M:'Mid-range', B:'Budget'};
+const BRANDS = ['AP','PA','OA','OT'], BNM = {AP:'Apple', PA:'Premium Android', OA:'Other Android', OT:'Other', ALL:'All brands'};
+const BSUB = {AP:'iPhone', PA:'Samsung, Google', OA:'All other Android makers', OT:'Feature phones and other systems'};
+function defaultBrand(){ return zip(['ap','pa','oa','ot'], [[55,30,13,2],[40,35,23,2],[25,35,37,3],[20,5,73,2],[5,20,70,5],[20,25,50,5],[12,35,50,3],[30,30,37,3],[5,25,60,10]]); }
+function defaultBrandB(){ return {
+  AP:{tp:85,tm:15,tb:0, px:1.10, dep:18, life:1.10, tradein:1.20, fin:1.10, arpu:1.05},
+  PA:{tp:50,tm:35,tb:15, px:1.00, dep:null, life:1, tradein:1, fin:1, arpu:1},
+  OA:{tp:10,tm:45,tb:45, px:0.85, dep:null, life:0.95, tradein:0.70, fin:0.90, arpu:0.95},
+  OT:{tp:0,tm:10,tb:90, px:0.60, dep:50, life:0.90, tradein:0.20, fin:0.30, arpu:0.80} }; }
+// Region tier mix: typed in when brands are off, worked out from the brands when they are on.
+function tierMix(s, r, y){
+  if (!s.g.useBrands){ const ts = rowAt(s,'tiers',r,y); return norm({P:ts.sp,M:ts.sm,B:ts.sb},TIERS); }
+  const bs = norm(rowAt(s,'brand',r,y), ['ap','pa','oa','ot']), o = {P:0,M:0,B:0};
+  BRANDS.forEach(b => { const w = bs[b.toLowerCase()], bb = rowAt(s,'brandB',b,y), bt = norm({P:bb.tp,M:bb.tm,B:bb.tb},TIERS); TIERS.forEach(t => o[t] += w*bt[t]); });
+  return o;
+}
+// Scenarios saved before price tiers existed load as 100% mid-range at their old price, so their results are unchanged.
+function migrate(s){
+  if (!s.volY) s.volY = Object.fromEntries(RK.map(r=>[r,{}]));
+  if (!s.tiers) s.tiers = Object.fromEntries(RK.map(r => { const a = num(s.vol[r].asp,400); return [r,{sp:0,sm:100,sb:0,ap:Math.round(a*2),am:a,ab:Math.round(a*0.4)}]; }));
+  if (!s.tierB) s.tierB = defaultTierB();
+  if (!s.brand) s.brand = defaultBrand();
+  if (!s.brandB) s.brandB = defaultBrandB();
+  if (s.g.useBrands===undefined) s.g.useBrands = false;
+  if (!s.pins) s.pins = {};
+  if (!s.impacts) s.impacts = [];
+  if (!s.g.cur) s.g.cur = 'USD';
+  if (!s.g.fx) s.g.fx = Object.assign({}, FX_DEFAULT);
+  if (s.g.baseYear===undefined) s.g.baseYear = s.g.firstYear;
+  if (s.g.lastActual===undefined) s.g.lastActual = num(s.g.firstYear,2026)-1;
+  return s;
+}
+function withFlows(s){
+  const F = {NA:{NA:55,LATAM:20,APAC:10,ME:5,AF:10}, EU1:{EU1:45,EU2:25,ME:10,AF:20}, EU2:{EU2:65,ME:10,AF:25}, CN:{CN:60,APAC:25,AF:15}, IN:{IN:100}, APAC:{APAC:80,ME:5,AF:15}, LATAM:{LATAM:100}, ME:{ME:60,AF:30,IN:10}, AF:{AF:100}};
+  RK.forEach(o => RK.forEach(d => s.flow[o][d] = F[o][d]||0)); return s;
+}
+function circular(){
+  const s = withHistory(withFlows(baseline())); s.name = 'Circular economy push'; s.notes = 'Baseline with more trade-in, fewer drawer devices and higher formal recycling.';
+  RK.forEach(r => { const a = s.r1[r], mv = Math.min(15, a.drawer); a.refurb += mv; a.drawer -= mv;
+    const b = s.r2[r], mv2 = Math.min(10, b.lost); b.recycled += mv2; b.lost -= mv2;
+    const c = s.dx[r], mv3 = Math.min(20, c.lost); c.recycled += mv3; c.lost -= mv3; });
+  return s;
+}
+function shifting(){
+  const s = withHistory(withFlows(baseline())); s.name = 'Shifting market 2015–2030'; s.notes = 'Baseline with by-year changes: Apple gaining share, SIM-only replacing contract, finance replacing bundled deals, more trade-in and fewer drawer devices.';
+  const P = {
+    'brand/NA/ap':{2015:45,2030:62}, 'brand/NA/pa':{2015:40,2030:23}, 'brand/EU1/ap':{2015:32,2030:47}, 'brand/EU1/pa':{2015:43,2030:28},
+    'svc/NA/nc':{2015:82,2030:57}, 'svc/NA/ns':{2015:8,2030:33}, 'svc/EU1/nc':{2015:60,2030:30}, 'svc/EU1/ns':{2015:25,2030:55},
+    'buy/NA/fin':{2015:30,2030:65}, 'buy/NA/bund':{2015:50,2030:5}, 'buy/EU1/fin':{2015:35,2030:60}, 'buy/EU1/bund':{2015:40,2030:5},
+    'r1/NA/refurb':{2015:15,2030:40}, 'r1/NA/drawer':{2015:50,2030:25}, 'r1/EU1/refurb':{2015:15,2030:40}, 'r1/EU1/drawer':{2015:45,2030:20},
+    'tiers/NA/ap':{2015:750,2025:1150,2030:1250}, 'tiers/EU1/ap':{2015:700,2025:1050,2030:1150} };
+  s.pins = P; return s;
+}
+// Illustrative starting points for impacts; every number is editable once added.
+const IMPACT_PRESETS = {
+  geo:{name:'Geopolitical uncertainty', shape:'wave', start:2026, end:2028, regions:[], brands:[], tiers:[], note:'Trade friction and weaker confidence: fewer sales, dearer handsets and logistics.',
+    effects:[{lever:'units',pct:-5},{lever:'price',pct:4},{lever:'imp',pct:30},{lever:'arpu',pct:-1}]},
+  ram:{name:'RAM component shortage', shape:'shock', start:2026, end:2027, regions:[], brands:[], tiers:['M','B'], note:'Memory costs push up mid-range and budget prices; people keep phones longer and trade-in demand rises.',
+    effects:[{lever:'price',pct:10},{lever:'units',pct:-6},{lever:'life',pct:8},{lever:'tradein',pct:15}]},
+  tariff:{name:'US tariffs on imported handsets', shape:'perm', start:2026, end:2026, regions:['NA'], brands:[], tiers:[], note:'Higher shelf prices in North America, lower volumes, longer ownership.',
+    effects:[{lever:'price',pct:12},{lever:'units',pct:-7},{lever:'life',pct:6}]},
+  downturn:{name:'Economic downturn', shape:'shock', start:2027, end:2028, regions:[], brands:[], tiers:[], note:'Consumers delay upgrades, spend less on airtime and lean on finance.',
+    effects:[{lever:'units',pct:-8},{lever:'life',pct:10},{lever:'arpu',pct:-2},{lever:'fin',pct:10}]},
+  repair:{name:'Right-to-repair and circularity rules', shape:'ramp', start:2027, end:2030, regions:['EU1','EU2'], brands:[], tiers:[], note:'EU rules lift trade-in and lifetimes and cut refurbishment costs.',
+    effects:[{lever:'tradein',pct:30},{lever:'life',pct:10},{lever:'refurb',pct:-10}]},
+  blank:{name:'New impact', shape:'shock', start:2026, end:2027, regions:[], brands:[], tiers:[], note:'', effects:[{lever:'units',pct:0}]}
+};
+const newImpact = (key) => Object.assign({on:true}, clone(IMPACT_PRESETS[key]));
+function shockTest(){
+  const s = withHistory(withFlows(baseline())); s.name = 'Shock test 2026–2028'; s.notes = 'Baseline with a geopolitical shock and a RAM shortage applied.';
+  s.impacts = [newImpact('geo'), newImpact('ram')]; return s;
+}
+const EXAMPLES = [() => withHistory(withFlows(baseline())), circular, shifting, shockTest];
+
+/* ---------- helpers ---------- */
+const $ = (id) => document.getElementById(id);
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const num = (v, d) => (v===null||v===undefined||v===''||isNaN(v)) ? d : +v;
+const esc = (s) => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// money arrives in $ millions
+const CURS = {USD:{s:'$',n:'US dollar'}, GBP:{s:'£',n:'Pound sterling'}, EUR:{s:'€',n:'Euro'}, JPY:{s:'¥',n:'Japanese yen'}, CNY:{s:'CN¥',n:'Chinese yuan'}, INR:{s:'₹',n:'Indian rupee'}, BRL:{s:'R$',n:'Brazilian real'}, ZAR:{s:'R',n:'South African rand'}, AUD:{s:'A$',n:'Australian dollar'}, CAD:{s:'C$',n:'Canadian dollar'}};
+// Indicative units per 1 US dollar; every scenario carries its own editable copy.
+const FX_DEFAULT = {USD:1, GBP:0.75, EUR:0.86, JPY:148, CNY:7.15, INR:87, BRL:5.4, ZAR:17.8, AUD:1.53, CAD:1.38};
+const fxOf = (s, c) => c==='USD' ? 1 : num(((s.g && s.g.fx) || {})[c], FX_DEFAULT[c]);
+let dispCur = null; // results currency chosen by this viewer; null = the scenario's own currency
+const inCode = () => (S && S.g && S.g.cur) || 'USD';
+const curCode = () => dispCur || inCode();
+const SYM = () => CURS[curCode()].s, inSym = () => CURS[inCode()].s;
+const fmtM = (v) => { const a = Math.abs(v), s = v<0?'−':'', y = SYM(); if (a>=1e6){ const d = a>=1e8?0:a>=1e7?1:2; return s+y+(a/1e6).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})+'tn'; } if (a>=1000) return s+y+(a/1000).toLocaleString('en-US',{maximumFractionDigits:a>=100000?0:1})+'bn'; if (a>=1) return s+y+a.toLocaleString('en-US',{maximumFractionDigits:0})+'m'; return s+y+(a*1000).toLocaleString('en-US',{maximumFractionDigits:0})+'k'; };
+const fmtAx = (v) => { const a = Math.abs(v), s = v<0?'−':'', y = SYM(); return a>=1e6 ? s+y+(a/1e6).toLocaleString('en-US',{maximumFractionDigits:1})+'tn' : a>=1000 ? s+y+(a/1000).toLocaleString('en-US',{maximumFractionDigits:1})+'bn' : s+y+Math.round(a)+'m'; };
+const fmtU = (v) => (v<0?'−':'')+(Math.abs(v)>=100? Math.round(Math.abs(v)).toLocaleString('en-US') : Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:1}))+'m';
+const fmtD = (v) => (v<0?'−':'')+SYM()+Math.round(Math.abs(v)).toLocaleString('en-US');
+const pct = (v) => (Math.round(v*10)/10)+'%';
+
+/* ---------- state ---------- */
+const LS_CUR = 'ghv-current-v1', LS_LIB = 'ghv-library-v1';
+const lsGet = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } };
+const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
+function valid(s){ return s && s.g && s.vol && s.svc && s.buy && s.life && s.r1 && s.r2 && s.dx && s.flow && RK.every(r=>s.vol[r]&&s.flow[r]); }
+let S = migrate((() => { const c = lsGet(LS_CUR); return valid(c && c.s) ? c.s : withHistory(withFlows(baseline())); })());
+let cur = (() => { const c = lsGet(LS_CUR); return c && valid(c.s) ? {docId:c.docId||null, authorId:c.authorId||null} : {docId:null, authorId:null}; })();
+
+/* ---------- model ---------- */
+function units(s, r, y){
+  const v = s.vol[r], Y0 = num(s.g.firstYear,2026); let u = num(v.base,0);
+  for (let yy = Y0; yy <= y; yy++){
+    const o = s.volY[r] && s.volY[r][yy];
+    if (yy===Y0) u = num(o, u); else u = num(o, u*(1+num(v.growth,0)/100));
+  }
+  return u;
+}
+function norm(obj, keys){ let t = 0; keys.forEach(k => t += Math.max(0,num(obj[k],0))); const o = {}; keys.forEach(k => o[k] = t>0 ? Math.max(0,num(obj[k],0))/t : 0); return o; }
+function interestSched(P, aprPct, n){
+  const out = []; const r = aprPct/100/12; if (!(r>0) || !(P>0)) return out;
+  const A = P*r/(1-Math.pow(1+r,-n)); let b = P;
+  for (let k=0;k<n;k++){ const i = b*r; out.push(i); b -= (A-i); }
+  return out;
+}
+
+// Scale the trade-in share of a route split and rebalance the other routes so the split still totals 1.
+function tierSplit(sp, mult){
+  if (mult===1) return sp;
+  const r = Math.min(1, (sp.refurb||0)*mult), rest = 1-(sp.refurb||0), o = {refurb:r};
+  ['private','passed','drawer','recycled','lost'].forEach(k => o[k] = rest>1e-12 ? (sp[k]||0)*(1-r)/rest : 0);
+  if (rest<=1e-12) o.lost = 1-r;
+  return o;
+}
+// ---- Inputs that can change by year ----
+// A pinned cell holds values for chosen years; other years are interpolated in a straight line and held flat
+// before the first and after the last pinned year. A cell with no pins uses its single value in every year.
+const PINNABLE = new Set(['brand','brandB','tiers','svc','buy','r1','r2','dx']);
+const pk = (t,r,k) => t+'/'+r+'/'+k;
+function pinsOf(s,t,r,k){ const p = s.pins && s.pins[pk(t,r,k)]; return p && Object.keys(p).length ? p : null; }
+function interp(p, y){
+  const ys = Object.keys(p).map(Number).sort((a,b)=>a-b);
+  if (y<=ys[0]) return +p[ys[0]];
+  if (y>=ys[ys.length-1]) return +p[ys[ys.length-1]];
+  for (let i=0;i<ys.length-1;i++) if (y<=ys[i+1]){ const a = ys[i], b = ys[i+1]; return +p[a] + (p[b]-p[a])*(y-a)/(b-a); }
+  return +p[ys[ys.length-1]];
+}
+function rowAt(s,t,r,y){
+  const base = s[t][r]; if (y==null || !s.pins) return base;
+  let o = null;
+  for (const k in base){ const p = pinsOf(s,t,r,k); if (p){ if (!o) o = Object.assign({}, base); o[k] = interp(p,y); } }
+  return o || base;
+}
+const tableHasPins = (s,t) => !!s.pins && Object.keys(s.pins).some(k => k.startsWith(t+'/') && Object.keys(s.pins[k]).length);
+// ASP for a region, tier and launch year: pinned prices are used as entered; unpinned ones follow the price trend.
+function tierPrice(s, r, tier, y){
+  const k = 'a'+tier.toLowerCase(), p = pinsOf(s,'tiers',r,k);
+  if (p) return interp(p,y);
+  return num(s.tiers[r][k],0)*Math.pow(1+num(s.vol[r].aspTr,0)/100, y-Math.round(num(s.g.baseYear, s.g.firstYear)));
+}
+// Plan-weighted ARPU for each region and calendar year, for new (N) and second-hand (S) owners.
+function arpuTable(s, yMin, yMax, imf){
+  const baseY = Math.round(num(s.g.baseYear, s.g.firstYear)), out = {};
+  RK.forEach(r => {
+    const n = yMax-yMin+1, N = new Float64Array(n), Sx = new Float64Array(n), gi = {};
+    gi[baseY] = 1;
+    for (let y=baseY+1; y<=Math.max(yMax,baseY); y++) gi[y] = gi[y-1]*(1+num(rowAt(s,'svc',r,y).tr,0)/100);
+    for (let y=baseY-1; y>=Math.min(yMin,baseY); y--) gi[y] = gi[y+1]/(1+num(rowAt(s,'svc',r,y+1).tr,0)/100);
+    for (let y=yMin; y<=yMax; y++){
+      const sv = rowAt(s,'svc',r,y);
+      const lvl = (k) => pinsOf(s,'svc',r,k) ? num(sv[k],0) : num(s.svc[r][k],0)*gi[y];
+      const c = lvl('c'), sp = lvl('s'), pg = lvl('p');
+      const nm = norm({c:sv.nc,s:sv.ns,p:sv.np,n:sv.nn},['c','s','p','n']), sm = norm({c:sv.sc,s:sv.ss,p:sv.sp,n:sv.sn},['c','s','p','n']);
+      const im = imf ? imf('arpu', y, r, null, null) : 1;
+      N[y-yMin] = (nm.c*c+nm.s*sp+nm.p*pg)*im; Sx[y-yMin] = (sm.c*c+sm.s*sp+sm.p*pg)*im;
+    }
+    out[r] = {N, S:Sx};
+  });
+  return out;
+}
+
+// ---- Impact scenarios ----
+// An impact (e.g. a component shortage) changes chosen levers by a % for chosen years, regions, brands and tiers.
+const LEVERS = {units:'New handset sales (units)', price:'Handset prices', arpu:'Airtime ARPU', life:'Time first owner keeps the device', tradein:'Trade-in after first owner', fin:'Share bought on finance', apr:'Finance APR', dep:'Resale value decline rate', refurb:'Refurbishment cost', imp:'Logistics & duties'};
+const SHAPES = {shock:'Temporary: full effect from start to end year', wave:'Rises to a peak mid-way, fades out by the end year', perm:'Permanent from the start year', ramp:'Builds up from start to end year, then stays'};
+function intensity(im, y){
+  const a = Math.round(num(im.start,2026)), b = Math.max(a, Math.round(num(im.end,a)));
+  switch (im.shape){
+    case 'perm': return y>=a ? 1 : 0;
+    case 'ramp': return y<a ? 0 : y>=b ? 1 : (y-a+1)/(b-a+1);
+    case 'wave': { if (y<a || y>b) return 0; const mid = (a+b)/2, half = (b-a)/2+0.5; return Math.max(0, 1-Math.abs(y-mid)/half); }
+    default: return (y>=a && y<=b) ? 1 : 0;
+  }
+}
+function makeImpact(list){
+  if (!list.length) return () => 1;
+  return (lever, y, r, b, t) => { let m = 1;
+    for (const im of list){ const w = intensity(im, y); if (!w) continue;
+      if (im.regions && im.regions.length && r && !im.regions.includes(r)) continue;
+      if (im.brands && im.brands.length && b && !im.brands.includes(b)) continue;
+      if (im.tiers && im.tiers.length && t && !im.tiers.includes(t)) continue;
+      for (const e of (im.effects||[])) if (e.lever===lever) m *= Math.max(0, 1 + num(e.pct,0)/100*w); }
+    return m; };
+}
+const activeImpacts = (s, sel) => (sel==='none') ? [] : (s.impacts||[]).filter((im,i) => im.on!==false && (sel===undefined || sel==='all' || sel===i));
+
+// Phase 1: follow one handset of a given first-sale region, brand and tier through every route, month by month.
+// The result holds how many devices are where each month, with values stored per unit of launch price (A) or as
+// fixed amounts. It depends only on the settings that move devices around, so identical settings share one run.
+function flowRun(r0, P, K, E){
+  const {TR, maxLives, tIn, pf, mat, col} = K;
+  const depT = E.dep, r1T = E.r1, R2 = E.r2, DX = E.dx;
+  const dFirstT = Math.max(1, Math.round(P[r0].dFirst*E.lifeM));
+  const F = () => new Float64Array(TR+1);
+  const T = { finA:F(), secA:F(), costA:F(), costC:F(), recC:F(), mF:{}, mS:{},
+    base:{first:F(), second:F(), drawer:F()}, subsA:0, regLA:{}, regLC:{},
+    fate:{recycled:0,lost:0,active:0}, flows:{}, decayA:0, devM:0, useM:0 };
+  RK.forEach(r => { T.regLA[r]=0; T.regLC[r]=0; T.flows[r]={}; });
+  const vf = (m) => Math.pow(1-depT, m/12);
+  const dF = {}, dS = {}, dD = F();
+  const buckets = Array.from({length:TR+1}, () => new Map());
+  const push = (m, r, kind, life, mass) => { if (mass<=1e-9) return; if (m>=TR){ T.fate.active += mass; return; }
+    const key = r+'|'+kind+'|'+life; const b = buckets[m]; const e = b.get(key); if (e) e.mass += mass; else b.set(key,{r,kind,life,mass}); };
+  const bu = E.buy;
+  if (bu.finShare>0) interestSched(1-bu.dep/100, bu.apr, bu.term).forEach((v,k) => { if (k<=TR) T.finA[k] += v*bu.finShare; });
+  T.subsA = bu.bundShare*bu.subs/100;
+  push(0, r0, 'new', 1, 1);
+  const route = (r, m, mass, split, life) => {
+    let sp = split;
+    if (life+1 > maxLives){
+      const owners = (sp.refurb||0)+(sp.private||0)+(sp.passed||0), rl = (sp.recycled||0)+(sp.lost||0);
+      sp = Object.assign({}, sp, {refurb:0, private:0, passed:0});
+      if (rl>0){ sp.recycled = (sp.recycled||0)*(1+owners/rl); sp.lost = (sp.lost||0)*(1+owners/rl); } else sp.lost = (sp.lost||0) + owners;
+    }
+    const mm = (k) => mass*(sp[k]||0);
+    if (mm('refurb')>0){ const tot = mm('refurb');
+      RK.forEach(d => { const q = tot*P[r].flow[d]; if (q<=1e-12) return;
+        const pr = vf(m)*P[d].px;
+        T.secA[m] += q*pr; T.regLA[d] += q*pr;
+        T.costA[m] += q*pr*tIn; T.regLA[r] -= q*pr*tIn;
+        const rc = P[r].refurb*(E.refM ? E.refM[r] : 1), ic = P[d].imp*(E.impM ? E.impM[d] : 1);
+        T.costC[m] += q*rc; T.regLC[r] -= q*rc;
+        if (d!==r){ T.costC[m] += q*ic; T.regLC[d] -= q*ic; }
+        T.flows[r][d] = (T.flows[r][d]||0) + q;
+        push(m, d, 'owner2', life+1, q); });
+    }
+    if (mm('private')>0){ const q = mm('private'), v = q*vf(m)*P[r].px*pf*P[r].fee; T.secA[m] += v; T.regLA[r] += v; push(m, r, 'owner2', life+1, q); }
+    if (mm('passed')>0) push(m, r, 'owner2', life+1, mm('passed'));
+    if (mm('drawer')>0) push(m, r, 'drawer', life, mm('drawer'));
+    if (mm('recycled')>0){ const q = mm('recycled'); T.recC[m] += q*mat; T.costC[m] += q*col; T.regLC[r] += q*(mat-col); T.fate.recycled += q; }
+    if (mm('lost')>0) T.fate.lost += mm('lost');
+  };
+  for (let m=0; m<TR; m++){
+    for (const st of buckets[m].values()){
+      const {r, kind, life, mass} = st, p = P[r];
+      const d = kind==='new'?dFirstT : kind==='drawer'?p.dDrawer : p.dSecond;
+      const end = Math.min(TR, m+d);
+      // devices in each state are tracked as start/stop markers and summed once at the end
+      if (kind==='drawer'){ dD[m] += mass; dD[end] -= mass; T.decayA += mass*(vf(m)-vf(end))*p.px; }
+      else { const st2 = kind==='new' ? dF : dS, dd = st2[r] || (st2[r] = F()); dd[m] += mass; dd[end] -= mass; T.useM += mass*(end-m); }
+      T.devM += mass*(end-m);
+      if (m+d >= TR){ T.fate.active += mass; continue; }
+      route(r, m+d, mass, kind==='drawer' ? DX[r] : (kind==='new' ? r1T : R2[r]), life);
+    }
+  }
+  { let a = 0; for (let k=0;k<=TR;k++){ a += dD[k]; T.base.drawer[k] = a; } }
+  for (const [st, first] of [[dF,true],[dS,false]]) for (const r in st){
+    const dd = st[r], out = F(), ba = T.base[first?'first':'second'];
+    let a = 0;
+    for (let k=0;k<=TR;k++){ a += dd[k]; if (a<1e-15 && a>-1e-15) continue; ba[k] += a; out[k] = a; }
+    (first ? T.mF : T.mS)[r] = out;
+  }
+  let fs = 0, ss = 0, rs = 0;
+  for (let k=0;k<=TR;k++){ fs += T.finA[k]; ss += T.secA[k]; rs += T.recC[k]; }
+  T.sumFinA = fs; T.sumSecA = ss; T.sumRecC = rs;
+  return T;
+}
+
+// Phase 2 helpers: add a run, scaled to a launch year's units and prices, into that year's monthly arrays.
+function addScaled(out, a, w, n){ for (let k=0;k<n;k++) out[k] += w*a[k]; }
+function addProd(out, a, rate, w, n){ let s = 0; for (let k=0;k<n;k++){ const v = w*a[k]*rate[k]; out[k] += v; s += v; } return s; }
+function valueRun(T, U, UA, loc, lb, TR){
+  const n = TR+1;
+  addScaled(loc.finance, T.finA, UA, n); addScaled(loc.secondary, T.secA, UA, n);
+  addScaled(loc.cost, T.costA, UA, n); addScaled(loc.cost, T.costC, U, n); addScaled(loc.recycling, T.recC, U, n);
+  addScaled(lb.first, T.base.first, U, n); addScaled(lb.second, T.base.second, U, n); addScaled(lb.drawer, T.base.drawer, U, n);
+}
+// Convert every money input (prices, ARPU, costs, recovery values, including by-year values) by factor f.
+function convertInputs(s, f){
+  const r2 = (v) => (v===null||v===undefined||v==='') ? v : Math.round(+v*f*100)/100;
+  RK.forEach(r => { ['ap','am','ab'].forEach(k => s.tiers[r][k] = r2(s.tiers[r][k])); ['c','s','p'].forEach(k => s.svc[r][k] = r2(s.svc[r][k]));
+    ['refurb','imp'].forEach(k => s.life[r][k] = r2(s.life[r][k])); if (s.vol[r].asp!==undefined) s.vol[r].asp = r2(s.vol[r].asp); });
+  s.g.material = r2(s.g.material); s.g.collection = r2(s.g.collection);
+  Object.keys(s.pins||{}).forEach(key => { const [t,,k] = key.split('/');
+    if ((t==='tiers' && ['ap','am','ab'].includes(k)) || (t==='svc' && ['c','s','p'].includes(k))) Object.keys(s.pins[key]).forEach(y => s.pins[key][y] = r2(s.pins[key][y])); });
+  return s;
+}
+// Re-express a result in another currency (all money outputs multiplied by f).
+function scaleResult(R, f){
+  if (f===1) return R;
+  const M = ['device','service','secondary','finance','recycling','cost','gross','net','pv','cum'];
+  const sc = (o) => { const x = Object.assign({}, o); M.forEach(k => { if (typeof x[k]==='number') x[k] *= f; }); return x; };
+  const mo = (o) => Object.fromEntries(Object.entries(o).map(([k,v]) => [k, typeof v==='number' ? v*f : v]));
+  return Object.assign({}, R, { years:R.years.map(sc), tot:sc(R.tot),
+    reg:Object.fromEntries(Object.entries(R.reg).map(([k,v]) => [k,{first:v.first*f, later:v.later*f}])),
+    tierNet:mo(R.tierNet), tierGross:mo(R.tierGross), brandNet:mo(R.brandNet), brandGross:mo(R.brandGross),
+    bt:Object.fromEntries(Object.entries(R.bt).map(([b,o]) => [b, mo(o)])),
+    cohorts:R.cohorts.map(c => { const x = sc(c); x.firstNet = c.firstNet*f; x.curve = c.curve.map(v => v*f); return x; }),
+    decay:R.decay*f, firstNet:R.firstNet*f });
+}
+const RUN_CACHE = {};
+function compute(s, only, onlyTier, onlyBrand, slot, impSel){
+  const IMP = activeImpacts(s, impSel), imf = makeImpact(IMP), hasImp = IMP.length>0;
+  const g = s.g, Y0 = Math.round(num(g.firstYear,2026)), NC = Math.max(1, Math.min(40, Math.round(num(g.cohorts,5))));
+  const baseY = Math.round(num(g.baseYear, Y0));
+  const TR = Math.max(12, Math.round(num(g.track,20)*12));
+  const K = { TR, maxLives:Math.max(1, Math.round(num(g.maxLives,6))), tIn:num(g.tradeIn,55)/100, pf:num(g.privFactor,85)/100, mat:num(g.material,0), col:num(g.collection,0) };
+  const attr = num(g.attr,100)/100;
+  const L = NC*12 + TR + 12;
+  const COMP = ['device','service','secondary','finance','recycling','cost'];
+  const G = Object.fromEntries(COMP.map(k=>[k,new Float64Array(L)]));
+  const B = {first:new Float64Array(L), second:new Float64Array(L), drawer:new Float64Array(L)};
+  const reg = Object.fromEntries(RK.map(r=>[r,{first:0,later:0}]));
+  const flows = Object.fromEntries(RK.map(o=>[o,Object.fromEntries(RK.map(d=>[d,0]))]));
+  const fate = {recycled:0, lost:0, active:0};
+  let unitsTot = 0, deviceMonths = 0, useMonths = 0, decay = 0, firstNet = 0;
+  const tierNet = {P:0,M:0,B:0}, tierU = {P:0,M:0,B:0}, tierGross = {P:0,M:0,B:0};
+  const BR = s.g.useBrands ? BRANDS : ['ALL'];
+  const brandNet = {}, brandU = {}, brandGross = {}, bt = {};
+  BR.forEach(b => { brandNet[b]=0; brandU[b]=0; brandGross[b]=0; bt[b] = {P:0,M:0,B:0}; });
+  const RKEYS = ['refurb','private','passed','drawer','recycled','lost'];
+
+  const P = {};
+  RK.forEach(r => { const lf = s.life[r];
+    P[r] = { dFirst:Math.max(1,Math.round(num(lf.first,3)*12)), dSecond:Math.max(1,Math.round(num(lf.second,2)*12)), dDrawer:Math.max(1,Math.round(num(lf.drawer,1.5)*12)),
+      px:num(lf.px,1), refurb:num(lf.refurb,0), imp:num(lf.imp,0), fee:num(lf.fee,0)/100, flow:norm(s.flow[r],RK) }; });
+  // later-life routes by launch year (shared across years when not pinned)
+  const laterPinned = tableHasPins(s,'r2') || tableHasPins(s,'dx');
+  const laterCache = {};
+  const laterAt = (y) => { const key = laterPinned ? y : 'c'; if (!laterCache[key]){
+    laterCache[key] = { r2:Object.fromEntries(RK.map(r=>[r,norm(rowAt(s,'r2',r,laterPinned?y:null),RKEYS)])), dx:Object.fromEntries(RK.map(r=>[r,norm(rowAt(s,'dx',r,laterPinned?y:null),['refurb','recycled','lost'])])) }; }
+    return laterCache[key]; };
+  // everything that moves devices, other than the per-run settings in the signature
+  const gHash = JSON.stringify([TR, K, s.life, s.flow, s.r2, s.dx, Object.entries(s.pins||{}).filter(([k])=>k.startsWith('r2/')||k.startsWith('dx/'))]);
+  const cache = RUN_CACHE[slot||'A'] && RUN_CACHE[slot||'A'].h===gHash ? RUN_CACHE[slot||'A'] : {h:gHash, m:new Map()};
+  const used = new Map();
+
+  const yMin = Y0, yMax = Y0 + NC + Math.ceil(TR/12) + 1;
+  const AT = arpuTable(s, yMin, yMax, hasImp ? imf : null);
+  const cohorts = [];
+  for (let c=0;c<NC;c++){
+    const year = Y0 + c;
+    const loc = Object.fromEntries(COMP.map(k=>[k,new Float64Array(TR+1)]));
+    const lb = {first:new Float64Array(TR+1), second:new Float64Array(TR+1), drawer:new Float64Array(TR+1)};
+    const co = {year, units:0, firstNet:0};
+    // ARPU by month since launch, for this launch year (calendar year = launch year + months elapsed)
+    const rateN = {}, rateS = {};
+    RK.forEach(r => { const a = new Float64Array(TR+1), b = new Float64Array(TR+1);
+      for (let k=0;k<=TR;k++){ const yi = Math.min(yMax, year + Math.floor((k+6)/12)) - yMin; a[k] = AT[r].N[yi]; b[k] = AT[r].S[yi]; }
+      rateN[r] = a; rateS[r] = b; });
+    const later = laterAt(year), lSig = laterPinned ? String(year) : 'c';
+    for (const r0 of RK) for (const b of BR) for (const tier of TIERS){
+      if (only && only!==r0) continue;
+      if (onlyTier && onlyTier!==tier) continue;
+      if (onlyBrand && onlyBrand!==b) continue;
+      const tl = tier.toLowerCase(), tb = (s.tierB && s.tierB[tier]) || {};
+      let share, bb = {}, bpx = 1;
+      if (b==='ALL'){ const ts = rowAt(s,'tiers',r0,year); share = norm({P:ts.sp,M:ts.sm,B:ts.sb},TIERS)[tier]; }
+      else { bb = rowAt(s,'brandB',b,year); bpx = Math.max(0,num(bb.px,1));
+        share = norm(rowAt(s,'brand',r0,year),['ap','pa','oa','ot'])[b.toLowerCase()] * norm({P:bb.tp,M:bb.tm,B:bb.tb},TIERS)[tier]; }
+      const U = units(s, r0, year) * share * (hasImp ? imf('units', year, r0, b, tier) : 1); if (!(U>0)) continue;
+      // settings that move devices, for this launch year
+      const im = hasImp ? (lv) => imf(lv, year, r0, b, tier) : () => 1;
+      const dep = Math.min(0.99, num(bb.dep, num(tb.dep, num(g.dep,30)))/100*im('dep'));
+      const lifeM = Math.max(0.05,num(tb.life,1)*num(bb.life,1)*im('life')), finM = Math.max(0,num(tb.fin,1)*num(bb.fin,1)*im('fin')), arpuM = Math.max(0,num(tb.arpu,1)*num(bb.arpu,1));
+      const trM = Math.max(0,num(tb.tradein,1)*num(bb.tradein,1)*im('tradein'));
+      const r1 = tierSplit(norm(rowAt(s,'r1',r0,year),RKEYS), trM);
+      const bu0 = rowAt(s,'buy',r0,year);
+      const buy = { finShare:Math.min(1, Math.max(0,num(bu0.fin,0))/100*finM), dep:num(bu0.dep,0), apr:num(bu0.apr,0)*im('apr'), term:Math.max(1,Math.round(num(bu0.term,24))), bundShare:Math.max(0,num(bu0.bund,0))/100, subs:num(bu0.subs,0) };
+      let refM = null, impM = null, cSig = '';
+      if (hasImp){ refM = {}; impM = {}; RK.forEach(r => { refM[r] = imf('refurb', year, r, b, tier); impM[r] = imf('imp', year, r, b, tier); }); cSig = RK.map(r => refM[r].toFixed(8)+':'+impM[r].toFixed(8)).join(','); }
+      const sig = [r0, dep, lifeM, RKEYS.map(k=>r1[k].toFixed(10)).join(','), buy.finShare, buy.dep, buy.apr, buy.term, buy.bundShare, buy.subs, lSig, cSig].join('|');
+      let T = used.get(sig) || cache.m.get(sig);
+      if (!T) T = flowRun(r0, P, K, {dep, lifeM, r1, buy, r2:later.r2, dx:later.dx, refM, impM});
+      used.set(sig, T);
+      const A = tierPrice(s, r0, tier, year)*bpx*im('price'), UA = U*A;
+      unitsTot += U; tierU[tier] += U; brandU[b] += U; co.units += U;
+      loc.device[0] += UA; loc.cost[0] += UA*T.subsA;
+      valueRun(T, U, UA, loc, lb, TR);
+      const n = TR+1, wF = U*attr*arpuM, wS = U*attr;
+      const servF = {}, servL = {};
+      for (const r in T.mF) servF[r] = addProd(loc.service, T.mF[r], rateN[r], wF, n);
+      for (const r in T.mS) servL[r] = addProd(loc.service, T.mS[r], rateS[r], wS, n);
+      const fNet = UA*(1 + T.sumFinA - T.subsA) + (servF[r0]||0);
+      reg[r0].first += fNet; firstNet += fNet; co.firstNet += fNet;
+      let lNet = 0, servTot = 0;
+      RK.forEach(r => { const v = UA*T.regLA[r] + U*T.regLC[r] + (servL[r]||0); reg[r].later += v; lNet += v; servTot += (servF[r]||0)+(servL[r]||0); });
+      const gr = UA*(1 + T.sumFinA + T.sumSecA) + U*T.sumRecC + servTot;
+      tierNet[tier] += fNet + lNet; tierGross[tier] += gr;
+      brandNet[b] += fNet + lNet; brandGross[b] += gr; bt[b][tier] += fNet + lNet;
+      fate.recycled += U*T.fate.recycled; fate.lost += U*T.fate.lost; fate.active += U*T.fate.active;
+      for (const o in T.flows) for (const d in T.flows[o]) flows[o][d] += U*T.flows[o][d];
+      decay += UA*T.decayA; deviceMonths += U*T.devM; useMonths += U*T.useM;
+    }
+    // spread the launch year's sales evenly across its 12 months
+    const off = c*12, curve = new Float64Array(TR+12);
+    for (const k of COMP){ const a = loc[k], out = G[k], sg = k==='cost'?-1:1; let t = 0;
+      for (let i=0;i<=TR;i++){ const v = a[i]; if (!v) continue; t += v; const w = v/12; for (let j=0;j<12;j++){ out[off+i+j] += w; if (i+j<TR+12) curve[i+j] += sg*w; } }
+      co[k] = t; }
+    for (const k of ['first','second','drawer']){ const a = lb[k], out = B[k]; for (let i=0;i<TR;i++){ const v = a[i]; if (!v) continue; const w = v/12; for (let j=0;j<12;j++) out[off+i+j] += w; } }
+    co.gross = co.device+co.service+co.secondary+co.finance+co.recycling; co.net = co.gross-co.cost; co.curve = curve;
+    cohorts.push(co);
+  }
+  // keep only this calculation's runs for next time (filters and value edits then reuse them)
+  cache.m = used; RUN_CACHE[slot||'A'] = cache;
+
+  const nY = Math.ceil(L/12), disc = num(g.disc,0)/100;
+  let years = [];
+  for (let y=0;y<nY;y++){
+    const row = {year:Y0+y};
+    COMP.forEach(k => { let t=0; for (let i=y*12;i<Math.min(L,(y+1)*12);i++) t += G[k][i]; row[k]=t; });
+    ['first','second','drawer'].forEach(k => { let t=0, n=0; for (let i=y*12;i<Math.min(L,(y+1)*12);i++){ t += B[k][i]; n++; } row['b_'+k] = n? t/n : 0; });
+    row.gross = row.device+row.service+row.secondary+row.finance+row.recycling;
+    row.net = row.gross-row.cost; row.pv = row.net/Math.pow(1+disc, row.year-baseY);
+    years.push(row);
+  }
+  let last = years.length-1; while (last>0 && Math.abs(years[last].gross)+years[last].cost < 1e-3 && years[last].b_first+years[last].b_second+years[last].b_drawer < 1e-3) last--;
+  years = years.slice(0,last+1);
+  let cum = 0; years.forEach(y => { cum += y.net; y.cum = cum; });
+  const tot = {}; ['device','service','secondary','finance','recycling','cost','gross','net','pv'].forEach(k => tot[k] = years.reduce((a,y)=>a+y[k],0));
+  return {years, tot, reg, flows, fate, unitsTot, tierNet, tierU, tierGross, brandNet, brandU, brandGross, bt, BR, cohorts, runs:used.size, avgLife: unitsTot? deviceMonths/unitsTot/12 : 0, avgUse: unitsTot? useMonths/unitsTot/12 : 0, decay, firstNet, Y0, NC, TR, baseY};
+}
+
+/* ---------- input tabs ---------- */
+const TABS = [
+  {id:'vol', label:'Sales volumes', desc:'New handsets sold in each region by year of first sale, in millions. Blank years grow from the previous year at the growth rate. The price trend applies to every price tier in the region.'},
+  {id:'brand', label:'Brands', desc:'Split each region’s sales between Apple, Premium Android (Samsung, Google), Other Android and Other (feature phones and other systems). Each brand has its own mix of price tiers, a price index against the regional tier price, and behaviour multipliers that apply on top of the tier’s. A brand’s value decline replaces the tier’s when set. Brand mix and brand settings apply by launch year.'},
+  {id:'tier', label:'Price tiers', desc:'Average price for premium, mid-range and budget handsets in each region, and how the tiers behave differently. Multipliers of 1.00 leave the regional inputs unchanged; a blank value decline uses the global rate. When brands are on, the tier mix comes from the Brands tab. A price set by year is used as entered; prices without by-year values follow the regional price trend.'},
+  {id:'svc', label:'Airtime & plans', desc:'These follow the calendar year a device is in use, not its launch year. An ARPU set by year is used as entered; one without by-year values follows the ARPU trend. Monthly ARPU by plan type, the yearly ARPU trend, and the plan mix for new and second-hand owners. "None" means the device is in use but not on its own connection (for example Wi-Fi only).'},
+  {id:'buy', label:'Buying & finance', desc:'Set for each launch year. How new handsets are paid for. The APR is the blended rate across financed sales, so a market with many 0% APR plans has a low blended rate. Bundled contracts carry an operator handset subsidy.'},
+  {id:'life', label:'Lifetimes & costs', desc:'How long each owner keeps a device, how long devices sit in drawers, resale price levels, refurbishment cost where traded in, logistics & duties into the region, and marketplace fees on private sales.'},
+  {id:'r1', label:'Routes after first owner', desc:'Set for each launch year: devices keep the routes of the year they were first sold. What happens to devices when the first owner is finished with them. Each row should total 100%.'},
+  {id:'r2', label:'Routes after later owners', desc:'Set for each launch year: devices keep the routes of the year they were first sold. What happens after second and later owners, and what happens when a device comes out of a drawer. Each row should total 100%.'},
+  {id:'flow', label:'Refurb flows', desc:'Where refurbished devices are resold, by the region they were traded in. Each row should total 100%.'},
+  {id:'imp', label:'Impacts', desc:'Add events such as a geopolitical shock or a component shortage, choose which levers they hit and by how much, when, and for which regions, brands and tiers. Effects are percentage changes to the scenario’s own inputs, scaled by the timing shape. Several impacts on the same lever multiply together. ARPU effects apply to the whole region, whatever brand or tier is chosen.'},
+  {id:'g', label:'Global settings', desc:'Settings that apply to every region.'}
+];
+let tab = 'vol';
+const blended = (r) => { const y = ySel ?? Math.round(num(S.g.baseYear, S.g.firstYear)), pr = {P:tierPrice(S,r,'P',y), M:tierPrice(S,r,'M',y), B:tierPrice(S,r,'B',y)};
+  if (!S.g.useBrands){ const tm = tierMix(S, r, y); return TIERS.reduce((a,t)=>a+tm[t]*pr[t],0); }
+  const bs = norm(rowAt(S,'brand',r,y),['ap','pa','oa','ot']); let v = 0;
+  BRANDS.forEach(b => { const bb = rowAt(S,'brandB',b,y), ts = norm({P:bb.tp,M:bb.tm,B:bb.tb},TIERS); TIERS.forEach(t => v += bs[b.toLowerCase()]*ts[t]*pr[t]*num(bb.px,1)); });
+  return v; };
+const sumChip = (t) => { const ok = Math.abs(t-100)<0.05; return `<span class="chip ${ok?'ok':'warn'}">${ok?'100%':(Math.round(t*10)/10)+'%'}</span>`; };
+let ySel = null; // null = the single value used in every year
+const TAB_TABLES = {brand:['brand','brandB'], tier:['tiers'], svc:['svc'], buy:['buy'], r1:['r1'], r2:['r2','dx']};
+const fmtIn = (v) => (v===null||v===undefined||isNaN(v)) ? '' : String(Math.round(v*100)/100);
+const pinText = (p) => Object.keys(p).map(Number).sort((a,b)=>a-b).map(y=>`${y}: ${fmtIn(+p[y])}`).join(' · ');
+const effRow = (t, r) => rowAt(S, t, r, ySel);
+const cell = (t, r, k, v, step='any', ph='') => {
+  const common = `id="${t}-${r}-${k}" data-t="${t}" data-r="${r}" data-k="${k}" step="${step}" aria-label="${esc(RN[r]||BNM[r]||TN[r]||r)} ${esc(k)}"`;
+  if (!PINNABLE.has(t)) return `<td><input type="number" ${common} value="${v===null||v===undefined?'':v}" ${ph!==''?`placeholder="${ph}"`:''}></td>`;
+  const p = pinsOf(S,t,r,k);
+  if (ySel===null){
+    if (p) return `<td><input type="number" ${common} class="varies" value="" placeholder="by year" title="Set by year: ${esc(pinText(p))}" readonly></td>`;
+    return `<td><input type="number" ${common} value="${v===null||v===undefined?'':v}" ${ph!==''?`placeholder="${ph}"`:''}></td>`;
+  }
+  const pinned = p && p[ySel]!==undefined;
+  const eff = p ? interp(p, ySel) : v;
+  return `<td><input type="number" ${common} class="${pinned?'pin':''}" value="${pinned? p[ySel] : ''}" placeholder="${fmtIn(eff)}"></td>`;
+};
+function pinCount(tabId){ if (tabId==='imp') return (S.impacts||[]).filter(i=>i.on!==false).length; const ts = TAB_TABLES[tabId]; if (!ts || !S.pins) return 0; return Object.keys(S.pins).filter(k => ts.includes(k.split('/')[0]) && Object.keys(S.pins[k]).length).length; }
+function renderYearBar(){
+  const pinnable = !!TAB_TABLES[tab];
+  $('yearBar').hidden = tab==='imp';
+  const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5)));
+  if (ySel!==null && (ySel<Y0 || ySel>Y0+NC-1)) ySel = null;
+  $('yearSel').innerHTML = `<option value="">Every year (single value)</option>` + Array.from({length:NC},(_,i)=>Y0+i).map(y=>`<option value="${y}" ${ySel===y?'selected':''}>${y}</option>`).join('');
+  $('yearSel').value = ySel===null ? '' : String(ySel);
+  $('yearSel').disabled = !pinnable; $('clearTabPins').hidden = !pinnable || !pinCount(tab);
+  $('pinInfo').innerHTML = !pinnable ? 'These inputs are the same in every year.'
+    : ySel===null ? `Pick a year to set values for that year. <span class="key-var"></span> cells already vary by year.`
+    : `Values for ${ySel}. Type in a cell to fix it for this year; clear it to remove that year. <span class="key-pin"></span> fixed this year · grey numbers are worked out from other years.`;
+}
+$('yearSel').addEventListener('change', e => { ySel = e.target.value==='' ? null : +e.target.value; renderTab(); });
+$('clearTabPins').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent = 'Click again to clear'; setTimeout(()=>{ b.dataset.armed=''; b.textContent='Clear by-year values on this tab'; }, 3500); return; }
+  const ts = TAB_TABLES[tab]||[]; Object.keys(S.pins).forEach(k => { if (ts.includes(k.split('/')[0])) delete S.pins[k]; });
+  b.dataset.armed=''; b.textContent='Clear by-year values on this tab'; renderTab(); scheduleCompute();
+});
+$('tabBody').addEventListener('focusin', e => {
+  const el = e.target; if (!el.dataset || !PINNABLE.has(el.dataset.t)) return;
+  const td = el.closest('td'), tr = td.parentNode, idx = [...tr.children].indexOf(td), th = td.closest('table').querySelector('thead tr').children[idx];
+  const col = th ? th.childNodes[0].textContent : el.dataset.k, row = tr.children[0].childNodes[0].textContent;
+  const p = pinsOf(S, el.dataset.t, el.dataset.r, el.dataset.k);
+  $('pinInfo').innerHTML = `<b>${esc(row)} · ${esc(col)}</b>: ${p ? 'set by year — '+esc(pinText(p))+'. Years in between are interpolated; before the first and after the last it holds flat.' : 'same value in every year.'}${ySel===null && !p ? ' Pick a year above to make it change over time.' : ''}${p ? ` <button class="btn small" id="clearCellPins" data-key="${esc(pk(el.dataset.t,el.dataset.r,el.dataset.k))}">Clear by-year values for this cell</button>` : ''}`;
+});
+$('yearBar').addEventListener('click', e => { const b = e.target.closest('#clearCellPins'); if (!b) return; delete S.pins[b.dataset.key]; renderTab(); scheduleCompute(); });
+function simpleTable(t, cols, obj, withSum){
+  let h = `<thead><tr><th>Region</th>${cols.map(c=>`<th>${c[1]}${c[2]?`<span class="u">${c[2]}</span>`:''}</th>`).join('')}${withSum?'<th>Total</th>':''}</tr></thead><tbody>`;
+  RK.forEach(r => { const o = obj[r], e = PINNABLE.has(t) ? effRow(t,r) : o; h += `<tr><td>${esc(RN[r])}</td>${cols.map(c=>cell(t,r,c[0],o[c[0]])).join('')}${withSum?`<td id="sum-${t}-${r}">${sumChip(cols.reduce((a,c)=>a+num(e[c[0]],0),0))}</td>`:''}</tr>`; });
+  return h + '</tbody>';
+}
+function renderTab(){
+  $('tabs').innerHTML = TABS.map(t => { const n = pinCount(t.id); return `<button role="tab" id="tab-${t.id}" aria-selected="${t.id===tab}" data-tab="${t.id}">${t.label}${n?`<span class="n" title="${n} input${n>1?'s':''} set by year">${n}</span>`:''}</button>`; }).join('');
+  renderYearBar();
+  $('tabDesc').textContent = TABS.find(t=>t.id===tab).desc;
+  let h = '';
+  if (tab==='vol'){
+    const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5)));
+    const ys = Array.from({length:NC},(_,i)=>Y0+i);
+    h = `<div class="tbl"><table><thead><tr><th>Region</th><th>Units ${Y0}<span class="u">millions</span></th><th>Growth<span class="u">% a year</span></th>${ys.slice(1).map(y=>`<th>${y}<span class="u">millions</span></th>`).join('')}<th>Price trend<span class="u">% a year</span></th></tr></thead><tbody>`;
+    RK.forEach(r => { const v = S.vol[r];
+      h += `<tr><td>${esc(RN[r])}</td>${cell('vol',r,'base',v.base,'1')}${cell('vol',r,'growth',v.growth,'0.5')}`;
+      ys.slice(1).forEach(y => { const o = S.volY[r][y]; h += `<td><input type="number" id="vy-${r}-${y}" data-t="volY" data-r="${r}" data-k="${y}" step="1" value="${o===undefined||o===null?'':o}" placeholder="${Math.round(units(Object.assign({},S,{volY:Object.assign({},S.volY,{[r]:{}})}),r,y)*10)/10}" aria-label="${esc(RN[r])} units ${y}"></td>`; });
+      h += `${cell('vol',r,'aspTr',v.aspTr,'0.5')}</tr>`; });
+    h += `<tr class="tot"><td>Total</td>${ys.map((y,i)=>`<td id="vt-${y}">${fmtU(RK.reduce((a,r)=>a+units(S,r,y),0))}</td>${i===0?'<td></td>':''}`).join('')}<td></td></tr></tbody></table></div>`;
+  }
+  if (tab==='brand'){
+    const on = !!S.g.useBrands;
+    h = `<label class="row" style="gap:8px;font-weight:700"><input type="checkbox" id="g-useBrands" data-t="gflag" data-k="useBrands" ${on?'checked':''}> Split sales by brand</label>`;
+    if (!on) h += `<p class="foot">Brands are off, so each region's tier mix is typed in on the Price tiers tab. Turn this on to build the tier mix from brands instead.</p>`;
+    const bcols = [['ap','Apple','% of units'],['pa','Premium Android','% of units'],['oa','Other Android','% of units'],['ot','Other','% of units']];
+    h += `<div class="tbl" ${on?'':'style="opacity:.55"'}><table><thead><tr><th>Region</th>${bcols.map(c=>`<th>${c[1]}<span class="u">${c[2]}</span></th>`).join('')}<th>Total</th><th>Tier mix (P / M / B)</th></tr></thead><tbody>`;
+    RK.forEach(r => { const o = S.brand[r], e = effRow('brand',r), tm = tierMix(Object.assign({}, S, {g:Object.assign({}, S.g, {useBrands:true})}), r, ySel);
+      h += `<tr><td>${esc(RN[r])}</td>${bcols.map(c=>cell('brand',r,c[0],o[c[0]],'1')).join('')}<td id="sum-brand-${r}">${sumChip(bcols.reduce((a,c)=>a+num(e[c[0]],0),0))}</td><td id="tm-${r}">${TIERS.map(t=>Math.round(tm[t]*100)).join(' / ')}</td></tr>`; });
+    h += `</tbody></table></div>`;
+    const cc = [['tp','Premium','% of brand'],['tm','Mid-range','% of brand'],['tb','Budget','% of brand'],['px','Price index','× regional tier price'],['dep','Resale value decline','% a year · blank = tier'],['life','First owner keeps','× tier'],['tradein','Trade-in after first owner','× tier'],['fin','Bought on finance','× tier'],['arpu','First-owner ARPU','× tier']];
+    h += `<h2 style="margin-top:16px;font-size:14px">How each brand behaves</h2><div class="tbl" ${on?'':'style="opacity:.55"'}><table><thead><tr><th>Brand</th>${cc.map(c=>`<th>${c[1]}<span class="u">${c[2]}</span></th>`).join('')}<th>Tier split</th></tr></thead><tbody>`;
+    BRANDS.forEach(b => { const o = S.brandB[b], e = effRow('brandB',b); h += `<tr><td>${BNM[b]}<span class="foot" style="display:block">${BSUB[b]}</span></td>${cc.map(c=>cell('brandB',b,c[0],o[c[0]],['tp','tm','tb','dep'].includes(c[0])?'1':'0.05')).join('')}<td id="sum-brandB-${b}">${sumChip(num(e.tp,0)+num(e.tm,0)+num(e.tb,0))}</td></tr>`; });
+    h += `</tbody></table></div>`;
+  }
+  if (tab==='tier'){
+    const on = !!S.g.useBrands;
+    const cols = on ? [['ap','Premium price',inCode()],['am','Mid-range price',inCode()],['ab','Budget price',inCode()]] : [['sp','Premium','% of units'],['sm','Mid-range','% of units'],['sb','Budget','% of units'],['ap','Premium price',inCode()],['am','Mid-range price',inCode()],['ab','Budget price',inCode()]];
+    h = `<div class="tbl"><table><thead><tr><th>Region</th>${on?'<th>Tier mix from brands<span class="u">P / M / B %</span></th>':''}${cols.map(c=>`<th>${c[1]}<span class="u">${c[2]}</span></th>`).join('')}${on?'':'<th>Tier mix</th>'}<th>Blended price</th></tr></thead><tbody>`;
+    RK.forEach(r => { const o = S.tiers[r], e = effRow('tiers',r), tm = tierMix(S, r, ySel); h += `<tr><td>${esc(RN[r])}</td>${on?`<td>${TIERS.map(t=>Math.round(tm[t]*100)).join(' / ')}</td>`:''}${cols.map(c=>cell('tiers',r,c[0],o[c[0]],c[0][0]==='a'?'10':'1')).join('')}${on?'':`<td id="sum-tiers-${r}">${sumChip(num(e.sp,0)+num(e.sm,0)+num(e.sb,0))}</td>`}<td id="bp-${r}">${fmtD(blended(r))}</td></tr>`; });
+    h += `</tbody></table></div>`;
+    const bc = [['dep','Resale value decline','% per year · blank = global'],['life','First owner keeps','× regional years'],['tradein','Trade-in after first owner','× regional share'],['fin','Bought on finance','× regional share'],['arpu','First-owner ARPU','× plan-weighted ARPU']];
+    h += `<h2 style="margin-top:16px;font-size:14px">How each tier behaves</h2><div class="tbl"><table><thead><tr><th>Tier</th>${bc.map(c=>`<th>${c[1]}<span class="u">${c[2]}</span></th>`).join('')}</tr></thead><tbody>`;
+    TIERS.forEach(t => { const o = S.tierB[t]; h += `<tr><td>${TN[t]}</td>${bc.map(c=>`<td><input type="number" id="tierB-${t}-${c[0]}" data-t="tierB" data-r="${t}" data-k="${c[0]}" step="${c[0]==='dep'?'1':'0.05'}" value="${o[c[0]]===null||o[c[0]]===undefined?'':o[c[0]]}" ${c[0]==='dep'?`placeholder="${num(S.g.dep,30)}"`:''} aria-label="${TN[t]} ${esc(c[1])}"></td>`).join('')}</tr>`; });
+    h += `</tbody></table></div>`;
+  }
+  if (tab==='svc') h = `<div class="tbl"><table>${(() => {
+    const cols = [['c','Contract ARPU',inSym()+'/month'],['s','SIM-only ARPU',inSym()+'/month'],['p','PAYG ARPU',inSym()+'/month'],['tr','ARPU trend','% a year'],['nc','New: contract','%'],['ns','New: SIM-only','%'],['np','New: PAYG','%'],['nn','New: none','%'],['sc','2nd-hand: contract','%'],['ss','2nd-hand: SIM-only','%'],['sp','2nd-hand: PAYG','%'],['sn','2nd-hand: none','%']];
+    let x = `<thead><tr><th>Region</th>${cols.map(c=>`<th>${c[1]}<span class="u">${c[2]}</span></th>`).join('')}<th>New mix</th><th>2nd-hand mix</th></tr></thead><tbody>`;
+    RK.forEach(r => { const o = S.svc[r], e = effRow('svc',r); x += `<tr><td>${esc(RN[r])}</td>${cols.map(c=>cell('svc',r,c[0],o[c[0]])).join('')}<td id="sum-svcn-${r}">${sumChip(['nc','ns','np','nn'].reduce((a,k)=>a+num(e[k],0),0))}</td><td id="sum-svcs-${r}">${sumChip(['sc','ss','sp','sn'].reduce((a,k)=>a+num(e[k],0),0))}</td></tr>`; });
+    return x + '</tbody>'; })()}</table></div>`;
+  if (tab==='buy') h = `<div class="tbl"><table>${simpleTable('buy',[['fin','On device finance','% of sales'],['apr','Blended APR','%'],['term','Finance term','months'],['dep','Deposit','%'],['bund','Bundled contract','% of sales'],['subs','Operator subsidy','% of price']],S.buy,false)}</table></div>`;
+  if (tab==='life') h = `<div class="tbl"><table>${simpleTable('life',[['first','First owner keeps','years'],['second','Later owners keep','years'],['drawer','Time in drawer','years'],['px','Resale price index','1.00 = full'],['refurb','Refurb cost',inSym()+' per unit'],['imp','Logistics & duties in',inSym()+' per unit'],['fee','Marketplace fee','% of private sale']],S.life,false)}</table></div>`;
+  const RC = [['refurb','Traded in & refurbished','%'],['private','Sold privately','%'],['passed','Passed on','%'],['drawer','Put in a drawer','%'],['recycled','Formally recycled','%'],['lost','Lost, broken or landfill','%']];
+  if (tab==='r1') h = `<div class="tbl"><table>${simpleTable('r1',RC,S.r1,true)}</table></div>`;
+  if (tab==='r2') h = `<div class="tbl"><table>${simpleTable('r2',RC,S.r2,true)}</table></div><h2 style="margin-top:16px;font-size:14px">When a device comes out of a drawer</h2><div class="tbl"><table>${simpleTable('dx',[['refurb','Traded in & refurbished','%'],['recycled','Formally recycled','%'],['lost','Thrown away or lost','%']],S.dx,true)}</table></div>`;
+  if (tab==='flow'){
+    h = `<div class="tbl"><table><thead><tr><th>Traded in ↓ · Resold in →</th>${RK.map(d=>`<th>${esc(RN[d])}<span class="u">%</span></th>`).join('')}<th>Total</th></tr></thead><tbody>`;
+    RK.forEach(o => { h += `<tr><td>${esc(RN[o])}</td>${RK.map(d=>cell('flow',o,d,S.flow[o][d],'1')).join('')}<td id="sum-flow-${o}">${sumChip(RK.reduce((a,d)=>a+num(S.flow[o][d],0),0))}</td></tr>`; });
+    h += '</tbody></table></div>';
+  }
+  if (tab==='imp') h = renderImpactsTab();
+  if (tab==='g'){
+    const F = [['firstYear','First sales year','Earliest launch year to model',1],['cohorts','Years of sales to model','Launch years, 1–40',1],['lastActual','Last year of actual data','This year and earlier are shaded as history',1],['baseYear','Prices and ARPU are stated for','Year the price and ARPU inputs apply to; trends run forwards and backwards from it. Also the present-value year.',1],['track','Follow each device for','years',1],['maxLives','Maximum owners per device','',1],['dep','Resale value decline','% per year of age',1],['tradeIn','Trade-in payout','% of refurbished resale price',1],['privFactor','Private sale price','% of refurbished price',1],['attr','Service revenue credited to handset','% of ARPU',5],['disc','Discount rate','% a year, for present value',0.5],['material','Material recovery value',inSym()+' per recycled unit',0.5],['collection','Collection & processing cost',inSym()+' per recycled unit',0.5]];
+    h = `<div class="gridg">${F.map(f=>`<div class="f"><label for="g-${f[0]}">${f[1]}</label><input type="number" id="g-${f[0]}" data-t="g" data-k="${f[0]}" step="${f[3]}" value="${S.g[f[0]]??''}">${f[2]?`<span class="h">${f[2]}</span>`:''}</div>`).join('')}</div>`;
+    h += `<h2 style="margin-top:18px;font-size:14px">Currency</h2>
+      <div class="gridg"><div class="f"><label for="g-cur">Scenario currency</label><select id="g-cur">${Object.keys(CURS).map(c=>`<option value="${c}" ${c===inCode()?'selected':''}>${c} · ${CURS[c].n}</option>`).join('')}</select><span class="h">Prices, ARPU and costs are entered in this currency, and results are shown in it by default.</span></div></div>
+      <div id="curConvert" class="panel" style="margin-top:10px" hidden></div>
+      <h2 style="margin-top:16px;font-size:14px">Exchange rates</h2>
+      <p class="foot" style="margin:0">Units of each currency per 1 US dollar. Used to convert inputs when the scenario currency changes, to show results in another currency, and to compare scenarios set in different currencies. The defaults are indicative only; replace them with your house rates.</p>
+      <div class="tbl"><table style="width:auto"><thead><tr><th>Currency</th><th>Per 1 USD</th></tr></thead><tbody>${Object.keys(CURS).filter(c=>c!=='USD').map(c=>`<tr><td>${c} · ${CURS[c].n}</td><td><input type="number" id="fx-${c}" data-t="fx" data-k="${c}" step="0.01" value="${fxOf(S,c)}" aria-label="${c} per US dollar"></td></tr>`).join('')}</tbody></table></div>`;
+  }
+  $('tabBody').innerHTML = h;
+}
+/* ---------- impacts tab ---------- */
+const effText = (im) => (im.effects||[]).filter(e=>num(e.pct,0)!==0).map(e => `${LEVERS[e.lever]} ${num(e.pct,0)>0?'+':''}${num(e.pct,0)}%`).join(' · ') || 'No effects yet';
+function renderImpactsTab(){
+  const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5)));
+  const yrs = Array.from({length:Math.max(NC, 2030-Y0+1)},(_,i)=>Y0+i);
+  let h = `<div class="row"><label for="impAdd" class="foot" style="font-weight:700;color:var(--ink-2)">Add an impact</label><select id="impAdd" style="width:auto">${Object.entries(IMPACT_PRESETS).map(([k,p])=>`<option value="${k}">${k==='blank'?'Blank impact':esc(p.name)}</option>`).join('')}</select><button class="btn primary" data-impact="add">Add</button></div>`;
+  if (!S.impacts.length) h += `<p class="foot">No impacts yet. Add one from the list to start from an example, or add a blank one.</p>`;
+  const chip = (i, k, v, label, on) => `<label class="ichip ${on?'on':''}"><input type="checkbox" data-t="impscope" data-i="${i}" data-k="${k}" data-v="${v}" ${on?'checked':''}>${esc(label)}</label>`;
+  S.impacts.forEach((im, i) => {
+    const off = im.on===false;
+    h += `<div class="impact ${off?'off':''}">
+      <div class="imp-h"><label class="row" style="gap:6px"><input type="checkbox" data-t="imp" data-i="${i}" data-k="on" ${off?'':'checked'} aria-label="Apply this impact"><span class="foot">Apply</span></label>
+        <input type="text" id="imp-${i}-name" data-t="imp" data-i="${i}" data-k="name" value="${esc(im.name)}" aria-label="Impact name" class="imp-name">
+        <button class="btn small danger" data-impact="del" data-i="${i}">Remove</button></div>
+      ${im.note?`<p class="foot" style="margin:0">${esc(im.note)}</p>`:''}
+      <div class="imp-grid">
+        <div class="f"><label for="imp-${i}-shape">Timing</label><select id="imp-${i}-shape" data-t="imp" data-i="${i}" data-k="shape">${Object.entries(SHAPES).map(([k,v])=>`<option value="${k}" ${im.shape===k?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+        <div class="f"><label for="imp-${i}-start">Start year</label><input type="number" id="imp-${i}-start" data-t="imp" data-i="${i}" data-k="start" value="${im.start}" step="1"></div>
+        <div class="f"><label for="imp-${i}-end">End year</label><input type="number" id="imp-${i}-end" data-t="imp" data-i="${i}" data-k="end" value="${im.end}" step="1" ${im.shape==='perm'?'disabled':''}></div>
+      </div>
+      <div class="f"><span class="flab">Regions <span class="foot">(none ticked = all)</span></span><div class="chips">${RK.map(r=>chip(i,'regions',r,RN[r],(im.regions||[]).includes(r))).join('')}</div></div>
+      <div class="imp-grid2">
+        ${S.g.useBrands?`<div class="f"><span class="flab">Brands <span class="foot">(none = all)</span></span><div class="chips">${BRANDS.map(b=>chip(i,'brands',b,BNM[b],(im.brands||[]).includes(b))).join('')}</div></div>`:''}
+        <div class="f"><span class="flab">Price tiers <span class="foot">(none = all)</span></span><div class="chips">${TIERS.map(t=>chip(i,'tiers',t,TN[t],(im.tiers||[]).includes(t))).join('')}</div></div>
+      </div>
+      <div class="tbl"><table style="width:auto;min-width:min(100%,460px)"><thead><tr><th>Lever it hits</th><th>Change at full effect<span class="u">%</span></th><th></th></tr></thead><tbody>
+        ${(im.effects||[]).map((e,j)=>`<tr><td><select id="imp-${i}-e${j}-lever" data-t="impeff" data-i="${i}" data-j="${j}" data-k="lever" aria-label="Lever">${Object.entries(LEVERS).map(([k,v])=>`<option value="${k}" ${e.lever===k?'selected':''}>${esc(v)}</option>`).join('')}</select></td><td><input type="number" id="imp-${i}-e${j}-pct" data-t="impeff" data-i="${i}" data-j="${j}" data-k="pct" value="${e.pct??''}" step="1" aria-label="Percent change"></td><td><button class="btn small" data-impact="deleff" data-i="${i}" data-j="${j}" aria-label="Remove this effect">✕</button></td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="row"><button class="btn small" data-impact="addeff" data-i="${i}">Add a lever</button></div>
+      <div class="f"><span class="flab">Strength by year</span><div class="istrip" id="imp-${i}-strip">${stripHtml(im, yrs)}</div></div>
+    </div>`;
+  });
+  return h;
+}
+function stripHtml(im, yrs){ return yrs.map(y => { const w = intensity(im, y); return `<span title="${y}: ${Math.round(w*100)}% of full effect" style="background:rgba(var(--heat),${(w*0.75).toFixed(3)})">${String(y).slice(2)}</span>`; }).join(''); }
+function impYears(){ const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5))); return Array.from({length:Math.max(NC, 2030-Y0+1)},(_,i)=>Y0+i); }
+$('tabBody').addEventListener('click', e => {
+  const b = e.target.closest('button[data-impact]'); if (!b) return;
+  const a = b.dataset.impact, i = +b.dataset.i, j = +b.dataset.j;
+  if (a==='add') S.impacts.push(newImpact($('impAdd').value));
+  if (a==='del') S.impacts.splice(i,1);
+  if (a==='addeff') S.impacts[i].effects.push({lever:'units', pct:0});
+  if (a==='deleff') S.impacts[i].effects.splice(j,1);
+  renderTab(); scheduleCompute();
+});
+// Changing the scenario currency: offer to convert the money inputs or just relabel them.
+$('tabBody').addEventListener('change', e => {
+  if (e.target.id!=='g-cur') return;
+  const from = inCode(), to = e.target.value, box = $('curConvert'); if (from===to){ box.hidden = true; return; }
+  const rate = fxOf(S,to)/fxOf(S,from), rs = rate>=100 ? Math.round(rate).toLocaleString('en-US') : rate.toFixed(4);
+  box.innerHTML = `<p style="margin:0">Switch this scenario from <b>${from}</b> to <b>${to}</b>. Convert prices, ARPU, refurb, logistics and recycling values (including by-year values) at <b>${rs} ${to} per ${from}</b>, or keep the numbers and only change the currency label?</p>
+    <div class="row"><button class="btn primary" data-cur="convert" data-to="${to}">Convert values</button><button class="btn" data-cur="relabel" data-to="${to}">Keep numbers</button><button class="btn" data-cur="cancel">Cancel</button></div>`;
+  box.hidden = false;
+});
+$('tabBody').addEventListener('click', e => {
+  const b = e.target.closest('button[data-cur]'); if (!b) return;
+  const act = b.dataset.cur, to = b.dataset.to;
+  if (act==='convert') convertInputs(S, fxOf(S,to)/fxOf(S,inCode()));
+  if (act!=='cancel'){ S.g.cur = to; dispCur = null; }
+  renderTab(); scheduleCompute();
+});
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (!b) return; tab = b.dataset.tab; renderTab(); $('tab-'+tab).focus(); });
+$('tabs').addEventListener('keydown', e => { if (!['ArrowRight','ArrowLeft'].includes(e.key)) return; const i = TABS.findIndex(t=>t.id===tab); tab = TABS[(i+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length].id; renderTab(); $('tab-'+tab).focus(); });
+
+$('tabBody').addEventListener('input', e => {
+  const el = e.target, t = el.dataset.t, r = el.dataset.r, k = el.dataset.k; if (!t) return;
+  if (t==='gflag'){ S.g[k] = el.checked; renderTab(); $('g-'+k).focus(); brandFilterVis(); scheduleCompute(); return; }
+  if (t==='imp' || t==='impscope' || t==='impeff'){
+    const im = S.impacts[+el.dataset.i]; if (!im) return;
+    if (t==='imp'){ if (k==='on') im.on = el.checked; else if (k==='name') im.name = el.value; else if (k==='shape') im.shape = el.value; else im[k] = el.value==='' ? null : +el.value; }
+    if (t==='impscope'){ const arr = im[k] || (im[k] = []), v = el.dataset.v; if (el.checked){ if (!arr.includes(v)) arr.push(v); } else im[k] = arr.filter(x=>x!==v); el.parentNode.classList.toggle('on', el.checked); }
+    if (t==='impeff'){ const e2 = im.effects[+el.dataset.j]; if (k==='lever') e2.lever = el.value; else e2.pct = el.value==='' ? 0 : +el.value; }
+    if (t==='imp' && (k==='shape' || k==='on')){ renderTab(); }
+    else { const st = $('imp-'+el.dataset.i+'-strip'); if (st) st.innerHTML = stripHtml(im, impYears()); }
+    if (t==='imp' && k==='name'){ lsSet(LS_CUR, {s:S, docId:cur.docId, authorId:cur.authorId}); if (lastR) renderImpactCard(); return; }
+    scheduleCompute(); return;
+  }
+  if (t==='fx'){ S.g.fx = S.g.fx || {}; S.g.fx[k] = el.value==='' ? null : +el.value; cmpCache.key = null; scheduleCompute(); return; }
+  const v = el.value==='' ? null : +el.value;
+  if (t==='g') S.g[k] = v;
+  else if (t==='volY'){ if (v===null) delete S.volY[r][k]; else S.volY[r][k] = v; }
+  else if (t==='flow') S.flow[r][k] = v;
+  else if (PINNABLE.has(t) && ySel!==null){
+    const key = pk(t,r,k), Y0 = Math.round(num(S.g.firstYear,2026));
+    if (v===null){ if (S.pins[key]){ delete S.pins[key][ySel]; if (!Object.keys(S.pins[key]).length) delete S.pins[key]; } el.classList.remove('pin'); el.placeholder = fmtIn(S.pins[key] ? interp(S.pins[key], ySel) : S[t][r][k]); }
+    else {
+      if (!S.pins[key]){ S.pins[key] = {}; if (ySel!==Y0 && S[t][r][k]!==null && S[t][r][k]!==undefined) S.pins[key][Y0] = +S[t][r][k]; } // start the ramp from the single value in the first year
+      S.pins[key][ySel] = v; el.classList.add('pin');
+    }
+    const tb = $('tab-'+tab); if (tb){ const n = pinCount(tab); let sp = tb.querySelector('.n'); if (n){ if (!sp){ sp = document.createElement('span'); sp.className = 'n'; tb.appendChild(sp); } sp.textContent = n; } else if (sp) sp.remove(); }
+    $('clearTabPins').hidden = !pinCount(tab);
+  }
+  else S[t][r][k] = v;
+  // refresh sum chips and derived placeholders without re-rendering inputs
+  const sumOf = (o, ks) => ks.reduce((a,x)=>a+num(o[x],0),0);
+  const allB = Object.assign({}, S, {g:Object.assign({}, S.g, {useBrands:true})});
+  if (['r1','r2'].includes(t)) $('sum-'+t+'-'+r).innerHTML = sumChip(sumOf(effRow(t,r),['refurb','private','passed','drawer','recycled','lost']));
+  if (t==='brand'){ $('sum-brand-'+r).innerHTML = sumChip(sumOf(effRow('brand',r),['ap','pa','oa','ot'])); const tm = tierMix(allB, r, ySel); $('tm-'+r).textContent = TIERS.map(x=>Math.round(tm[x]*100)).join(' / '); }
+  if (t==='brandB' && ['tp','tm','tb'].includes(k)){ $('sum-brandB-'+r).innerHTML = sumChip(sumOf(effRow('brandB',r),['tp','tm','tb'])); RK.forEach(rr => { const c = $('tm-'+rr); if (c){ const tm = tierMix(allB, rr, ySel); c.textContent = TIERS.map(x=>Math.round(tm[x]*100)).join(' / '); } }); }
+  if (t==='tiers'){ if ($('sum-tiers-'+r)) $('sum-tiers-'+r).innerHTML = sumChip(sumOf(effRow('tiers',r),['sp','sm','sb'])); if ($('bp-'+r)) $('bp-'+r).textContent = fmtD(blended(r)); }
+  if (t==='dx') $('sum-dx-'+r).innerHTML = sumChip(sumOf(effRow('dx',r),['refurb','recycled','lost']));
+  if (t==='flow') $('sum-flow-'+r).innerHTML = sumChip(sumOf(S.flow[r],RK));
+  if (t==='svc'){ const e = effRow('svc',r); $('sum-svcn-'+r).innerHTML = sumChip(sumOf(e,['nc','ns','np','nn'])); $('sum-svcs-'+r).innerHTML = sumChip(sumOf(e,['sc','ss','sp','sn'])); }
+  if (t==='vol' || t==='volY'){
+    const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5)));
+    for (let i=1;i<NC;i++){ const y = Y0+i; const inp = $('vy-'+r+'-'+y); if (inp){ const tmp = clone(S); for (let j=y;j<Y0+NC;j++) delete tmp.volY[r][j]; for (let j=Y0+1;j<y;j++) if (S.volY[r][j]!==undefined) tmp.volY[r][j]=S.volY[r][j]; inp.placeholder = Math.round(units(tmp,r,y)*10)/10; } }
+    for (let i=0;i<NC;i++){ const y = Y0+i, td = $('vt-'+y); if (td) td.textContent = fmtU(RK.reduce((a,rr)=>a+units(S,rr,y),0)); }
+  }
+  if (t==='g' && ['firstYear','cohorts'].includes(k) && tab==='g'){ /* volume table rebuilt when its tab opens */ }
+  scheduleCompute();
+});
+
+/* ---------- charts ---------- */
+const tip = $('tip');
+function showTip(e, html){ tip.innerHTML = html; tip.hidden = false; const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX+14, y = e.clientY+14; if (x+w>innerWidth-8) x = e.clientX-w-14; if (y+h>innerHeight-8) y = e.clientY-h-14; tip.style.left = x+'px'; tip.style.top = y+'px'; }
+const hideTip = () => { tip.hidden = true; };
+function niceTicks(min, max, n=5){
+  if (min===max) max = min+1;
+  const span = max-min, step0 = span/n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1,2,2.5,5,10].map(x=>x*mag).find(x=>span/x<=n) || 10*mag;
+  const lo = Math.floor(min/step)*step, hi = Math.ceil(max/step)*step, t=[];
+  for (let v=lo; v<=hi+step/2; v+=step) t.push(+v.toFixed(8));
+  return {lo, hi, t};
+}
+function rpath(x,y,w,h,rt,rb){ rt=Math.min(rt,w/2,h); rb=Math.min(rb,w/2,h);
+  return `M${x},${y+rt} Q${x},${y} ${x+rt},${y} L${x+w-rt},${y} Q${x+w},${y} ${x+w},${y+rt} L${x+w},${y+h-rb} Q${x+w},${y+h} ${x+w-rb},${y+h} L${x+rb},${y+h} Q${x},${y+h} ${x},${y+h-rb} Z`; }
+const COMPS = [{k:'device',label:'New device sales',v:'--s1'},{k:'service',label:'Airtime & service',v:'--s2'},{k:'secondary',label:'Secondary market',v:'--s3'},{k:'finance',label:'Finance interest',v:'--s4'},{k:'recycling',label:'Material recovery',v:'--s5'}];
+const BASES = [{k:'b_first',label:'With first owner',v:'--s2'},{k:'b_second',label:'With later owners',v:'--s3'},{k:'b_drawer',label:'In drawers',v:'--cost'}];
+
+function histShade(x0, x1, top, bot, W){
+  if (x1 <= x0) return '';
+  x1 = Math.min(x1, W);
+  return `<rect x="${x0}" y="${top}" width="${x1-x0}" height="${bot-top}" fill="var(--panel)"/><line x1="${x1}" x2="${x1}" y1="${top-10}" y2="${bot}" stroke="var(--line-2)" stroke-dasharray="3 3"/><text x="${x1-6}" y="${top-3}" text-anchor="end" style="font-weight:700">History</text><text x="${x1+6}" y="${top-3}" style="font-weight:700">Forecast</text>`;
+}
+function drawValue(R){
+  const el = $('valueChart'), W = Math.max(300, el.clientWidth), H = 310, m = {t:22,r:8,b:26,l:58}, ys = R.years;
+  if (!ys.length){ el.innerHTML = '<p class="foot">No sales entered.</p>'; return; }
+  const tk = niceTicks(Math.min(0, ...ys.map(y=>-y.cost), ...ys.map(y=>y.net)), Math.max(1, ...ys.map(y=>y.gross)), 5);
+  const Y = v => m.t + (tk.hi-v)/(tk.hi-tk.lo)*(H-m.t-m.b);
+  const band = (W-m.l-m.r)/ys.length, bw = Math.max(4, Math.min(40, band*0.66));
+  let g = histShade(m.l, m.l + band*(lastAct()-ys[0].year+1), m.t, H-m.b, W-m.r);
+  tk.t.forEach(t => { g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${fmtAx(t)}</text>`; });
+  const every = Math.ceil(ys.length/ (W<600?7:14));
+  ys.forEach((y,i) => {
+    const cx = m.l+band*i+band/2, x = cx-bw/2; let base = 0;
+    const segs = COMPS.filter(c=>y[c.k]>1e-6);
+    segs.forEach((c,j) => { const top = Y(base+y[c.k]), bot = Y(base)-(j>0?2:0), h = Math.max(0.5, bot-top); g += `<path d="${rpath(x,top,bw,h,j===segs.length-1?4:0,0)}" fill="var(${c.v})"/>`; base += y[c.k]; });
+    if (y.cost>1e-6){ const top = Y(0)+(segs.length?2:0); g += `<path d="${rpath(x,top,bw,Math.max(0.5,Y(-y.cost)-top),0,4)}" fill="var(--cost)"/>`; }
+    g += `<circle cx="${cx}" cy="${Y(y.net)}" r="4" fill="var(--ink)" stroke="var(--card)" stroke-width="2"/>`;
+    if (i%every===0) g += `<text x="${cx}" y="${H-8}" text-anchor="middle">${y.year}</text>`;
+    g += `<rect class="hit" data-i="${i}" x="${m.l+band*i}" y="${m.t}" width="${band}" height="${H-m.t-m.b}" fill="transparent"/>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Stacked bars of industry value by year">${g}</svg>`;
+  el.querySelectorAll('.hit').forEach(rc => { rc.addEventListener('pointermove', e => { const y = ys[+rc.dataset.i];
+    showTip(e, `<b>${y.year}</b><hr>${COMPS.map(c=>`<div class="r"><span><i class="sw" style="background:var(${c.v})"></i> ${c.label}</span><b>${fmtM(y[c.k])}</b></div>`).join('')}<div class="r"><span><i class="sw" style="background:var(--cost)"></i> Costs</span><b>${fmtM(-y.cost)}</b></div><hr><div class="r"><span>Net value</span><b>${fmtM(y.net)}</b></div><div class="r"><span>Cumulative net</span><b>${fmtM(y.cum)}</b></div>`); });
+    rc.addEventListener('pointerleave', hideTip); });
+}
+function drawBase(R){
+  const el = $('baseChart'), W = Math.max(280, el.clientWidth), H = 250, m = {t:22,r:10,b:26,l:48}, ys = R.years;
+  if (!ys.length){ el.innerHTML=''; return; }
+  const tot = ys.map(y=>BASES.reduce((a,b)=>a+y[b.k],0));
+  const tk = niceTicks(0, Math.max(1,...tot), 4);
+  const n = ys.length, X = i => m.l + (n>1? i/(n-1):0.5)*(W-m.l-m.r), Y = v => m.t + (tk.hi-v)/(tk.hi-tk.lo)*(H-m.t-m.b);
+  const iLa = lastAct()-ys[0].year;
+  let g = iLa>=0 ? histShade(m.l, iLa+1<n ? (X(iLa)+X(iLa+1))/2 : W-m.r, m.t, H-m.b, W-m.r) : '';
+  tk.t.forEach(t => { g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${t>=1000?(t/1000)+'bn':t+'m'}</text>`; });
+  const every = Math.ceil(n/(W<500?6:10));
+  ys.forEach((y,i) => { if (i%every===0) g += `<text x="${X(i)}" y="${H-8}" text-anchor="middle">${y.year}</text>`; });
+  const acc = new Array(n).fill(0);
+  BASES.forEach(b => {
+    const lo = acc.slice(), hi = acc.map((a,i)=>a+ys[i][b.k]);
+    let d = hi.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join('');
+    d += lo.map((v,i)=>i).reverse().map(i=>'L'+X(i).toFixed(1)+','+Y(lo[i]).toFixed(1)).join('') + 'Z';
+    g += `<path d="${d}" fill="var(${b.v})" opacity=".85" stroke="var(--card)" stroke-width="1.5"/>`;
+    hi.forEach((v,i)=>acc[i]=v);
+  });
+  g += `<line id="bx" y1="${m.t}" y2="${H-m.b}" stroke="var(--ink-2)" visibility="hidden"/><rect id="bhit" x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Stacked area of devices in circulation">${g}</svg>`;
+  const svg = el.querySelector('svg'), bx = svg.querySelector('#bx');
+  svg.querySelector('#bhit').addEventListener('pointermove', e => { const bb = svg.getBoundingClientRect(), px = (e.clientX-bb.left)*(W/bb.width);
+    const i = Math.max(0, Math.min(n-1, Math.round((px-m.l)/(W-m.l-m.r)*(n-1)))), y = ys[i];
+    bx.setAttribute('x1',X(i)); bx.setAttribute('x2',X(i)); bx.setAttribute('visibility','visible');
+    showTip(e, `<b>${y.year}</b><hr>${BASES.map(b=>`<div class="r"><span><i class="sw" style="background:var(${b.v})"></i> ${b.label}</span><b>${fmtU(y[b.k])}</b></div>`).join('')}<hr><div class="r"><span>Total</span><b>${fmtU(tot[i])}</b></div>`); });
+  svg.querySelector('#bhit').addEventListener('pointerleave', () => { bx.setAttribute('visibility','hidden'); hideTip(); });
+}
+
+/* ---------- results ---------- */
+let lastR = null;
+function renderResults(){
+  const only = $('fReg').value || null, onlyTier = $('fTier').value || null, onlyBrand = S.g.useBrands ? ($('fBrand').value || null) : null;
+  const hasImp = activeImpacts(S,'all').length>0; $('fImp').hidden = $('fImpL').hidden = !hasImp;
+  const impMain = hasImp ? $('fImp').value : 'all';
+  const R = scaleResult(compute(S, only, onlyTier, onlyBrand, impMain==='none'?'N':'A', impMain), fxOf(S, curCode())/fxOf(S, inCode())); lastR = R; window.__R = R;
+  $('fCur').value = curCode();
+  $('curFoot').textContent = `Values in ${curCode()}` + (dispCur && dispCur!==inCode() ? `, converted from the scenario's ${inCode()} inputs at ${fxOf(S,curCode())/fxOf(S,inCode())>=100 ? Math.round(fxOf(S,curCode())/fxOf(S,inCode())) : (fxOf(S,curCode())/fxOf(S,inCode())).toFixed(4)} ${curCode()} per ${inCode()}` : '') + '. Units in millions; m = million, bn = billion, tn = trillion.';
+  const t = R.tot, afterFirst = t.net ? (t.net - R.firstNet)/t.net*100 : 0;
+  const K = [
+    ['', fmtU(R.unitsTot), `Handsets sold ${R.Y0}–${R.Y0+R.NC-1}`],
+    ['lead', fmtM(t.gross), 'Lifecycle revenue'],
+    ['', fmtM(t.net), 'Net value after costs'],
+    ['', fmtM(t.pv), `Present value at ${num(S.g.disc,0)}%, ${R.baseY} terms`],
+    ['', R.unitsTot? fmtD(t.gross/R.unitsTot) : '$0', 'Revenue per handset'],
+    ['', t.device? (t.gross/t.device).toFixed(1)+'×' : '–', 'Revenue ÷ new device sales'],
+    ['', pct(afterFirst), 'Net value after first owner']
+  ];
+  $('kpis').innerHTML = K.map(([c,v,l]) => `<div class="kpi ${c}"><span class="v">${v}</span><span class="l">${l}</span></div>`).join('');
+  $('lgValue').innerHTML = COMPS.map(c=>`<span><i class="sw" style="background:var(${c.v})"></i>${c.label}</span>`).join('') + `<span><i class="sw" style="background:var(--cost)"></i>Costs</span><span><i class="sw" style="background:var(--ink);border-radius:50%"></i>Net</span>`;
+  $('lgBase').innerHTML = BASES.map(b=>`<span><i class="sw" style="background:var(${b.v})"></i>${b.label}</span>`).join('');
+  drawValue(R); drawBase(R);
+  // regions
+  const rows = RK.map(r => ({r, f:R.reg[r].first, l:R.reg[r].later, t:R.reg[r].first+R.reg[r].later})).filter(x=>Math.abs(x.t)>1e-6).sort((a,b)=>b.t-a.t);
+  const mx = Math.max(1, ...rows.map(x=>Math.max(0,x.f)+Math.max(0,x.l)));
+  $('regBars').innerHTML = rows.map(x => `<div class="cbar"><span>${esc(RN[x.r])}</span><div class="track" title="First owner ${fmtM(x.f)} · Later lives ${fmtM(x.l)}"><div style="width:${Math.max(0,x.f)/mx*100}%;background:var(--s2)"></div><div style="width:${Math.max(0,x.l)/mx*100}%;background:var(--s3)"></div></div><span class="v">${fmtM(x.t)}</span></div>`).join('') || '<p class="foot">No value yet.</p>';
+  // tiers
+  const tmx = Math.max(1e-9, ...TIERS.map(t=>Math.max(0,R.tierNet[t])));
+  $('tierBars').innerHTML = TIERS.filter(t=>R.tierU[t]>0).map(t => `<div class="cbar"><span>${TN[t]}<br><span class="foot">${fmtU(R.tierU[t])} sold · ${fmtD(R.tierGross[t]/R.tierU[t])} each</span></span><div class="track"><div style="width:${Math.max(0,R.tierNet[t])/tmx*100}%;background:var(--s1)"></div></div><span class="v">${fmtM(R.tierNet[t])}</span></div>`).join('') || '<p class="foot">No sales in this selection.</p>';
+  // brands
+  $('brandCard').hidden = !S.g.useBrands;
+  if (S.g.useBrands){
+    const bs = R.BR.filter(b=>R.brandU[b]>0), bmx = Math.max(1e-9, ...bs.map(b=>Math.max(0,R.brandNet[b])));
+    const bnTot = bs.reduce((a,b)=>a+R.brandNet[b],0) || 1;
+    $('brandBars').innerHTML = bs.map(b => `<div class="cbar"><span>${BNM[b]}<br><span class="foot">${fmtU(R.brandU[b])} sold · ${fmtD(R.brandGross[b]/R.brandU[b])} each</span></span><div class="track"><div style="width:${Math.max(0,R.brandNet[b])/bmx*100}%;background:var(--s1)"></div></div><span class="v">${fmtM(R.brandNet[b])}<br><span class="foot">${pct(R.brandNet[b]/bnTot*100)}</span></span></div>`).join('') || '<p class="foot">No sales in this selection.</p>';
+    let bth = `<thead><tr><th>Net value</th>${TIERS.map(t=>`<th>${TN[t]}</th>`).join('')}<th>Total</th></tr></thead><tbody>`;
+    bs.forEach(b => { bth += `<tr><td>${BNM[b]}</td>${TIERS.map(t=>`<td>${Math.abs(R.bt[b][t])>1e-6?fmtM(R.bt[b][t]):'—'}</td>`).join('')}<td><b>${fmtM(R.brandNet[b])}</b></td></tr>`; });
+    bth += `<tr class="tot"><td>Total</td>${TIERS.map(t=>`<td>${fmtM(bs.reduce((a,b)=>a+R.bt[b][t],0))}</td>`).join('')}<td>${fmtM(bs.reduce((a,b)=>a+R.brandNet[b],0))}</td></tr></tbody>`;
+    $('btTbl').innerHTML = bth;
+  }
+  renderCompare(R);
+  renderCohorts(R);
+  renderImpactCard();
+  // fate
+  const F = R.fate, ft = F.recycled+F.lost+F.active || 1;
+  $('fate').innerHTML = `<div><b>${pct(F.recycled/ft*100)}</b><span>Formally recycled (${fmtU(F.recycled)})</span></div><div><b>${pct(F.lost/ft*100)}</b><span>Lost, broken or landfill (${fmtU(F.lost)})</span></div><div><b>${pct(F.active/ft*100)}</b><span>Still in circulation when tracking stops (${fmtU(F.active)})</span></div><div><b>${R.avgLife.toFixed(1)} yrs</b><span>Average life, ${R.avgUse.toFixed(1)} yrs in use</span></div><div><b>${fmtM(R.decay)}</b><span>Resale value lost in drawers</span></div>`;
+  $('fateNote').textContent = `Tracked ${num(S.g.track,20)} years`;
+  // flows
+  const fmax = Math.max(1e-9, ...RK.flatMap(o=>RK.map(d=>R.flows[o][d])));
+  let fh = `<thead><tr><th>From ↓ · To →</th>${RK.map(d=>`<th>${esc(d)}</th>`).join('')}<th>Total</th></tr></thead><tbody>`;
+  RK.forEach(o => { const tot = RK.reduce((a,d)=>a+R.flows[o][d],0); if (tot<1e-6) return;
+    fh += `<tr><td>${esc(RN[o])}</td>${RK.map(d=>{ const v = R.flows[o][d]; return `<td class="heat" style="background:rgba(var(--heat),${(v/fmax*0.45).toFixed(3)})">${v>0.05? v.toFixed(1):''}</td>`; }).join('')}<td><b>${tot.toFixed(1)}</b></td></tr>`; });
+  $('flowTbl').innerHTML = fh + '</tbody>';
+  // year table
+  const hd = ['Year','Device sales','Airtime & service','Secondary','Finance','Recovery','Costs','Net','Cumulative','Present value','In use (m)','In drawers (m)'];
+  let yt = `<thead><tr>${hd.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+  R.years.forEach(y => { yt += `<tr><td>${y.year}${y.year<=lastAct()?' · history':''}</td><td>${fmtM(y.device)}</td><td>${fmtM(y.service)}</td><td>${fmtM(y.secondary)}</td><td>${fmtM(y.finance)}</td><td>${fmtM(y.recycling)}</td><td>${fmtM(-y.cost)}</td><td><b>${fmtM(y.net)}</b></td><td>${fmtM(y.cum)}</td><td>${fmtM(y.pv)}</td><td>${fmtU(y.b_first+y.b_second)}</td><td>${fmtU(y.b_drawer)}</td></tr>`; });
+  yt += `<tr class="tot"><td>Total</td><td>${fmtM(t.device)}</td><td>${fmtM(t.service)}</td><td>${fmtM(t.secondary)}</td><td>${fmtM(t.finance)}</td><td>${fmtM(t.recycling)}</td><td>${fmtM(-t.cost)}</td><td>${fmtM(t.net)}</td><td></td><td>${fmtM(t.pv)}</td><td></td><td></td></tr></tbody>`;
+  $('yearTbl').innerHTML = yt;
+  $('curName').textContent = S.name || 'Untitled scenario';
+  lsSet(LS_CUR, {s:S, docId:cur.docId, authorId:cur.authorId});
+}
+let ct; function scheduleCompute(){ clearTimeout(ct); ct = setTimeout(renderResults, 200); }
+$('fReg').innerHTML = `<option value="">All regions</option>` + REG.map(([k,n])=>`<option value="${k}">${esc(n)}</option>`).join('');
+$('fReg').addEventListener('change', renderResults);
+$('fTier').innerHTML = `<option value="">All tiers</option>` + TIERS.map(t=>`<option value="${t}">${TN[t]}</option>`).join('');
+$('fTier').addEventListener('change', renderResults);
+$('fImp').addEventListener('change', renderResults);
+$('fCur').innerHTML = Object.keys(CURS).map(c=>`<option value="${c}">${c} · ${CURS[c].n}</option>`).join('');
+$('fCur').addEventListener('change', e => { dispCur = e.target.value===inCode() ? null : e.target.value; renderResults(); });
+$('fBrand').innerHTML = `<option value="">All brands</option>` + BRANDS.map(b=>`<option value="${b}">${BNM[b]}</option>`).join('');
+$('fBrand').addEventListener('change', renderResults);
+function brandFilterVis(){ const on = !!S.g.useBrands; $('fBrand').hidden = !on; $('fBrandL').hidden = !on; if (!on) $('fBrand').value = ''; }
+
+/* ---------- comparison ---------- */
+let cmpCache = {key:null, R:null, name:''};
+function cmpOptions(){
+  const sel = $('cmpB'), keep = sel.value;
+  const ex = EXAMPLES.map((f,i)=>`<option value="ex${i}">${esc(f().name)}</option>`).join('');
+  const lib = libDocs.map(d=>`<option value="doc:${esc(d.id)}">${esc(d.name||'Untitled')}</option>`).join('');
+  sel.innerHTML = `<option value="">Choose a scenario…</option><optgroup label="Examples">${ex}</optgroup>` + (lib?`<optgroup label="${localMode?'Saved in this browser':'Shared library'}">${lib}</optgroup>`:'');
+  if ([...sel.options].some(o=>o.value===keep)) sel.value = keep;
+}
+function cmpScenario(v){
+  if (v.startsWith('ex')) { const s = EXAMPLES[+v.slice(2)](); return {s:migrate(s), name:s.name, stamp:'ex'}; }
+  if (v.startsWith('doc:')) { const d = libDocs.find(x=>x.id===v.slice(4)); if (d && valid(d.scenario)) return {s:migrate(clone(d.scenario)), name:d.name||'Untitled', stamp:d.updatedAt}; }
+  return null;
+}
+function renderCompare(RA){
+  const v = $('cmpB').value, body = $('cmpBody');
+  if (!v){ body.innerHTML = '<p class="foot">Choose a scenario to compare. The examples include a circular-economy case to test against the baseline.</p>'; return; }
+  const only = $('fReg').value || null, onlyTier = $('fTier').value || null, onlyBrand = $('fBrand').value || null;
+  const sc = cmpScenario(v); if (!sc){ body.innerHTML = '<p class="foot">That scenario is no longer available.</p>'; return; }
+  const key = v+'|'+sc.stamp+'|'+only+'|'+onlyTier+'|'+onlyBrand;
+  const fB = fxOf(S, curCode())/fxOf(S, sc.s.g.cur||'USD'), key2 = key+'|'+fB;
+  if (cmpCache.key!==key2) cmpCache = {key:key2, R:scaleResult(compute(sc.s, only, onlyTier, sc.s.g.useBrands ? onlyBrand : null, 'B'), fB), name:sc.name};
+  const RB = cmpCache.R, nA = S.name||'Current scenario', nB = cmpCache.name;
+  const k = (R) => { const t = R.tot, f = R.fate, ft = f.recycled+f.lost+f.active || 1; return {
+    units:R.unitsTot, gross:t.gross, net:t.net, pv:t.pv, per:R.unitsTot? t.gross/R.unitsTot:0,
+    after:t.net? (t.net-R.firstNet)/t.net*100:0, rec:f.recycled/ft*100, life:R.avgLife }; };
+  const a = k(RA), b = k(RB);
+  const rows = [['Handsets sold','units',fmtU],['Lifecycle revenue','gross',fmtM],['Net value after costs','net',fmtM],['Present value','pv',fmtM],['Revenue per handset','per',fmtD],['Net value after first owner','after',pct],['Formally recycled','rec',pct],['Average life (years)','life',x=>x.toFixed(2)]];
+  const diff = (x,y,f,isPct) => { const d = y-x; if (Math.abs(d)<1e-9) return '<td>—</td><td></td>';
+    const ds = isPct ? (d>0?'+':'−')+Math.abs(Math.round(d*10)/10)+' pts' : (d>0?'+':'')+f(d).replace(/^\+?/,'');
+    return `<td><b>${ds}</b></td><td>${!isPct && Math.abs(x)>1e-9 ? (d>0?'+':'−')+Math.abs(Math.round(d/Math.abs(x)*1000)/10)+'%' : ''}</td>`; };
+  let kt = `<thead><tr><th>Measure</th><th>A · ${esc(nA)}</th><th>B · ${esc(nB)}</th><th>B − A</th><th>Change</th></tr></thead><tbody>`;
+  rows.forEach(([l,key,f]) => { kt += `<tr><td>${l}</td><td>${f(a[key])}</td><td>${f(b[key])}</td>${diff(a[key],b[key],f,f===pct)}</tr>`; });
+  kt += '</tbody>';
+  const cr = [...COMPS.map(c=>[c.label,c.k,1]), ['Costs','cost',-1], ['Net value','net',1]];
+  let ct = `<thead><tr><th>Value stream</th><th>A</th><th>B</th><th>B − A</th></tr></thead><tbody>`;
+  cr.forEach(([l,key,sg]) => { const x = sg*RA.tot[key], y = sg*RB.tot[key], d = y-x; ct += `<tr ${key==='net'?'class="tot"':''}><td>${l}</td><td>${fmtM(x)}</td><td>${fmtM(y)}</td><td>${Math.abs(d)<1e-6?'—':(d>0?'+':'')+fmtM(d)}</td></tr>`; });
+  ct += '</tbody>';
+  let rt = `<thead><tr><th>Region (where value lands)</th><th>A</th><th>B</th><th>B − A</th></tr></thead><tbody>`;
+  RK.forEach(r => { const x = RA.reg[r].first+RA.reg[r].later, y = RB.reg[r].first+RB.reg[r].later; if (Math.abs(x)+Math.abs(y)<1e-6) return; const d = y-x; rt += `<tr><td>${esc(RN[r])}</td><td>${fmtM(x)}</td><td>${fmtM(y)}</td><td>${Math.abs(d)<1e-6?'—':(d>0?'+':'')+fmtM(d)}</td></tr>`; });
+  rt += '</tbody>';
+  body.innerHTML = `<div class="tbl"><table>${kt}</table></div>
+    <div class="head"><h2 style="font-size:14px">Net value by year</h2><div class="legend"><span><i class="sw" style="background:var(--s2)"></i>A · ${esc(nA)}</span><span><i class="sw" style="background:var(--s5)"></i>B · ${esc(nB)} (dashed)</span></div></div>
+    <div class="chart" id="cmpChart"></div>
+    <div class="res" style="gap:16px"><div class="tbl"><table>${ct}</table></div><div class="tbl"><table>${rt}</table></div></div>`;
+  drawCmp(RA, RB, nA, nB);
+}
+function drawCmp(RA, RB, nA, nB){
+  const el = $('cmpChart'); if (!el) return;
+  const W = Math.max(300, el.clientWidth), H = 250, m = {t:22,r:12,b:26,l:58};
+  const y0 = Math.min(RA.Y0, RB.Y0), y1 = Math.max(RA.Y0+RA.years.length-1, RB.Y0+RB.years.length-1);
+  const yrs = []; for (let y=y0;y<=y1;y++) yrs.push(y);
+  const get = (R, y) => { const r = R.years.find(z=>z.year===y); return r ? r.net : 0; };
+  const A = yrs.map(y=>get(RA,y)), B = yrs.map(y=>get(RB,y));
+  const tk = niceTicks(Math.min(0,...A,...B), Math.max(1,...A,...B), 4);
+  const n = yrs.length, X = i => m.l + (n>1? i/(n-1) : 0.5)*(W-m.l-m.r), Y = v => m.t + (tk.hi-v)/(tk.hi-tk.lo)*(H-m.t-m.b);
+  const iLa = lastAct()-y0;
+  let g = iLa>=0 ? histShade(m.l, iLa+1<n ? (X(iLa)+X(iLa+1))/2 : W-m.r, m.t, H-m.b, W-m.r) : '';
+  tk.t.forEach(t => { g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${fmtAx(t)}</text>`; });
+  const every = Math.ceil(n/(W<600?7:14));
+  yrs.forEach((y,i) => { if (i%every===0) g += `<text x="${X(i)}" y="${H-8}" text-anchor="middle">${y}</text>`; });
+  const line = (arr) => arr.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join('');
+  g += `<path d="${line(A)}" fill="none" stroke="var(--s2)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<path d="${line(B)}" fill="none" stroke="var(--s5)" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"/>`;
+  g += `<line id="cx" y1="${m.t}" y2="${H-m.b}" stroke="var(--ink-2)" visibility="hidden"/><circle id="ca" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2" visibility="hidden"/><circle id="cb" r="4" fill="var(--s5)" stroke="var(--card)" stroke-width="2" visibility="hidden"/>`;
+  g += `<rect id="chit" x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Net value by year for both scenarios">${g}</svg>`;
+  const svg = el.querySelector('svg'), cx = svg.querySelector('#cx'), ca = svg.querySelector('#ca'), cb = svg.querySelector('#cb');
+  svg.querySelector('#chit').addEventListener('pointermove', e => { const bb = svg.getBoundingClientRect(), px = (e.clientX-bb.left)*(W/bb.width);
+    const i = Math.max(0, Math.min(n-1, Math.round((px-m.l)/(W-m.l-m.r)*(n-1))));
+    cx.setAttribute('x1',X(i)); cx.setAttribute('x2',X(i)); [cx,ca,cb].forEach(z=>z.setAttribute('visibility','visible'));
+    ca.setAttribute('cx',X(i)); ca.setAttribute('cy',Y(A[i])); cb.setAttribute('cx',X(i)); cb.setAttribute('cy',Y(B[i]));
+    showTip(e, `<b>${yrs[i]}</b><hr><div class="r"><span><i class="sw" style="background:var(--s2)"></i> A</span><b>${fmtM(A[i])}</b></div><div class="r"><span><i class="sw" style="background:var(--s5)"></i> B</span><b>${fmtM(B[i])}</b></div><hr><div class="r"><span>B − A</span><b>${fmtM(B[i]-A[i])}</b></div>`); });
+  svg.querySelector('#chit').addEventListener('pointerleave', () => { [cx,ca,cb].forEach(z=>z.setAttribute('visibility','hidden')); hideTip(); });
+}
+$('cmpB').addEventListener('change', () => { if (lastR) renderCompare(lastR); });
+
+/* ---------- launch-year (cohort) view ---------- */
+let cohMode = 'tot';
+const lastAct = () => Math.round(num(S.g.lastActual, -1e9));
+function realised(co){ const la = lastAct(); let t = 0; for (let i=0;i<co.curve.length;i++){ if (co.year + Math.floor(i/12) > la) break; t += co.curve[i]; } return t; }
+function renderCohorts(R){
+  const cs = R.cohorts.filter(c=>c.units>0);
+  // selects
+  const a = $('cohA'), b = $('cohB'), ka = a.value, kb = b.value;
+  const opts = cs.map(c=>`<option value="${c.year}">${c.year}</option>`).join('');
+  a.innerHTML = opts; b.innerHTML = opts;
+  const ys = cs.map(c=>String(c.year));
+  a.value = ys.includes(ka) ? ka : (ys[0]||'');
+  b.value = ys.includes(kb) ? kb : (ys.includes('2022') ? '2022' : (ys[ys.length-1]||''));
+  // table
+  let t = `<thead><tr><th>Launch year</th><th>Handsets sold</th><th>Lifecycle revenue</th><th>Net value</th><th>Revenue per handset</th><th>Net per handset</th><th>Revenue ÷ device sales</th><th>After first owner</th><th>Realised to date</th></tr></thead><tbody>`;
+  cs.forEach(c => { const rl = realised(c); t += `<tr><td>${c.year}${c.year<=lastAct()?' · history':''}</td><td>${fmtU(c.units)}</td><td>${fmtM(c.gross)}</td><td><b>${fmtM(c.net)}</b></td><td>${fmtD(c.gross/c.units)}</td><td>${fmtD(c.net/c.units)}</td><td>${c.device?(c.gross/c.device).toFixed(1)+'×':'–'}</td><td>${pct(c.net?(c.net-c.firstNet)/c.net*100:0)}</td><td>${pct(c.net?rl/c.net*100:0)}</td></tr>`; });
+  $('cohTbl').innerHTML = t + '</tbody>';
+  drawCoh(cs);
+  renderCohCmp(cs);
+}
+function drawCoh(cs){
+  const el = $('cohChart'), W = Math.max(300, el.clientWidth), H = 240, m = {t:12,r:8,b:26,l:58};
+  if (!cs.length){ el.innerHTML = '<p class="foot">No sales in this selection.</p>'; return; }
+  const per = cohMode==='per';
+  const vals = cs.map(c => { const d = per ? c.units : 1, rl = realised(c); return {c, tot:c.net/d, rl:Math.max(0,Math.min(c.net,rl))/d}; });
+  const tk = niceTicks(Math.min(0,...vals.map(v=>v.tot)), Math.max(1,...vals.map(v=>v.tot)), 4);
+  const Y = v => m.t + (tk.hi-v)/(tk.hi-tk.lo)*(H-m.t-m.b);
+  const band = (W-m.l-m.r)/cs.length, bw = Math.max(4, Math.min(40, band*0.66));
+  let g = '';
+  tk.t.forEach(t => { g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${per?fmtD(t):fmtAx(t)}</text>`; });
+  const every = Math.ceil(cs.length/(W<600?8:20));
+  vals.forEach((v,i) => { const cx = m.l+band*i+band/2, x = cx-bw/2;
+    if (v.tot>0){
+      const rest = v.tot - v.rl;
+      if (v.rl>0){ const top = Y(v.rl); g += `<path d="${rpath(x,top,bw,Math.max(0.5,Y(0)-top), rest>1e-9?0:4, 0)}" fill="var(--s1)"/>`; }
+      if (rest>1e-9){ const top = Y(v.tot), bot = Y(v.rl) - (v.rl>0?2:0); g += `<path d="${rpath(x,top,bw,Math.max(0.5,bot-top),4,0)}" fill="var(--s1)" opacity=".35"/>`; }
+    } else { const top = Y(0); g += `<path d="${rpath(x,top,bw,Math.max(0.5,Y(v.tot)-top),0,4)}" fill="var(--cost)"/>`; }
+    if (i%every===0) g += `<text x="${cx}" y="${H-8}" text-anchor="middle">${v.c.year}</text>`;
+    g += `<rect class="hit" data-i="${i}" x="${m.l+band*i}" y="${m.t}" width="${band}" height="${H-m.t-m.b}" fill="transparent"/>`; });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Lifetime net value by launch year">${g}</svg>`;
+  el.querySelectorAll('.hit').forEach(rc => { rc.addEventListener('pointermove', e => { const v = vals[+rc.dataset.i], c = v.c, f = per ? fmtD : fmtM;
+    showTip(e, `<b>Launched ${c.year}</b> · ${fmtU(c.units)} sold<hr><div class="r"><span>Net value${per?' per handset':''}</span><b>${f(v.tot)}</b></div><div class="r"><span>Realised to date</span><b>${f(v.rl)}</b></div><div class="r"><span>Still to come</span><b>${f(v.tot-v.rl)}</b></div>`); });
+    rc.addEventListener('pointerleave', hideTip); });
+}
+function renderCohCmp(cs){
+  const ca = cs.find(c=>String(c.year)===$('cohA').value), cb = cs.find(c=>String(c.year)===$('cohB').value), body = $('cohCmp');
+  if (!ca || !cb){ body.innerHTML = ''; return; }
+  const ph = (c,k) => c[k]/c.units;
+  const rows = [
+    ['Handsets sold', c=>c.units, fmtU, false],
+    ['Lifecycle revenue', c=>c.gross, fmtM, false],
+    ['Net value', c=>c.net, fmtM, false],
+    ['Revenue per handset', c=>c.gross/c.units, fmtD, false],
+    ['— New device sale', c=>ph(c,'device'), fmtD, false],
+    ['— Airtime & service', c=>ph(c,'service'), fmtD, false],
+    ['— Secondary market', c=>ph(c,'secondary'), fmtD, false],
+    ['— Finance interest', c=>ph(c,'finance'), fmtD, false],
+    ['— Material recovery', c=>ph(c,'recycling'), fmtD, false],
+    ['Costs per handset', c=>-ph(c,'cost'), fmtD, false],
+    ['Net value per handset', c=>c.net/c.units, fmtD, false],
+    ['Net value after first owner', c=>c.net?(c.net-c.firstNet)/c.net*100:0, pct, true],
+    ['Realised to date', c=>c.net?realised(c)/c.net*100:0, pct, true]];
+  let t = `<thead><tr><th>Measure</th><th>A · launched ${ca.year}</th><th>B · launched ${cb.year}</th><th>B − A</th></tr></thead><tbody>`;
+  rows.forEach(([l,fn,f,isP]) => { const x = fn(ca), y = fn(cb), d = y-x;
+    t += `<tr><td>${l}</td><td>${f(x)}</td><td>${f(y)}</td><td>${Math.abs(d)<1e-9?'—':isP?(d>0?'+':'−')+Math.abs(Math.round(d*10)/10)+' pts':(d>0?'+':'')+f(d)}</td></tr>`; });
+  body.innerHTML = `<div class="res"><div class="tbl"><table>${t}</tbody></table></div>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><div class="head"><h2 style="font-size:14px">Cumulative net value per handset</h2><div class="legend"><span><i class="sw" style="background:var(--s2)"></i>${ca.year}</span><span><i class="sw" style="background:var(--s5)"></i>${cb.year} (dashed)</span></div></div>
+    <div class="foot">By years since launch. The dots mark the end of the last year of actual data.</div><div class="chart" id="cohCurve"></div></div></div>`;
+  drawCohCurve(ca, cb);
+}
+function drawCohCurve(ca, cb){
+  const el = $('cohCurve'); if (!el) return;
+  const W = Math.max(280, el.clientWidth), H = 240, m = {t:12,r:12,b:26,l:52};
+  const cum = (c) => { const out = new Float64Array(c.curve.length); let t = 0; for (let i=0;i<c.curve.length;i++){ t += c.curve[i]; out[i] = t/c.units; } return out; };
+  const A = cum(ca), B = cum(cb), n = Math.max(A.length, B.length);
+  let lastI = n-1; while (lastI>12 && Math.abs(A[Math.min(lastI,A.length-1)]-A[Math.min(lastI-12,A.length-1)])<0.005*Math.abs(A[A.length-1]||1) && Math.abs(B[Math.min(lastI,B.length-1)]-B[Math.min(lastI-12,B.length-1)])<0.005*Math.abs(B[B.length-1]||1)) lastI -= 12;
+  const tk = niceTicks(Math.min(0,...A,...B), Math.max(1,...A,...B), 4);
+  const X = i => m.l + i/Math.max(1,lastI)*(W-m.l-m.r), Y = v => m.t + (tk.hi-v)/(tk.hi-tk.lo)*(H-m.t-m.b);
+  let g = '';
+  tk.t.forEach(t => { g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${fmtD(t)}</text>`; });
+  const step = lastI/12 > 12 ? 2 : 1;
+  for (let yv=0; yv*12<=lastI; yv+=step) g += `<text x="${X(yv*12)}" y="${H-8}" text-anchor="middle">${yv}</text>`;
+  const path = (arr) => { let d=''; for (let i=0;i<=lastI;i++) d += (i?'L':'M')+X(i).toFixed(1)+','+Y(arr[Math.min(i,arr.length-1)]).toFixed(1); return d; };
+  g += `<path d="${path(A)}" fill="none" stroke="var(--s2)" stroke-width="2"/><path d="${path(B)}" fill="none" stroke="var(--s5)" stroke-width="2" stroke-dasharray="6 4"/>`;
+  [[ca,A,'--s2'],[cb,B,'--s5']].forEach(([c,arr,v]) => { const i = (lastAct()-c.year+1)*12-1; if (i>=0 && i<=lastI) g += `<circle cx="${X(i)}" cy="${Y(arr[i])}" r="4.5" fill="var(${v})" stroke="var(--card)" stroke-width="2"/>`; });
+  g += `<line id="kx" y1="${m.t}" y2="${H-m.b}" stroke="var(--ink-2)" visibility="hidden"/><rect id="khit" x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative net value per handset by years since launch">${g}</svg>`;
+  const svg = el.querySelector('svg'), kx = svg.querySelector('#kx');
+  svg.querySelector('#khit').addEventListener('pointermove', e => { const bb = svg.getBoundingClientRect(), px = (e.clientX-bb.left)*(W/bb.width);
+    const i = Math.max(0, Math.min(lastI, Math.round((px-m.l)/(W-m.l-m.r)*lastI)));
+    kx.setAttribute('x1',X(i)); kx.setAttribute('x2',X(i)); kx.setAttribute('visibility','visible');
+    const a = A[Math.min(i,A.length-1)], b = B[Math.min(i,B.length-1)];
+    showTip(e, `<b>${(i/12).toFixed(1)} years after launch</b><hr><div class="r"><span><i class="sw" style="background:var(--s2)"></i> ${ca.year}</span><b>${fmtD(a)}</b></div><div class="r"><span><i class="sw" style="background:var(--s5)"></i> ${cb.year}</span><b>${fmtD(b)}</b></div><hr><div class="r"><span>Difference</span><b>${fmtD(b-a)}</b></div>`); });
+  svg.querySelector('#khit').addEventListener('pointerleave', () => { kx.setAttribute('visibility','hidden'); hideTip(); });
+}
+/* ---------- impact results ---------- */
+let impLast = null;
+function renderImpactCard(){
+  const list = (S.impacts||[]).map((im,i)=>({im,i})).filter(x=>x.im.on!==false);
+  $('impCard').hidden = !list.length; if (!list.length){ impLast = null; return; }
+  const only = $('fReg').value || null, onlyTier = $('fTier').value || null, onlyBrand = S.g.useBrands ? ($('fBrand').value || null) : null;
+  const f = fxOf(S, curCode())/fxOf(S, inCode());
+  const run = (sel, slot) => scaleResult(compute(S, only, onlyTier, onlyBrand, slot, sel), f);
+  const mainNone = $('fImp').value==='none';
+  const Rw = mainNone ? run('all','A') : lastR, Rn = mainNone ? lastR : run('none','N');
+  const singles = list.slice(0,8).map(x => ({x, R: list.length===1 ? Rw : run(x.i, 'I'+x.i)}));
+  impLast = {Rw, Rn};
+  const d = Rw.tot.net - Rn.tot.net, pc = Rn.tot.net ? d/Math.abs(Rn.tot.net)*100 : 0;
+  const sg = (v, fm) => (v>0?'+':'')+fm(v);
+  const perW = Rw.unitsTot? Rw.tot.gross/Rw.unitsTot : 0, perN = Rn.unitsTot? Rn.tot.gross/Rn.unitsTot : 0;
+  $('impTiles').innerHTML = `<div><b>${fmtM(Rn.tot.net)}</b><span>Net value without impacts</span></div><div><b>${fmtM(Rw.tot.net)}</b><span>Net value with impacts</span></div>
+    <div><b>${sg(d,fmtM)}</b><span>Change in net value (${pc>0?'+':''}${pc.toFixed(1)}%)</span></div>
+    <div><b>${sg(Rw.unitsTot-Rn.unitsTot,fmtU)}</b><span>Change in handsets sold</span></div>
+    <div><b>${sg(perW-perN,fmtD)}</b><span>Change in revenue per handset</span></div>`;
+  // contribution bars
+  const rows = singles.map(({x,R}) => ({name:x.im.name||'Impact', v:R.tot.net-Rn.tot.net, t:effText(x.im)}));
+  const sum = rows.reduce((a,r)=>a+r.v,0);
+  if (rows.length>1){ rows.push({name:'All impacts together', v:d, tot:true}); }
+  const over = d - sum, showOver = rows.length>2 && Math.abs(over) > Math.abs(d)*0.005;
+  if (showOver) rows.push({name:'Overlap between impacts', v:over, t:'The combined effect differs from the sum of the single effects because impacts on the same devices compound.'});
+  const mx = Math.max(1e-9, ...rows.map(r=>Math.abs(r.v)));
+  $('impBars').innerHTML = rows.map(r => { const w = Math.abs(r.v)/mx*50; return `<div class="cbar" title="${esc(r.t||'')}"><span style="${r.tot?'font-weight:800':''}">${esc(r.name)}</span><div class="track" style="position:relative;background:var(--panel)"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-2)"></div><div style="position:absolute;top:0;bottom:0;${r.v<0?`right:50%;border-radius:3px 0 0 3px`:`left:50%;border-radius:0 3px 3px 0`};width:${w}%;background:var(${r.v<0?'--s5':'--s2'})"></div></div><span class="v">${sg(r.v,fmtM)}</span></div>`; }).join('');
+  $('impNote').textContent = list.length>8 ? 'Single effects are shown for the first eight impacts.' : 'Each bar is the change in net value from that impact alone.';
+  // timeline
+  const yrs = impYears();
+  $('impTime').style.gridTemplateColumns = `minmax(120px,200px) repeat(${yrs.length}, minmax(22px,1fr))`;
+  $('impTime').innerHTML = `<span></span>${yrs.map(y=>`<span class="yr">${String(y).slice(2)}</span>`).join('')}` + list.map(({im}) => `<span class="nm" title="${esc(effText(im))}">${esc(im.name||'Impact')}</span>${yrs.map(y=>{ const w = intensity(im,y); return `<span class="c" title="${y}: ${Math.round(w*100)}% of full effect — ${esc(effText(im))}" style="background:rgba(var(--heat),${(w*0.75).toFixed(3)})"></span>`; }).join('')}`).join('');
+  // table
+  let t = `<thead><tr><th>Year</th><th>Without impacts</th><th>With impacts</th><th>Change</th><th>Change %</th></tr></thead><tbody>`;
+  Rw.years.forEach(y => { const n = (Rn.years.find(z=>z.year===y.year)||{net:0}).net, dd = y.net-n; if (Math.abs(dd)<1e-6 && Math.abs(n)<1e-6) return;
+    t += `<tr><td>${y.year}</td><td>${fmtM(n)}</td><td>${fmtM(y.net)}</td><td>${Math.abs(dd)<1e-6?'—':sg(dd,fmtM)}</td><td>${n?((dd/Math.abs(n)*100)>0?'+':'')+(dd/Math.abs(n)*100).toFixed(1)+'%':''}</td></tr>`; });
+  $('impTbl').innerHTML = t + '</tbody>';
+  drawImp(Rn, Rw);
+}
+function drawImp(Rn, Rw){
+  const el = $('impChart'); if (!el) return;
+  const W = Math.max(280, el.clientWidth), H = 240, m = {t:22,r:12,b:26,l:58};
+  const y0 = Math.min(Rn.Y0, Rw.Y0), y1 = Math.max(Rn.Y0+Rn.years.length-1, Rw.Y0+Rw.years.length-1), yrs = [];
+  for (let y=y0;y<=y1;y++) yrs.push(y);
+  const get = (R,y) => { const r = R.years.find(z=>z.year===y); return r ? r.net : 0; };
+  const A = yrs.map(y=>get(Rn,y)), B = yrs.map(y=>get(Rw,y)), n = yrs.length;
+  const tk = niceTicks(Math.min(0,...A,...B), Math.max(1,...A,...B), 4);
+  const X = i => m.l + (n>1? i/(n-1) : 0.5)*(W-m.l-m.r), Y = v => m.t + (tk.hi-v)/(tk.hi-tk.lo)*(H-m.t-m.b);
+  const iLa = lastAct()-y0;
+  let g = iLa>=0 ? histShade(m.l, iLa+1<n ? (X(iLa)+X(iLa+1))/2 : W-m.r, m.t, H-m.b, W-m.r) : '';
+  // shade the years any impact is active
+  const act = yrs.map(y => (S.impacts||[]).some(im => im.on!==false && intensity(im,y)>0));
+  act.forEach((a,i) => { if (a){ const x0 = i ? (X(i-1)+X(i))/2 : m.l, x1 = i<n-1 ? (X(i)+X(i+1))/2 : W-m.r; g += `<rect x="${x0}" y="${m.t}" width="${x1-x0}" height="${H-m.t-m.b}" fill="var(--s5)" opacity=".07"/>`; } });
+  tk.t.forEach(t => { g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m.l-8}" y="${Y(t)+4}" text-anchor="end">${fmtAx(t)}</text>`; });
+  const every = Math.ceil(n/(W<600?7:14));
+  yrs.forEach((y,i) => { if (i%every===0) g += `<text x="${X(i)}" y="${H-8}" text-anchor="middle">${y}</text>`; });
+  const line = (arr) => arr.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join('');
+  g += `<path d="${line(A)}" fill="none" stroke="var(--cost)" stroke-width="2" stroke-dasharray="6 4"/><path d="${line(B)}" fill="none" stroke="var(--s1)" stroke-width="2"/>`;
+  g += `<line id="ix" y1="${m.t}" y2="${H-m.b}" stroke="var(--ink-2)" visibility="hidden"/><rect id="ihit" x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Net value by year with and without impacts">${g}</svg>`;
+  const svg = el.querySelector('svg'), ix = svg.querySelector('#ix');
+  svg.querySelector('#ihit').addEventListener('pointermove', e => { const bb = svg.getBoundingClientRect(), px = (e.clientX-bb.left)*(W/bb.width);
+    const i = Math.max(0, Math.min(n-1, Math.round((px-m.l)/(W-m.l-m.r)*(n-1)))); ix.setAttribute('x1',X(i)); ix.setAttribute('x2',X(i)); ix.setAttribute('visibility','visible');
+    const on = (S.impacts||[]).filter(im=>im.on!==false && intensity(im,yrs[i])>0).map(im=>`${esc(im.name)} (${Math.round(intensity(im,yrs[i])*100)}%)`).join(', ');
+    showTip(e, `<b>${yrs[i]}</b><hr><div class="r"><span>Without impacts</span><b>${fmtM(A[i])}</b></div><div class="r"><span>With impacts</span><b>${fmtM(B[i])}</b></div><hr><div class="r"><span>Change</span><b>${fmtM(B[i]-A[i])}</b></div>${on?`<hr><div style="max-width:260px">${on}</div>`:''}`); });
+  svg.querySelector('#ihit').addEventListener('pointerleave', () => { ix.setAttribute('visibility','hidden'); hideTip(); });
+  // change by year, as bars (only the years where anything changes, plus a margin)
+  const D = B.map((v,i)=>v-A[i]);
+  let lo = D.findIndex(v=>Math.abs(v)>1e-6), hi = D.length-1 - [...D].reverse().findIndex(v=>Math.abs(v)>1e-6);
+  const de = $('impDelta'); if (lo<0){ de.innerHTML = '<p class="foot">No change.</p>'; return; }
+  lo = Math.max(0, lo-1); hi = Math.min(n-1, hi+1);
+  const dy = yrs.slice(lo,hi+1), dv = D.slice(lo,hi+1), H2 = 170, m2 = {t:10,r:12,b:26,l:58};
+  const tk2 = niceTicks(Math.min(0,...dv), Math.max(0,...dv) || 1e-6, 4);
+  const Y2 = v => m2.t + (tk2.hi-v)/(tk2.hi-tk2.lo)*(H2-m2.t-m2.b), band = (W-m2.l-m2.r)/dy.length, bw = Math.max(4, Math.min(30, band*0.6));
+  let g2 = '';
+  tk2.t.forEach(t => { g2 += `<line x1="${m2.l}" x2="${W-m2.r}" y1="${Y2(t)}" y2="${Y2(t)}" stroke="var(${t===0?'--line-2':'--grid'})"/><text x="${m2.l-8}" y="${Y2(t)+4}" text-anchor="end">${fmtAx(t)}</text>`; });
+  const ev2 = Math.ceil(dy.length/(W<600?7:14));
+  dv.forEach((v,i) => { const cx = m2.l+band*i+band/2, x = cx-bw/2, y0v = Y2(0), yv = Y2(v);
+    if (Math.abs(v)>1e-9) g2 += `<path d="${rpath(x, Math.min(y0v,yv), bw, Math.max(0.5,Math.abs(yv-y0v)), v>0?3:0, v<0?3:0)}" fill="var(${v<0?'--s5':'--s2'})"><title>${dy[i]}: ${fmtM(v)}</title></path>`;
+    if (i%ev2===0) g2 += `<text x="${cx}" y="${H2-8}" text-anchor="middle">${dy[i]}</text>`; });
+  de.innerHTML = `<svg viewBox="0 0 ${W} ${H2}" role="img" aria-label="Change in net value by year from impacts">${g2}</svg>`;
+}
+['cohA','cohB'].forEach(id => $(id).addEventListener('change', () => { if (lastR) renderCohCmp(lastR.cohorts.filter(c=>c.units>0)); }));
+[['cohModeTot','tot'],['cohModePer','per']].forEach(([id,mode]) => $(id).addEventListener('click', () => { cohMode = mode; $('cohModeTot').setAttribute('aria-pressed', String(mode==='tot')); $('cohModePer').setAttribute('aria-pressed', String(mode==='per')); if (lastR) drawCoh(lastR.cohorts.filter(c=>c.units>0)); }));
+$('copyCsv').addEventListener('click', async () => {
+  const cu = curCode(), rows = [['Year',...['DeviceSales','Service','Secondary','Finance','Recovery','Costs','Net','Cumulative','PV'].map(x=>x+'_'+cu+'m'),'InUse_m','InDrawers_m']];
+  lastR.years.forEach(y => rows.push([y.year,y.device,y.service,y.secondary,y.finance,y.recycling,-y.cost,y.net,y.cum,y.pv,y.b_first+y.b_second,y.b_drawer].map((v,i)=>i?v.toFixed(2):v)));
+  const txt = rows.map(r=>r.join(',')).join('\n');
+  try { await navigator.clipboard.writeText(txt); $('copyCsv').textContent = 'Copied'; }
+  catch(e){ $('copyCsv').textContent = 'Copy blocked'; }
+  setTimeout(()=>$('copyCsv').textContent='Copy as CSV', 1800);
+});
+new ResizeObserver(() => { if (lastR){ drawValue(lastR); drawBase(lastR); if ($('cmpB').value && cmpCache.R) drawCmp(lastR, cmpCache.R); if (impLast) drawImp(impLast.Rn, impLast.Rw); drawCoh(lastR.cohorts.filter(c=>c.units>0)); const ca=lastR.cohorts.find(c=>String(c.year)===$('cohA').value), cb=lastR.cohorts.find(c=>String(c.year)===$('cohB').value); if (ca&&cb) drawCohCurve(ca,cb); } }).observe($('valueChart'));
+
+/* ---------- scenario library ---------- */
+let db = null, user = null, myId = null, libDocs = [], localMode = true, armedDelete = null;
+const setStatus = (t, err) => { const s = $('libStatus'); s.textContent = t; s.className = 'status' + (err?' err':''); };
+$('libToggle').addEventListener('click', () => { const p = $('library'); p.hidden = !p.hidden; $('libToggle').setAttribute('aria-expanded', String(!p.hidden)); if (!p.hidden){ $('sc-name').value = S.name||''; $('sc-notes').value = S.notes||''; } });
+function loadScenario(s, meta){
+  S = migrate(clone(s)); dispCur = null;
+  cur = meta || {docId:null, authorId:null};
+  $('sc-name').value = S.name||''; $('sc-notes').value = S.notes||'';
+  renderTab(); brandFilterVis(); renderResults(); renderLib();
+}
+const when = (ts) => { if (!ts) return ''; const d = new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); };
+async function renderLib(){
+  $('exList').innerHTML = EXAMPLES.map((f,i) => { const s = f(); return `<div class="li"><span class="n">${esc(s.name)}</span><span class="m">${esc(s.notes)}</span><span class="a"><button class="btn small" data-ex="${i}">Load</button></span></div>`; }).join('');
+  let names = {};
+  if (!localMode && user){ const ids = [...new Set(libDocs.map(d=>d.authorId).filter(Boolean))]; if (ids.length){ try { names = await user.profiles(ids); } catch(e){} } }
+  $('libList').innerHTML = libDocs.length ? libDocs.map(d => {
+    const mine = localMode || (myId && d.authorId===myId);
+    const who = localMode ? 'This browser' : (d.authorId===myId ? 'You' : ((names[d.authorId]&&names[d.authorId].name) || 'A colleague'));
+    return `<div class="li ${cur.docId===d.id?'on':''}"><span class="n">${esc(d.name||'Untitled')}</span><span class="m">${esc(who)} · ${when(d.updatedAt)}${d.notes?' · '+esc(d.notes):''}</span><span class="a"><button class="btn small" data-load="${esc(d.id)}">Load</button>${mine?`<button class="btn small danger" data-del="${esc(d.id)}">${armedDelete===d.id?'Confirm delete':'Delete'}</button>`:''}</span></div>`;
+  }).join('') : `<div class="li"><span class="m">No saved scenarios yet. Save one to share it${localMode?' (saved in this browser only)':''}.</span></div>`;
+  cmpOptions();
+}
+$('exList').addEventListener('click', e => { const b = e.target.closest('button[data-ex]'); if (!b) return; loadScenario(EXAMPLES[+b.dataset.ex](), null); setStatus('Loaded example. Save it to add it to the library.'); });
+$('libList').addEventListener('click', async e => {
+  const lb = e.target.closest('button[data-load]'), dbn = e.target.closest('button[data-del]');
+  if (lb){ const d = libDocs.find(x=>x.id===lb.dataset.load); if (d && valid(d.scenario)){ loadScenario(d.scenario, {docId:d.id, authorId:d.authorId}); setStatus(`Loaded “${d.name}”`); } else setStatus('That scenario could not be read.', true); }
+  if (dbn){ const id = dbn.dataset.del;
+    if (armedDelete!==id){ armedDelete = id; renderLib(); setTimeout(()=>{ if (armedDelete===id){ armedDelete=null; renderLib(); } }, 4000); return; }
+    armedDelete = null;
+    try { if (localMode){ libDocs = libDocs.filter(x=>x.id!==id); lsSet(LS_LIB, libDocs); renderLib(); } else await db.collection('scenarios').doc(id).delete();
+      if (cur.docId===id) cur = {docId:null, authorId:null}; setStatus('Scenario deleted'); }
+    catch(err){ setStatus(err && err.code==='invalid_argument' ? 'You can only delete scenarios you saved.' : 'Could not delete. Try again.', true); }
+  }
+});
+async function save(asNew){
+  S.name = $('sc-name').value.trim() || 'Untitled scenario'; S.notes = $('sc-notes').value.trim();
+  const body = {name:S.name, notes:S.notes, authorId:myId||null, updatedAt:Date.now(), scenario:clone(S)};
+  const canOverwrite = !asNew && cur.docId && (localMode || (myId && cur.authorId===myId)), hadDoc = !!cur.docId;
+  try {
+    if (localMode){
+      if (canOverwrite){ const i = libDocs.findIndex(x=>x.id===cur.docId); if (i>=0) libDocs[i] = Object.assign({id:cur.docId}, body); else libDocs.unshift(Object.assign({id:cur.docId}, body)); }
+      else { const id = 'l'+Date.now().toString(36); libDocs.unshift(Object.assign({id}, body)); cur = {docId:id, authorId:null}; }
+      lsSet(LS_LIB, libDocs); renderLib();
+    } else {
+      if (canOverwrite) await db.collection('scenarios').doc(cur.docId).set(body);
+      else { const ref = await db.collection('scenarios').add(body); cur = {docId:ref.id, authorId:myId}; }
+    }
+    setStatus(canOverwrite ? 'Saved changes' : (hadDoc && !asNew ? 'Saved as your own copy' : 'Saved to the library'));
+    renderResults(); renderLib();
+  } catch(err){
+    const c = err && err.code;
+    setStatus(c==='invalid_argument' ? 'You have view-only access, so this can’t be saved to the shared library. Ask the owner for Contributor access, or copy it as text.' : c==='quota_exceeded' ? 'The library is full. Delete old scenarios, then save again.' : 'Could not save. Try again in a moment.', true);
+  }
+}
+$('saveBtn').addEventListener('click', () => save(false));
+$('saveNewBtn').addEventListener('click', () => save(true));
+$('copyJson').addEventListener('click', async () => { S.name = $('sc-name').value.trim()||S.name; const txt = JSON.stringify(S); $('jsonBox').value = txt; try { await navigator.clipboard.writeText(txt); setStatus('Scenario copied as text'); } catch(e){ $('jsonBox').select(); setStatus('Select the text below and copy it'); } });
+$('loadJson').addEventListener('click', () => { try { const s = JSON.parse($('jsonBox').value); if (!valid(s)) throw 0; loadScenario(s, null); setStatus('Loaded pasted scenario'); } catch(e){ setStatus('That text is not a valid scenario. Paste the full copied text.', true); } });
+
+function useLocal(msg){ localMode = true; libDocs = lsGet(LS_LIB) || []; $('libTitle').textContent = 'Saved in this browser'; $('libMode').textContent = msg||''; renderLib(); }
+useLocal('This test version saves scenarios in your browser only.');
+(async () => {
+  let c = window.claude; if (!c || !c.use){ await new Promise(r=>setTimeout(r,1500)); c = window.claude; }
+  if (!c || !c.use) return;
+  let cm = null; try { cm = await c.use('comments'); } catch(e){}
+  if (!cm) return;
+  const btn = $('feedbackBtn'); btn.hidden = false;
+  btn.addEventListener('click', async () => {
+    try { const r = await cm.openComposer({element: $('testBanner')}); if (!r || !r.opened) btn.textContent = 'Click again to leave feedback'; }
+    catch(e){ btn.hidden = true; }
+  });
+})();
+if (false)
+(async () => {
+  let c = window.claude;
+  if (!c || !c.use){ await new Promise(r=>setTimeout(r,1500)); c = window.claude; }
+  if (!c || !c.use){ useLocal('Shared library not available in this view'); return; }
+  try { [db, user] = await Promise.all([c.use('db'), c.use('user')]); } catch(e){ db = null; }
+  if (!db){ useLocal('Shared library not available in this view'); return; }
+  myId = user ? await user.id() : null;
+  localMode = false; $('libTitle').textContent = 'Shared scenarios'; $('libMode').textContent = 'Visible to everyone with access to this page';
+  db.collection('scenarios').orderBy('updatedAt','desc').limit(200).onSnapshot(snap => {
+    libDocs = snap.docs.map(d => Object.assign({id:d.id}, d.data())); renderLib(); if (lastR) renderCompare(lastR);
+  }, err => { useLocal('Shared library unavailable, saving in this browser'); });
+})();
+
+renderTab(); brandFilterVis(); renderResults(); renderLib();
+})();
+</script>
+
+</body>
+</html>
