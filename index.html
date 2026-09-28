@@ -192,7 +192,7 @@ details summary{cursor:pointer;font-weight:800}
   </header>
 
   <section class="testbar" id="testBanner" aria-label="About this test version">
-    <div><b>Test version.</b> All figures are illustrative placeholders, not FDM CCS Insight data. Try the inputs, examples and impact scenarios, and tell us what's missing or unclear. Scenarios you save stay in your own browser; use <i>Scenario library → Copy or paste as text</i> to send one to someone.</div>
+    <div><b>Test version for colleagues.</b> All figures are illustrative placeholders, not FDM CCS Insight data. Try the inputs, examples and impact scenarios, and tell us what's missing or unclear. Scenarios you save stay in your own browser; use <i>Scenario library → Copy or paste as text</i> to send one to someone.</div>
     <button class="btn primary" id="feedbackBtn" hidden>Leave feedback</button>
   </section>
   <section class="panel" id="library" hidden aria-label="Scenario library">
@@ -223,6 +223,7 @@ details summary{cursor:pointer;font-weight:800}
   <!-- INPUTS -->
   <section class="card" aria-label="Model inputs">
     <div class="head"><h2>Inputs</h2><span class="foot">Blank cells use the value shown in grey. Percent splits that don't total 100 are scaled to 100.</span></div>
+    <div class="row" style="margin:-2px 0 10px"><span class="foot"><b>Inputs workbook:</b> every input, one sheet per tab. Edit in Excel and load it back.</span><button class="btn small" id="inDl">Download inputs (Excel)</button><label class="btn small" style="cursor:pointer">Load inputs from Excel<input type="file" id="inUp" accept=".xlsx" hidden></label><span class="status" id="inStatus" role="status"></span></div>
     <div class="tabs" role="tablist" id="tabs"></div>
     <p class="tabdesc" id="tabDesc"></p>
     <div class="yearbar" id="yearBar">
@@ -1465,6 +1466,233 @@ $('copyCsv').addEventListener('click', async () => {
   setTimeout(()=>$('copyCsv').textContent='Copy as CSV', 1800);
 });
 new ResizeObserver(() => { if (lastR){ drawValue(lastR); drawBase(lastR); if ($('cmpB').value && cmpCache.R) drawCmp(lastR, cmpCache.R); if (impLast) drawImp(impLast.Rn, impLast.Rw); drawCoh(lastR.cohorts.filter(c=>c.units>0)); const ca=lastR.cohorts.find(c=>String(c.year)===$('cohA').value), cb=lastR.cohorts.find(c=>String(c.year)===$('cohB').value); if (ca&&cb) drawCohCurve(ca,cb); } }).observe($('valueChart'));
+
+/* ---------- inputs workbook: download every input to Excel and load it back ---------- */
+const XL = (() => {
+  const enc = new TextEncoder();
+  const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = (b) => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  function zip(files){ // [{name, data:Uint8Array}] stored, no compression
+    const parts = [], central = []; let off = 0;
+    files.forEach(f => { const nm = enc.encode(f.name), d = f.data, c = crc32(d);
+      const h = new DataView(new ArrayBuffer(30)); h.setUint32(0,0x04034b50,true); h.setUint16(4,20,true); h.setUint16(6,0x0800,true); h.setUint16(8,0,true); h.setUint32(14,c,true); h.setUint32(18,d.length,true); h.setUint32(22,d.length,true); h.setUint16(26,nm.length,true);
+      parts.push(new Uint8Array(h.buffer), nm, d);
+      const e = new DataView(new ArrayBuffer(46)); e.setUint32(0,0x02014b50,true); e.setUint16(4,20,true); e.setUint16(6,20,true); e.setUint16(8,0x0800,true); e.setUint32(16,c,true); e.setUint32(20,d.length,true); e.setUint32(24,d.length,true); e.setUint16(28,nm.length,true); e.setUint32(42,off,true);
+      central.push(new Uint8Array(e.buffer), nm); off += 30 + nm.length + d.length; });
+    const cs = central.reduce((a,b)=>a+b.length,0), end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0,0x06054b50,true); end.setUint16(8,files.length,true); end.setUint16(10,files.length,true); end.setUint32(12,cs,true); end.setUint32(16,off,true);
+    return new Blob([...parts, ...central, new Uint8Array(end.buffer)], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }
+  const x = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
+  const col = (n) => { let s = ''; n++; while (n > 0){ const m = (n-1) % 26; s = String.fromCharCode(65+m) + s; n = Math.floor((n-1)/26); } return s; };
+  // styles: 0 normal · 1 header · 2 number 0.0 · 3 number 0 · 4 date · 5 title · 6 bold · 7 bold number 0.0 · 8 bold number 0 · 9 wrap text · 10 group header
+  const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="3"><numFmt numFmtId="164" formatCode="#,##0.0"/><numFmt numFmtId="165" formatCode="#,##0"/><numFmt numFmtId="166" formatCode="dd-mmm-yyyy"/></numFmts>
+<fonts count="4"><font><sz val="10"/><name val="Arial"/></font><font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Arial"/></font><font><b/><sz val="14"/><color rgb="FF1A3C34"/><name val="Arial"/></font><font><b/><sz val="10"/><name val="Arial"/></font></fonts>
+<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1A3C34"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEFF2F1"/></patternFill></fill></fills>
+<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="11"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment wrapText="1" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"></xf><xf numFmtId="164" fontId="3" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"></xf><xf numFmtId="165" fontId="3" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+  const serial = (d) => (d.getTime() - Date.UTC(1899,11,30))/864e5;
+  function sheetXml(sh){
+    const rows = sh.rows.map((r, ri) => `<row r="${ri+1}">${r.map((c, ci) => { if (c===null || c===undefined || c==='') return '';
+      const o = (typeof c==='object' && !(c instanceof Date)) ? c : {v:c}; const ref = col(ci)+(ri+1), v = o.v;
+      if (v instanceof Date) return `<c r="${ref}" s="4"><v>${serial(v)}</v></c>`;
+      if (typeof v==='number') return isFinite(v) ? `<c r="${ref}" s="${o.s ?? sh.num ?? 2}"><v>${v}</v></c>` : '';
+      return `<c r="${ref}" t="inlineStr" s="${o.s ?? 0}"><is><t xml:space="preserve">${x(v)}</t></is></c>`; }).join('')}</row>`).join('');
+    const fz = sh.freeze ? `<sheetViews><sheetView workbookViewId="0"><pane xSplit="${sh.freeze.c}" ySplit="${sh.freeze.r}" topLeftCell="${col(sh.freeze.c)}${sh.freeze.r+1}" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>` : '';
+    const cols = sh.cols ? `<cols>${sh.cols.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : '';
+    const merges = sh.merges && sh.merges.length ? `<mergeCells count="${sh.merges.length}">${sh.merges.map(m=>`<mergeCell ref="${m}"/>`).join('')}</mergeCells>` : '';
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${fz}${cols}<sheetData>${rows}</sheetData>${merges}</worksheet>`;
+  }
+  function build(sheets){
+    const names = new Set(); sheets.forEach(s => { let n = s.name.replace(/[\\\/?*\[\]:]/g,'').slice(0,31), k = 2; while (names.has(n)) n = n.slice(0,28)+' '+(k++); names.add(n); s.name = n; });
+    const f = (name, str) => ({name, data: enc.encode(str)});
+    return zip([
+      f('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`),
+      f('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`),
+      f('xl/workbook.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s,i)=>`<sheet name="${x(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`),
+      f('xl/_rels/workbook.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`),
+      f('xl/styles.xml', STYLES),
+      ...sheets.map((s,i) => f(`xl/worksheets/sheet${i+1}.xml`, sheetXml(s)))
+    ]);
+  }
+  return {build};
+})();
+let dlCap;
+async function saveFile(name, blob){
+  const c = window.claude;
+  if (c && c.use){ if (dlCap===undefined){ try { dlCap = await c.use('downloads'); } catch(e){ dlCap = null; } }
+    if (dlCap){ await dlCap.save({filename:name, data:blob}); return 'saved'; } }
+  const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000); return 'saved';
+}
+// Every table the site shows, in the order of the input tabs. Each becomes a block on its tab's sheet:
+// a title ending [code], a header row whose field headers end [field], then one row per region / brand / tier.
+const IO_RC = [['refurb','Traded in & refurbished','%'],['private','Sold privately','%'],['passed','Passed on','%'],['drawer','Put in a drawer','%'],['recycled','Formally recycled','%'],['lost','Lost, broken or landfill','%']];
+const IO_SHEETS = () => {
+  const cur = inCode(), cs = inSym();
+  return [
+    {sheet:'Sales volumes', note:'New handsets sold by region, in millions. The first-year units and growth set the path; a units figure typed for a later year replaces the grown value for that year.', tables:[
+      {t:'vol', title:'Sales volumes by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['base',`Units in first year (millions)`],['growth','Growth (% a year)'],['aspTr','Price trend (% a year)']], years:true}]},
+    {sheet:'Brands', note:'Brand split of each region’s sales, and how each brand behaves. Use “Split sales by brand” on the Global settings sheet to switch brands on or off.', tables:[
+      {t:'brand', title:'Brand mix by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['ap','Apple (% of units)'],['pa','Premium Android (% of units)'],['oa','Other Android (% of units)'],['ot','Other (% of units)']]},
+      {t:'brandB', title:'How each brand behaves', rowHead:'Brand', rows:BRANDS, rn:(b)=>BNM[b], cols:[['tp','Premium (% of brand)'],['tm','Mid-range (% of brand)'],['tb','Budget (% of brand)'],['px','Price index (× regional tier price)'],['dep','Resale value decline (% a year, blank = tier)'],['life','First owner keeps (× tier)'],['tradein','Trade-in after first owner (× tier)'],['fin','Bought on finance (× tier)'],['arpu','First-owner ARPU (× tier)']]}]},
+    {sheet:'Price tiers', note:`Tier mix (used when brands are off) and average price per tier in ${cur}, plus how each tier behaves.`, tables:[
+      {t:'tiers', title:'Tier mix and prices by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['sp','Premium (% of units)'],['sm','Mid-range (% of units)'],['sb','Budget (% of units)'],['ap',`Premium price (${cur})`],['am',`Mid-range price (${cur})`],['ab',`Budget price (${cur})`]]},
+      {t:'tierB', title:'How each tier behaves', rowHead:'Tier', rows:TIERS, rn:(t)=>TN[t], cols:[['dep','Resale value decline (% a year, blank = global)'],['life','First owner keeps (× regional years)'],['tradein','Trade-in after first owner (× regional share)'],['fin','Bought on finance (× regional share)'],['arpu','First-owner ARPU (× plan-weighted ARPU)']]}]},
+    {sheet:'Airtime & plans', note:'These follow the calendar year a device is in use.', tables:[
+      {t:'svc', title:'Airtime ARPU and plan mix by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['c',`Contract ARPU (${cs}/month)`],['s',`SIM-only ARPU (${cs}/month)`],['p',`PAYG ARPU (${cs}/month)`],['tr','ARPU trend (% a year)'],['nc','New: contract %'],['ns','New: SIM-only %'],['np','New: PAYG %'],['nn','New: none %'],['sc','2nd-hand: contract %'],['ss','2nd-hand: SIM-only %'],['sp','2nd-hand: PAYG %'],['sn','2nd-hand: none %']]}]},
+    {sheet:'Buying & finance', note:'Set for each launch year.', tables:[
+      {t:'buy', title:'How new handsets are paid for', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['fin','On device finance (% of sales)'],['apr','Blended APR (%)'],['term','Finance term (months)'],['dep','Deposit (%)'],['bund','Bundled contract (% of sales)'],['subs','Operator subsidy (% of price)']]}]},
+    {sheet:'Lifetimes & costs', note:`Money values in ${cur}.`, tables:[
+      {t:'life', title:'Lifetimes, resale and costs by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['first','First owner keeps (years)'],['second','Later owners keep (years)'],['drawer','Time in drawer (years)'],['px','Resale price index (1.00 = full)'],['refurb',`Refurb cost (${cs} per unit)`],['imp',`Logistics & duties in (${cs} per unit)`],['fee','Marketplace fee (% of private sale)']]}]},
+    {sheet:'Routes after first owner', note:'Each row should total 100%.', tables:[
+      {t:'r1', title:'What happens after the first owner', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:IO_RC.map(c=>[c[0], c[1]+' %'])}]},
+    {sheet:'Routes after later owners', note:'Each row should total 100%.', tables:[
+      {t:'r2', title:'What happens after later owners', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:IO_RC.map(c=>[c[0], c[1]+' %'])},
+      {t:'dx', title:'When a device comes out of a drawer', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['refurb','Traded in & refurbished %'],['recycled','Formally recycled %'],['lost','Thrown away or lost %']]}]},
+    {sheet:'Refurb flows', note:'Where refurbished devices are resold (columns), by the region they were traded in (rows). Each row should total 100%.', tables:[
+      {t:'flow', title:'Refurb flows', rowHead:'Traded in', rows:RK, rn:(r)=>RN[r], cols:RK.map(d=>[d, RN[d]+' %'])}]}
+  ];
+};
+const IO_G = [['firstYear','First sales year'],['cohorts','Years of sales to model'],['lastActual','Last year of actual data'],['baseYear','Prices and ARPU are stated for (year)'],['track','Follow each device for (years)'],['maxLives','Maximum owners per device'],['dep','Resale value decline (% per year of age)'],['tradeIn','Trade-in payout (% of refurbished resale price)'],['privFactor','Private sale price (% of refurbished price)'],['attr','Service revenue credited to handset (% of ARPU)'],['disc','Discount rate (% a year)'],['material','Material recovery value (per recycled unit)'],['collection','Collection & processing cost (per recycled unit)']];
+const ioYears = () => { const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5))), ys = new Set(Array.from({length:NC},(_,i)=>Y0+i));
+  Object.values(S.pins||{}).forEach(p => Object.keys(p).forEach(y => ys.add(+y))); return [...ys].sort((a,b)=>a-b); };
+function inputsWorkbook(){
+  const H = (t) => ({v:t, s:1}), T = (t) => ({v:t, s:6}), TT = (t) => ({v:t, s:5}), W = (t) => ({v:t, s:9}), sheets = [], Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5))), ys = ioYears();
+  const val = (v) => v===null || v===undefined || v==='' ? '' : +v;
+  sheets.push({name:'Read me', cols:[26,100], rows:[[TT('Global Handset Value Model — inputs workbook')], [],
+    [T('How to use'), W('Each input tab on the site has its own sheet. Change any white cell, keep the sheet names, titles and codes in [square brackets] as they are, then use “Load inputs from Excel” on the site. Every input is replaced by what is in this workbook.')],
+    [T('Values by year'), W('Tabs whose inputs can change over time have a “Values by launch year” block (Airtime & plans: by calendar year). Leave a row blank to use the single value above in every year. Fill in any years to make it change: years in between are interpolated in a straight line, and the value holds flat before the first and after the last year set.')],
+    [T('Money'), W(`Prices, ARPU and costs are in the scenario currency, ${inCode()}. Change the currency on the Global settings sheet only if the numbers are already in the new currency.`)],
+    [T('Percent splits'), W('Splits that don’t total 100% are scaled to 100% by the model, as on the site.')], [],
+    [H('Scenario'), H('')], [T('Name [name]'), S.name||''], [T('Notes [notes]'), S.notes||'']]});
+  IO_SHEETS().forEach(sh => {
+    const rows = [[TT(sh.sheet)], [W(sh.note)], []];
+    sh.tables.forEach(tb => {
+      const extra = tb.years ? Array.from({length:NC-1},(_,i)=>Y0+1+i) : [];
+      rows.push([T(`${tb.title} [${tb.t}]`)]);
+      rows.push([H(tb.rowHead), H('Code'), ...tb.cols.map(c=>H(`${c[1]} [${c[0]}]`)), ...extra.map(y=>H(`Units ${y} (millions) [${y}]`))]);
+      tb.rows.forEach(r => { const o = tb.t==='flow' ? S.flow[r] : S[tb.t][r]; rows.push([tb.rn(r), r, ...tb.cols.map(c=>val(o[c[0]])), ...extra.map(y => val((S.volY[r]||{})[y]))]); });
+      rows.push([]);
+      if (PINNABLE.has(tb.t)){
+        rows.push([T(`${tb.title}: values by ${tb.t==='svc'?'calendar':'launch'} year [pins:${tb.t}]`)]);
+        rows.push([H(tb.rowHead), H('Code'), H('Input'), H('Field'), ...ys.map(y=>H(String(y)))]);
+        tb.rows.forEach(r => tb.cols.forEach(c => { const p = pinsOf(S, tb.t, r, c[0]) || {}; rows.push([tb.rn(r), r, c[1], c[0], ...ys.map(y => val(p[y]))]); }));
+        rows.push([]);
+      }
+    });
+    const w = Math.max(...sh.tables.map(tb => tb.cols.length + (tb.years?NC-1:0) + 2), PINNABLE.has(sh.tables[0].t) ? ys.length + 4 : 0);
+    sheets.push({name:sh.sheet, rows, cols:[22,8,...Array(w).fill(14)], num:0});
+  });
+  // impacts: one row per lever
+  const im = [[TT('Impacts')], [W('One row per lever. Rows with the same Impact number belong to one impact. Regions, Brands and Tiers take codes separated by commas; leave blank for all. Timing: shock, wave, perm or ramp.')], [],
+    [T('Impacts [impacts]')], [H('Impact'), H('Code'), H('Name [name]'), H('Apply (Yes/No) [on]'), H('Timing [shape]'), H('Start year [start]'), H('End year [end]'), H('Regions [regions]'), H('Brands [brands]'), H('Tiers [tiers]'), H('Note [note]'), H('Lever [lever]'), H('Change at full effect % [pct]')]];
+  (S.impacts||[]).forEach((x, i) => (x.effects && x.effects.length ? x.effects : [{lever:'units', pct:0}]).forEach(e => im.push([`Impact ${i+1}`, i+1, x.name||'', x.on===false?'No':'Yes', x.shape||'shock', val(x.start), val(x.end), (x.regions||[]).join(', '), (x.brands||[]).join(', '), (x.tiers||[]).join(', '), x.note||'', e.lever, val(e.pct)])));
+  im.push([], [T('Codes you can use [codes]')], [H('Type'), H('Code'), H('Meaning')]);
+  Object.entries(SHAPES).forEach(([k,v]) => im.push(['Timing', k, v])); Object.entries(LEVERS).forEach(([k,v]) => im.push(['Lever', k, v]));
+  RK.forEach(r => im.push(['Region', r, RN[r]])); BRANDS.forEach(b => im.push(['Brand', b, BNM[b]])); TIERS.forEach(t => im.push(['Tier', t, TN[t]]));
+  sheets.push({name:'Impacts', rows:im, cols:[12,8,28,12,12,10,10,22,16,12,40,14,14], num:0});
+  // global settings, currency and exchange rates
+  const g = [[TT('Global settings')], [W('Settings that apply to every region.')], [], [T('Settings [g]')], [H('Setting'), H('Code'), H('Value')]];
+  IO_G.forEach(([k, l]) => g.push([l, k, val(S.g[k])]));
+  g.push(['Split sales by brand (Yes/No)', 'useBrands', S.g.useBrands ? 'Yes' : 'No'], ['Scenario currency', 'cur', inCode()], []);
+  g.push([T('Exchange rates [fx]')], [H('Currency'), H('Code'), H('Units per 1 USD')]);
+  Object.keys(CURS).filter(c=>c!=='USD').forEach(c => g.push([`${c} · ${CURS[c].n}`, c, fxOf(S,c)]));
+  sheets.push({name:'Global settings', rows:g, cols:[46,12,14], num:0});
+  return XL.build(sheets);
+}
+const cellStr = (v) => v===null || v===undefined ? '' : String(v).trim();
+const cellNum = (v) => { if (v===null || v===undefined || v==='') return null; if (typeof v==='number') return isFinite(v) ? v : null; const t = String(v).replace(/[\s,£$€%]/g,''); if (t==='') return null; const n = Number(t); return isNaN(n) ? null : n; };
+const codeOf = (v) => { const m = cellStr(v).match(/\[([^\]]+)\]\s*$/); return m ? m[1] : null; };
+const listOf = (v, ok) => cellStr(v).split(/[,;]/).map(x=>x.trim()).filter(Boolean).map(x => ok.find(k => k.toLowerCase()===x.toLowerCase()) || Object.keys(ok.names||{}).find(k => ok.names[k].toLowerCase()===x.toLowerCase())).filter(Boolean);
+function applyInputs(book){
+  const known = new Set(['vol','brand','brandB','tiers','tierB','svc','buy','life','r1','r2','dx','flow']), NULLABLE = {brandB:['dep'], tierB:['dep']};
+  const found = new Set(), skipped = [];
+  const rm = book['Read me']; if (rm) rm.forEach(r => { if (!r) return; const c = codeOf(r[0]); if (c==='name' && cellStr(r[1])) S.name = cellStr(r[1]); if (c==='notes') S.notes = cellStr(r[1]); });
+  const imps = new Map();
+  Object.entries(book).forEach(([name, rows]) => {
+    let block = null, head = null;
+    for (let i = 0; i < rows.length; i++){
+      const r = rows[i] || [], a = r[0], filled = r.filter(v => v!==null && v!==undefined && v!=='').length;
+      if (!filled) continue; // blank rows inside a table are fine; a new title starts the next table
+      if (filled===1 && codeOf(a)){ block = codeOf(a); head = null; continue; }
+      if (!block) continue;
+      if (!head){ head = r.map(h => h===null || h===undefined ? null : (codeOf(h) || cellStr(h))); if (block==='impacts') found.add('impacts'); continue; }
+      const code = cellStr(r[1]);
+      if (known.has(block)){
+        const t = block, tgt = t==='flow' ? S.flow : S[t]; if (!tgt || !tgt[code]){ if (code) skipped.push(`${name}: row ${code}`); continue; }
+        found.add(t);
+        head.forEach((f, ci) => { if (ci < 2 || !f) return; const v = cellNum(r[ci]);
+          if (t==='vol' && /^\d{4}$/.test(f)){ S.volY[code] = S.volY[code] || {}; if (v===null) delete S.volY[code][f]; else S.volY[code][f] = v; return; }
+          if (!(f in tgt[code]) && t!=='flow') return;
+          if (v===null){ if ((NULLABLE[t]||[]).includes(f)) tgt[code][f] = null; return; }
+          tgt[code][f] = v; });
+      } else if (block.startsWith('pins:')){
+        const t = block.slice(5), f = cellStr(r[3]); if (!PINNABLE.has(t) || !S[t] || !S[t][code] || !f) continue;
+        if (!found.has('pins:'+t)){ found.add('pins:'+t); Object.keys(S.pins||{}).forEach(k => { if (k.startsWith(t+'/')) delete S.pins[k]; }); }
+        const p = {}; head.forEach((y, ci) => { if (ci < 4 || !/^\d{4}$/.test(String(y))) return; const v = cellNum(r[ci]); if (v!==null) p[y] = v; });
+        if (Object.keys(p).length){ S.pins = S.pins || {}; S.pins[pk(t, code, f)] = p; }
+      } else if (block==='g'){
+        found.add('g'); const v = r[2];
+        if (code==='useBrands') S.g.useBrands = /^(y|yes|true|1|on)$/i.test(cellStr(v));
+        else if (code==='cur'){ const c = cellStr(v).toUpperCase(); if (CURS[c]) S.g.cur = c; }
+        else if (IO_G.some(x => x[0]===code)){ const n = cellNum(v); if (n!==null) S.g[code] = n; }
+      } else if (block==='fx'){
+        const n = cellNum(r[2]); if (CURS[code] && n!==null && n>0){ S.g.fx = S.g.fx || {}; S.g.fx[code] = n; found.add('fx'); }
+      } else if (block==='impacts'){
+        found.add('impacts'); const o = {}; head.forEach((f, ci) => { if (f) o[f] = r[ci]; });
+        const id = cellStr(o.Code || r[1]) || String(imps.size + 1);
+        if (!imps.has(id)){ const shape = cellStr(o.shape).toLowerCase(), sh = SHAPES[shape] ? shape : (Object.keys(SHAPES).find(k => SHAPES[k].toLowerCase()===shape) || 'shock');
+          imps.set(id, {on:!/^(n|no|false|0|off)$/i.test(cellStr(o.on)), name:cellStr(o.name) || 'Impact', note:cellStr(o.note), shape:sh, start:cellNum(o.start) ?? 2026, end:cellNum(o.end) ?? cellNum(o.start) ?? 2026,
+            regions:listOf(o.regions, Object.assign([...RK], {names:RN})), brands:listOf(o.brands, Object.assign([...BRANDS], {names:BNM})), tiers:listOf(o.tiers, Object.assign([...TIERS], {names:TN})), effects:[]}); }
+        const lv = cellStr(o.lever), lever = LEVERS[lv] ? lv : Object.keys(LEVERS).find(k => LEVERS[k].toLowerCase()===lv.toLowerCase());
+        if (lever) imps.get(id).effects.push({lever, pct:cellNum(o.pct) ?? 0});
+      }
+    }
+  });
+  if (found.has('impacts')) S.impacts = [...imps.values()];
+  return {found:[...found], skipped};
+}
+// minimal .xlsx reader: zip (stored or deflate) -> shared strings + sheet cells
+async function readXlsx(buf){
+  const u8 = new Uint8Array(buf), dv = new DataView(buf), dec = new TextDecoder();
+  let e = u8.length - 22; while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--; if (e < 0) throw new Error('not a zip');
+  const n = dv.getUint16(e+10, true); let p = dv.getUint32(e+16, true); const files = {};
+  for (let i = 0; i < n; i++){ const method = dv.getUint16(p+10, true), csz = dv.getUint32(p+20, true), nl = dv.getUint16(p+28, true), xl = dv.getUint16(p+30, true), cl = dv.getUint16(p+32, true), lo = dv.getUint32(p+42, true);
+    const name = dec.decode(u8.subarray(p+46, p+46+nl)); files[name] = {method, csz, lo}; p += 46 + nl + xl + cl; }
+  const get = async (name) => { const f = files[name]; if (!f) return null; const s = f.lo + 30 + dv.getUint16(f.lo+26, true) + dv.getUint16(f.lo+28, true), raw = u8.subarray(s, s + f.csz);
+    if (f.method === 0) return dec.decode(raw);
+    const out = await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer(); return dec.decode(out); };
+  const X = (s) => new DOMParser().parseFromString(s, 'application/xml'), tags = (d, t) => [...d.getElementsByTagNameNS('*', t)];
+  const ss = []; const sst = await get('xl/sharedStrings.xml'); if (sst) tags(X(sst), 'si').forEach(si => ss.push(tags(si, 't').map(t=>t.textContent).join('')));
+  const wb = X(await get('xl/workbook.xml')), rels = X(await get('xl/_rels/workbook.xml.rels')), relMap = {};
+  tags(rels, 'Relationship').forEach(r => relMap[r.getAttribute('Id')] = r.getAttribute('Target'));
+  const colIdx = (ref) => { const m = ref.match(/^[A-Z]+/)[0]; let c = 0; for (const ch of m) c = c*26 + ch.charCodeAt(0) - 64; return c - 1; };
+  const out = {};
+  for (const sh of tags(wb, 'sheet')){ const rid = sh.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id') || sh.getAttribute('r:id');
+    let t = relMap[rid]; if (!t) continue; t = t.replace(/^\//, ''); if (!t.startsWith('xl/')) t = 'xl/' + t;
+    const xml = await get(t); if (!xml) continue; const rows = [];
+    tags(X(xml), 'row').forEach(r => { const ri = +r.getAttribute('r') - 1, row = rows[ri] = [];
+      tags(r, 'c').forEach(c => { const ci = colIdx(c.getAttribute('r')), ty = c.getAttribute('t'), v = tags(c, 'v')[0];
+        let val = null; if (ty === 's') val = ss[+v.textContent]; else if (ty === 'inlineStr') val = tags(c, 't').map(x=>x.textContent).join(''); else if (ty === 'str' || ty === 'e') val = v ? v.textContent : null; else if (ty === 'b') val = v && v.textContent === '1'; else if (v) val = +v.textContent;
+        row[ci] = val; }); });
+    out[sh.getAttribute('name')] = rows; }
+  return out;
+}
+$('inDl').addEventListener('click', async () => { const st = $('inStatus'); st.className = 'status';
+  try { const d = new Date(), stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    await saveFile(`Claude - Handset Value Inputs - ${(S.name||'Scenario').replace(/[\\\/:*?"<>|]/g,'')} - ${stamp}.xlsx`, inputsWorkbook()); st.textContent = 'Inputs workbook ready.'; }
+  catch(e){ st.className = 'status err'; st.textContent = e && e.code==='declined' ? 'Download cancelled.' : 'Could not download the workbook in this view.'; } });
+$('inUp').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0], st = $('inStatus'); e.target.value = ''; if (!f) return;
+  st.className = 'status'; st.textContent = 'Reading the workbook…';
+  const before = JSON.stringify(S);
+  try { const book = await readXlsx(await f.arrayBuffer()), r = applyInputs(book);
+    if (!r.found.length){ S = migrate(JSON.parse(before)); st.className = 'status err'; st.textContent = 'No input sheets found. Use a workbook downloaded with “Download inputs”.'; return; }
+    S = migrate(S); dispCur = null; renderTab(); brandFilterVis(); renderResults();
+    const n = r.found.filter(x => !x.startsWith('pins:')).length, np = r.found.filter(x => x.startsWith('pins:')).length;
+    st.textContent = `Loaded ${n} input table${n===1?'':'s'}${np?` and by-year values for ${np}`:''} from ${f.name}.${r.skipped.length ? ' Skipped ' + r.skipped.slice(0,3).join(', ') + (r.skipped.length>3?'…':'') + '.' : ''}`; }
+  catch(err){ S = migrate(JSON.parse(before)); st.className = 'status err'; st.textContent = 'Could not read that file. Save it as .xlsx and try again.'; } });
 
 /* ---------- scenario library ---------- */
 let db = null, user = null, myId = null, libDocs = [], localMode = true, armedDelete = null;
