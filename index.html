@@ -15,6 +15,7 @@
   --action:#00C473; --action-ink:#0B2A22; --warn-bg:#FFF1E6; --warn-ink:#8A3A06; --ok-bg:#E3F7EE; --ok-ink:#0B5A39;
   --s1:#0E9F63; --s2:#2A6FD6; --s3:#E8A200; --s4:#17A5B8; --s5:#E0582A; --cost:#8391A3;
   --heat:14,159,99;
+  --src-p-bg:#E3EEFC; --src-p-line:#2A6FD6; --src-c-bg:#FFF3D6; --src-c-line:#B07E00; --src-e-bg:#F1EAFD; --src-e-line:#7A4FD0;
   --radius:8px;
   font-family:"Nunito Sans","Source Sans 3","Segoe UI",system-ui,-apple-system,sans-serif;
 }
@@ -26,6 +27,7 @@
     --action:#00C473; --action-ink:#06251B; --warn-bg:#3A2413; --warn-ink:#FFC49A; --ok-bg:#12352A; --ok-ink:#8BE3BD;
     --s1:#14B06F; --s2:#4C86E8; --s3:#C08A00; --s4:#1AA0B2; --s5:#E8683A; --cost:#8C9AB0;
     --heat:20,176,111;
+    --src-p-bg:#16294A; --src-p-line:#5A93F0; --src-c-bg:#3A2E0C; --src-c-line:#E0A800; --src-e-bg:#2A2140; --src-e-line:#A58BF0;
   }
 }
 :root[data-theme="dark"]{
@@ -35,6 +37,7 @@
   --action:#00C473; --action-ink:#06251B; --warn-bg:#3A2413; --warn-ink:#FFC49A; --ok-bg:#12352A; --ok-ink:#8BE3BD;
   --s1:#14B06F; --s2:#4C86E8; --s3:#C08A00; --s4:#1AA0B2; --s5:#E8683A; --cost:#8C9AB0;
   --heat:20,176,111;
+  --src-p-bg:#16294A; --src-p-line:#5A93F0; --src-c-bg:#3A2E0C; --src-c-line:#E0A800; --src-e-bg:#2A2140; --src-e-line:#A58BF0;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -135,6 +138,17 @@ td input.varies::placeholder{color:var(--ink-2);font-style:italic;opacity:1}
 .pininfo{font-size:12px;color:var(--ink-2);flex:1 1 280px;min-width:0}
 .tabs .n{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;border-radius:999px;padding:0 6px;background:var(--ok-bg);color:var(--ok-ink)}
 .key-pin{display:inline-block;width:18px;height:12px;border:1px solid var(--action);background:var(--ok-bg);border-radius:3px;vertical-align:-1px}
+td.src-pulse input,td.src-pulse input.pin,td.src-pulse input.varies{background:var(--src-p-bg);border-color:var(--src-p-line);box-shadow:inset 3px 0 0 var(--src-p-line)}
+td.src-cal input,td.src-cal input.pin,td.src-cal input.varies{background:var(--src-c-bg);border-color:var(--src-c-line);box-shadow:inset 3px 0 0 var(--src-c-line)}
+.key-src-pulse,.key-src-cal{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-1px;border:1px solid var(--src-p-line);background:var(--src-p-bg);box-shadow:inset 3px 0 0 var(--src-p-line)}
+td.src-est input,td.src-est input.pin,td.src-est input.varies{background:var(--src-e-bg);border-color:var(--src-e-line);border-style:dashed;box-shadow:inset 3px 0 0 var(--src-e-line)}
+.key-src-est{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-1px;border:1px dashed var(--src-e-line);background:var(--src-e-bg);box-shadow:inset 3px 0 0 var(--src-e-line)}
+.tabs .sd.est{background:var(--src-e-line)}
+.key-src-cal{border-color:var(--src-c-line);background:var(--src-c-bg);box-shadow:inset 3px 0 0 var(--src-c-line)}
+.srckey{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12px;color:var(--ink-2);margin:-2px 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+.srckey b{color:var(--ink)}
+.tabs .sd{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:5px;vertical-align:1px;background:var(--src-p-line)}
+.tabs .sd.cal{background:var(--src-c-line)}
 .key-var{display:inline-block;width:18px;height:12px;border:1px dashed var(--line-2);background:var(--panel);border-radius:3px;vertical-align:-1px}
 tr.tot td{font-weight:800;border-top:2px solid var(--line-2)}
 .chip{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800}
@@ -227,6 +241,7 @@ details summary{cursor:pointer;font-weight:800}
     <div class="row" style="margin:-4px 0 10px"><span class="foot"><b>FDM PULSE:</b> load the ACPBF, Forecast Summary and Quarterly Volume files (one or more at once) to fill volumes, brand mix, brand prices and channel splits, and to check the model against PULSE.</span>
       <label for="pulseDev" class="foot">Device</label><select id="pulseDev" style="width:auto"><option>Smartphone</option><option>Tablet</option><option>Smartwatch</option><option>Laptop</option></select>
       <label class="btn small" style="cursor:pointer">Load PULSE files<input type="file" id="pulseUp" accept=".xlsx" multiple hidden></label><span class="status" id="pulseStatus" role="status"></span></div>
+    <div class="srckey" id="srcKey" hidden></div>
     <div class="tabs" role="tablist" id="tabs"></div>
     <p class="tabdesc" id="tabDesc"></p>
     <div class="yearbar" id="yearBar">
@@ -292,8 +307,8 @@ details summary{cursor:pointer;font-weight:800}
       <div class="head"><div><h2>Check against PULSE</h2><div class="foot">What the model implies for each region in a year, against FDM PULSE. Gaps within ±10% are green, beyond ±25% amber. All regions, brands and tiers are included whatever the filters above. <span id="chkNote"></span></div></div>
         <div class="row"><label for="chkYear" class="foot">Year</label><select id="chkYear" style="width:auto"></select></div></div>
       <div class="tbl"><table id="chkTbl"></table></div>
-      <div class="row"><button class="btn primary small" id="calAll">Calibrate to PULSE</button><span class="foot">or one at a time:</span><button class="btn small" id="calTI">Trade-ins</button><button class="btn small" id="calRS">Refurbished sales</button><button class="btn small" id="calPV">Informal used sales</button><button class="btn small" id="calPX">Resale prices</button><button class="btn small" id="calAP">Apple share</button></div>
-      <p class="foot" id="calNote" style="margin:0">Each button scales one input per region by the gap across all PULSE years: the trade-in share (after first and later owners, and out of drawers), the share of trade-ins resold as refurbished, the private-sale shares, the resale price index, and Apple’s trade-in multiplier. Other routes are rebalanced so each split still totals 100%. Calibrate to PULSE runs them together, and also shifts the Refurb flows towards the regions PULSE says are short, until every region is within 3% (up to 15 rounds). Save the scenario first if you want to keep the uncalibrated inputs.</p>
+      <div class="row"><button class="btn primary small" id="calAll">Calibrate to PULSE</button><span class="foot">or one at a time:</span><button class="btn small" id="calTI">Trade-ins</button><button class="btn small" id="calRS">Refurbished sales</button><button class="btn small" id="calPV">Informal used sales</button><button class="btn small" id="calPX">Resale prices</button><button class="btn small" id="calPPV">Informal prices</button><button class="btn small" id="calAP">Brand shares</button></div>
+      <p class="foot" id="calNote" style="margin:0">New handsets, prices, brand mix and channels come straight from PULSE. Trade-ins, refurbished and informal used sales are worked out by following every device through its owners, so they depend on the route, resale and flow inputs. Calibrate to PULSE adjusts those inputs launch year by launch year until each region and year lines up with PULSE, including refurbished and informal prices and Apple and Samsung shares of refurbished sales (one to two minutes). Where PULSE has no trade-in figures (after its actual years) it aims at an estimate, marked ≈; the buttons on the right each adjust one input once. Adjusted inputs are shaded amber on the input tabs. Save the scenario first if you want to keep the unadjusted inputs.</p>
     </div>
     <div class="card wide" id="chanCard">
       <div class="head"><div><h2>Who captures trade-in and refurbished value</h2><div class="foot">Trade-ins (by the region traded in) and refurbished sales (by the region resold in), split by channel using the Channels tab. Payouts and revenue in the results currency.</div></div>
@@ -442,10 +457,13 @@ function migrate(s){
   if (!s.tierB) s.tierB = defaultTierB();
   if (!s.brand) s.brand = modernize({brand:defaultBrand()}).brand;
   if (!s.brandB) s.brandB = modernize({brandB:defaultBrandB()}).brandB;
-  RK.forEach(r => { if (s.life && s.life[r] && s.life[r].rsell===undefined) s.life[r].rsell = 100; });
+  RK.forEach(r => { if (s.life && s.life[r] && s.life[r].rsell===undefined) s.life[r].rsell = 100; if (s.life && s.life[r] && s.life[r].ppx===undefined) s.life[r].ppx = 1; });
+  if (!s.brandTi) s.brandTi = Object.fromEntries(RK.map(r => [r, {ap:1, sa:1, ot:1}]));
+  if (!s.brandPull) s.brandPull = Object.fromEntries(RK.map(r => [r, {ap:1, sa:1, ot:1}]));
   if (!s.brandPx) s.brandPx = Object.fromEntries(RK.map(r => [r, {ap:null, sa:null, ot:null}]));
   if (!s.chan) s.chan = Object.fromEntries(RK.map(r => [r, {to:40, tr:40, tt:20, ro:15, rr:70, rt:15}]));
   if (!s.g.priceMode) s.g.priceMode = 'tier';
+  if (!s.src || typeof s.src!=='object') s.src = {};
   if (!s.g.device) s.g.device = 'Smartphone';
   if (s.g.useBrands===undefined) s.g.useBrands = false;
   if (!s.pins) s.pins = {};
@@ -554,7 +572,10 @@ function tierSplit(sp, mult){
 // ---- Inputs that can change by year ----
 // A pinned cell holds values for chosen years; other years are interpolated in a straight line and held flat
 // before the first and after the last pinned year. A cell with no pins uses its single value in every year.
-const PINNABLE = new Set(['brand','brandB','brandPx','tiers','svc','buy','r1','r2','dx','chan']);
+const PINNABLE = new Set(['brand','brandB','brandPx','brandTi','brandPull','tiers','svc','buy','r1','r2','dx','chan','life','flow']);
+// tables where only some fields can change by year
+const PIN_FIELDS = {life:['rsell','px','ppx']};
+const canPin = (t, k) => PINNABLE.has(t) && (!PIN_FIELDS[t] || PIN_FIELDS[t].includes(k));
 const pk = (t,r,k) => t+'/'+r+'/'+k;
 function pinsOf(s,t,r,k){ const p = s.pins && s.pins[pk(t,r,k)]; return p && Object.keys(p).length ? p : null; }
 function interp(p, y){
@@ -657,6 +678,8 @@ function flowRun(r0, P, K, E){
   if (bu.finShare>0) interestSched(1-bu.dep/100, bu.apr, bu.term).forEach((v,k) => { if (k<=TR) T.finA[k] += v*bu.finShare; });
   T.subsA = bu.bundShare*bu.subs/100;
   push(0, r0, 'new', 1, 1);
+  // refurb flows for this brand: the regional split tilted by each destination's pull for the brand, rescaled to 100%
+  const FLc = {}, flowOf = (r) => { if (!E.pull) return P[r].flow; if (!FLc[r]){ let t = 0; const o = {}; RK.forEach(d => { o[d] = P[r].flow[d]*E.pull[d]; t += o[d]; }); RK.forEach(d => o[d] = t>0 ? o[d]/t : 0); FLc[r] = o; } return FLc[r]; };
   const route = (r, m, mass, split, life) => {
     let sp = split;
     if (life+1 > maxLives){
@@ -669,7 +692,8 @@ function flowRun(r0, P, K, E){
       // trade-ins that are not resold as refurbished handsets: paid out at the local resale value, then recycled
       if (uns>1e-12){ const v = uns*vf(m)*P[r].px*tIn; T.costA[m] += v; T.regLA[r] -= v; tk('ti',r)[m] += uns; tk('tiV',r)[m] += v;
         T.recC[m] += uns*mat; T.costC[m] += uns*col; T.regLC[r] += uns*(mat-col); T.fate.recycled += uns; }
-      RK.forEach(d => { const q = tot*P[r].flow[d]; if (q<=1e-12) return;
+      const fr = flowOf(r);
+      RK.forEach(d => { const q = tot*fr[d]; if (q<=1e-12) return;
         const pr = vf(m)*P[d].px;
         T.secA[m] += q*pr; T.regLA[d] += q*pr;
         T.costA[m] += q*pr*tIn; T.regLA[r] -= q*pr*tIn;
@@ -680,7 +704,7 @@ function flowRun(r0, P, K, E){
         tk('ti',r)[m] += q; tk('tiV',r)[m] += q*pr*tIn; tk('rs',d)[m] += q; tk('rsV',d)[m] += q*pr;
         push(m, d, 'owner2', life+1, q); });
     }
-    if (mm('private')>0){ const q = mm('private'), v = q*vf(m)*P[r].px*pf*P[r].fee; T.secA[m] += v; T.regLA[r] += v; tk('pv',r)[m] += q; tk('pvV',r)[m] += q*vf(m)*P[r].px*pf; push(m, r, 'owner2', life+1, q); }
+    if (mm('private')>0){ const q = mm('private'), v = q*vf(m)*P[r].px*P[r].ppx*pf*P[r].fee; T.secA[m] += v; T.regLA[r] += v; tk('pv',r)[m] += q; tk('pvV',r)[m] += q*vf(m)*P[r].px*P[r].ppx*pf; push(m, r, 'owner2', life+1, q); }
     if (mm('passed')>0) push(m, r, 'owner2', life+1, mm('passed'));
     if (mm('drawer')>0) push(m, r, 'drawer', life, mm('drawer'));
     if (mm('recycled')>0){ const q = mm('recycled'); T.recC[m] += q*mat; T.costC[m] += q*col; T.regLC[r] += q*(mat-col); T.fate.recycled += q; }
@@ -771,7 +795,7 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
   const P = {};
   RK.forEach(r => { const lf = s.life[r];
     P[r] = { dFirst:Math.max(1,Math.round(num(lf.first,3)*12)), dSecond:Math.max(1,Math.round(num(lf.second,2)*12)), dDrawer:Math.max(1,Math.round(num(lf.drawer,1.5)*12)),
-      px:num(lf.px,1), refurb:num(lf.refurb,0), imp:num(lf.imp,0), fee:num(lf.fee,0)/100, rsell:Math.max(0,Math.min(1,num(lf.rsell,100)/100)), flow:norm(s.flow[r],RK) }; });
+      px:num(lf.px,1), refurb:num(lf.refurb,0), imp:num(lf.imp,0), fee:num(lf.fee,0)/100, rsell:Math.max(0,Math.min(1,num(lf.rsell,100)/100)), ppx:Math.max(0,num(lf.ppx,1)), flow:norm(s.flow[r],RK) }; });
   // later-life routes by launch year (shared across years when not pinned)
   const laterPinned = tableHasPins(s,'r2') || tableHasPins(s,'dx');
   const laterCache = {};
@@ -779,7 +803,11 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
     laterCache[key] = { r2:Object.fromEntries(RK.map(r=>[r,norm(rowAt(s,'r2',r,laterPinned?y:null),RKEYS)])), dx:Object.fromEntries(RK.map(r=>[r,norm(rowAt(s,'dx',r,laterPinned?y:null),['refurb','recycled','lost'])])) }; }
     return laterCache[key]; };
   // everything that moves devices, other than the per-run settings in the signature
-  const gHash = JSON.stringify([TR, K, s.life, s.flow, s.r2, s.dx, Object.entries(s.pins||{}).filter(([k])=>k.startsWith('r2/')||k.startsWith('dx/'))]);
+  const gHash = JSON.stringify([TR, K, s.life, s.flow, s.r2, s.dx, Object.entries(s.pins||{}).filter(([k])=>k.startsWith('r2/')||k.startsWith('dx/')||k.startsWith('life/')||k.startsWith('flow/'))]);
+  // share of trade-ins resold, the resale price index and refurb flows can be set by launch year
+  const lifePinned = tableHasPins(s,'life') || tableHasPins(s,'flow'), lifeCache = {};
+  const pullOn = !!s.brandPull && (tableHasPins(s,'brandPull') || RK.some(d => BKEYS.some(k => num(s.brandPull[d] && s.brandPull[d][k],1)!==1)));
+  const lifeAt = (y) => { if (!lifePinned) return P; if (!lifeCache[y]){ const o = {}; RK.forEach(r => { const lf = rowAt(s,'life',r,y); o[r] = Object.assign({}, P[r], {px:num(lf.px,1), ppx:Math.max(0,num(lf.ppx,1)), rsell:Math.max(0,Math.min(1,num(lf.rsell,100)/100)), flow:norm(rowAt(s,'flow',r,y),RK)}); }); lifeCache[y] = o; } return lifeCache[y]; };
   const cache = RUN_CACHE[slot||'A'] && RUN_CACHE[slot||'A'].h===gHash ? RUN_CACHE[slot||'A'] : {h:gHash, m:new Map()};
   const used = new Map();
 
@@ -790,7 +818,7 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
   const CAL = Object.fromEntries(TRK.map(k=>[k, Object.fromEntries(RK.map(r=>[r,new Float64Array(L)]))]));
   const CALB = Object.fromEntries(BR.map(b=>[b, Object.fromEntries(RK.map(r=>[r,new Float64Array(L)]))]));
   const newU = Object.fromEntries(RK.map(r=>[r,{}])), newV = Object.fromEntries(RK.map(r=>[r,{}]));
-  const cohorts = [];
+  const cohorts = [], nYc = Math.ceil(L/12), COH = {ti:{}, rs:{}, rsV:{}, pv:{}, ap:{}};
   for (let c=0;c<NC;c++){
     const year = Y0 + c;
     const loc = Object.fromEntries(COMP.map(k=>[k,new Float64Array(TR+1)]));
@@ -801,7 +829,7 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
     RK.forEach(r => { const a = new Float64Array(TR+1), b = new Float64Array(TR+1);
       for (let k=0;k<=TR;k++){ const yi = Math.min(yMax, year + Math.floor((k+6)/12)) - yMin; a[k] = AT[r].N[yi]; b[k] = AT[r].S[yi]; }
       rateN[r] = a; rateS[r] = b; });
-    const later = laterAt(year), lSig = laterPinned ? String(year) : 'c';
+    const later = laterAt(year), lSig = (laterPinned || lifePinned) ? String(year) : 'c', PY = lifeAt(year);
     const ck = Object.fromEntries(TRK.map(k=>[k,{}])), ckB = Object.fromEntries(BR.map(b=>[b,{}]));
     const ckAdd = (dst, r, src, w) => { const a = dst[r] || (dst[r] = new Float64Array(TR+1)); for (let k=0;k<=TR;k++) a[k] += w*src[k]; };
     for (const r0 of RK) for (const b of BR) for (const tier of TIERS){
@@ -818,15 +846,17 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
       const im = hasImp ? (lv) => imf(lv, year, r0, b, tier) : () => 1;
       const dep = Math.min(0.99, num(bb.dep, num(tb.dep, num(g.dep,30)))/100*im('dep'));
       const lifeM = Math.max(0.05,num(tb.life,1)*num(bb.life,1)*im('life')), finM = Math.max(0,num(tb.fin,1)*num(bb.fin,1)*im('fin')), arpuM = Math.max(0,num(tb.arpu,1)*num(bb.arpu,1));
-      const trM = Math.max(0,num(tb.tradein,1)*num(bb.tradein,1)*im('tradein'));
+      const trM = Math.max(0,num(tb.tradein,1)*num(bb.tradein,1)*im('tradein')*(b==='ALL' ? 1 : num(rowAt(s,'brandTi',r0,year)[b.toLowerCase()],1)));
       const r1 = tierSplit(norm(rowAt(s,'r1',r0,year),RKEYS), trM);
       const bu0 = rowAt(s,'buy',r0,year);
       const buy = { finShare:Math.min(1, Math.max(0,num(bu0.fin,0))/100*finM), dep:num(bu0.dep,0), apr:num(bu0.apr,0)*im('apr'), term:Math.max(1,Math.round(num(bu0.term,24))), bundShare:Math.max(0,num(bu0.bund,0))/100, subs:num(bu0.subs,0) };
       let refM = null, impM = null, cSig = '';
       if (hasImp){ refM = {}; impM = {}; RK.forEach(r => { refM[r] = imf('refurb', year, r, b, tier); impM[r] = imf('imp', year, r, b, tier); }); cSig = RK.map(r => refM[r].toFixed(8)+':'+impM[r].toFixed(8)).join(','); }
-      const sig = [r0, dep, lifeM, RKEYS.map(k=>r1[k].toFixed(10)).join(','), buy.finShare, buy.dep, buy.apr, buy.term, buy.bundShare, buy.subs, lSig, cSig].join('|');
+      let pull = null, pSig = '';
+      if (b!=='ALL' && pullOn){ pull = {}; RK.forEach(d => pull[d] = Math.max(0, num(rowAt(s,'brandPull',d,year)[b.toLowerCase()],1))); if (RK.every(d => pull[d]===1)) pull = null; else pSig = RK.map(d => pull[d].toFixed(6)).join(','); }
+      const sig = [r0, dep, lifeM, RKEYS.map(k=>r1[k].toFixed(10)).join(','), buy.finShare, buy.dep, buy.apr, buy.term, buy.bundShare, buy.subs, lSig, cSig, pSig].join('|');
       let T = used.get(sig) || cache.m.get(sig);
-      if (!T) T = flowRun(r0, P, K, {dep, lifeM, r1, buy, r2:later.r2, dx:later.dx, refM, impM});
+      if (!T) T = flowRun(r0, PY, K, {dep, lifeM, r1, buy, r2:later.r2, dx:later.dx, refM, impM, pull});
       used.set(sig, T);
       const bpr = (s.g.priceMode==='brand' && b!=='ALL') ? brandPrice(s, r0, b, year) : null;
       const A = (bpr!==null ? bpr : tierPrice(s, r0, tier, year)*bpx)*im('price'), UA = U*A;
@@ -860,6 +890,10 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
     const spread = (a, out) => { for (let i=0;i<=TR;i++){ const v = a[i]; if (!v) continue; const w = v/12; for (let j=0;j<12;j++) out[off+i+j] += w; } };
     TRK.forEach(k => { for (const r in ck[k]) spread(ck[k][r], CAL[k][r]); });
     BR.forEach(b => { for (const r in ckB[b]) spread(ckB[b][r], CALB[b][r]); });
+    // by launch year: how much of each calendar year's trade-ins, resales and private sales came from this year's sales
+    if (slot==='K'){ const byY = (a) => { const o = new Float64Array(nYc); for (let i=0;i<=TR;i++){ const v = a[i]; if (!v) continue; const w = v/12; for (let j=0;j<12;j++){ const yi = ((off+i+j)/12)|0; if (yi<nYc) o[yi] += w; } } return o; };
+      ['ti','rs','rsV','pv'].forEach(k => { for (const r in ck[k]) (COH[k][r] || (COH[k][r] = []))[c] = byY(ck[k][r]); });
+      if (ckB.AP) for (const r in ckB.AP) (COH.ap[r] || (COH.ap[r] = []))[c] = byY(ckB.AP[r]); }
     co.gross = co.device+co.service+co.secondary+co.finance+co.recycling; co.net = co.gross-co.cost; co.curve = curve;
     cohorts.push(co);
   }
@@ -885,7 +919,7 @@ function compute(s, only, onlyTier, onlyBrand, slot, impSel){
   const trk = Object.fromEntries(TRK.map(k=>[k, Object.fromEntries(RK.map(r=>[r, yrSum(CAL[k][r])]))]));
   trk.newU = newU; trk.newV = newV;
   const trkB = Object.fromEntries(BR.map(b=>[b, Object.fromEntries(RK.map(r=>[r, yrSum(CALB[b][r])]))]));
-  return {years, tot, reg, flows, fate, unitsTot, tierNet, tierU, tierGross, brandNet, brandU, brandGross, bt, BR, cohorts, trk, trkB, runs:used.size, avgLife: unitsTot? deviceMonths/unitsTot/12 : 0, avgUse: unitsTot? useMonths/unitsTot/12 : 0, decay, firstNet, Y0, NC, TR, baseY};
+  return {years, tot, reg, flows, fate, unitsTot, tierNet, tierU, tierGross, brandNet, brandU, brandGross, bt, BR, cohorts, trk, trkB, coh: slot==='K' ? COH : null, runs:used.size, avgLife: unitsTot? deviceMonths/unitsTot/12 : 0, avgUse: unitsTot? useMonths/unitsTot/12 : 0, decay, firstNet, Y0, NC, TR, baseY};
 }
 
 /* ---------- input tabs ---------- */
@@ -895,11 +929,11 @@ const TABS = [
   {id:'tier', label:'Price tiers', desc:'Average price for premium, mid-range and budget handsets in each region, and how the tiers behave differently. Multipliers of 1.00 leave the regional inputs unchanged; a blank value decline uses the global rate. When brands are on, the tier mix comes from the Brands tab. When the Brands tab is set to brand prices, these prices are only used where a brand price is blank. A price set by year is used as entered; prices without by-year values follow the regional price trend.'},
   {id:'svc', label:'Airtime & plans', desc:'These follow the calendar year a device is in use, not its launch year. An ARPU set by year is used as entered; one without by-year values follows the ARPU trend. Monthly ARPU by plan type, the yearly ARPU trend, and the plan mix for new and second-hand owners. "None" means the device is in use but not on its own connection (for example Wi-Fi only).'},
   {id:'buy', label:'Buying & finance', desc:'Set for each launch year. How new handsets are paid for. The APR is the blended rate across financed sales, so a market with many 0% APR plans has a low blended rate. Bundled contracts carry an operator handset subsidy.'},
-  {id:'life', label:'Lifetimes & costs', desc:'How long each owner keeps a device, how long devices sit in drawers, resale price levels, refurbishment cost where traded in, logistics & duties into the region, and marketplace fees on private sales.'},
+  {id:'life', label:'Lifetimes & costs', desc:'How long each owner keeps a device, how long devices sit in drawers, resale price levels, the share of trade-ins resold as refurbished (the rest are recycled), refurbishment cost where traded in, logistics & duties into the region, and marketplace fees on private sales. The resale price index and the share resold can be set by launch year; calibrating to PULSE does this.'},
   {id:'r1', label:'Routes after first owner', desc:'Set for each launch year: devices keep the routes of the year they were first sold. What happens to devices when the first owner is finished with them. Each row should total 100%.'},
   {id:'r2', label:'Routes after later owners', desc:'Set for each launch year: devices keep the routes of the year they were first sold. What happens after second and later owners, and what happens when a device comes out of a drawer. Each row should total 100%.'},
   {id:'chan', label:'Channels', desc:'Who handles trade-ins and refurbished sales in each region: operators and handset makers (OEM/carrier), retailers, or others (online refurbishers, marketplaces). Used to split trade-in volumes, trade-in payouts and refurbished sales revenue by channel in the results. Set by calendar year; each group of three should total 100%.'},
-  {id:'flow', label:'Refurb flows', desc:'Where refurbished devices are resold, by the region they were traded in. Each row should total 100%.'},
+  {id:'flow', label:'Refurb flows', desc:'Where refurbished devices are resold, by the region they were traded in. Set for each launch year, like the route tabs. Each row should total 100%.'},
   {id:'imp', label:'Impacts', desc:'Add events such as a geopolitical shock or a component shortage, choose which levers they hit and by how much, when, and for which regions, brands and tiers. Effects are percentage changes to the scenario’s own inputs, scaled by the timing shape. Several impacts on the same lever multiply together. ARPU effects apply to the whole region, whatever brand or tier is chosen.'},
   {id:'g', label:'Global settings', desc:'Settings that apply to every region.'}
 ];
@@ -912,21 +946,28 @@ const blended = (r) => { const y = ySel ?? Math.round(num(S.g.baseYear, S.g.firs
   return v; };
 const sumChip = (t) => { const ok = Math.abs(t-100)<0.05; return `<span class="chip ${ok?'ok':'warn'}">${ok?'100%':(Math.round(t*10)/10)+'%'}</span>`; };
 let ySel = null; // null = the single value used in every year
-const TAB_TABLES = {brand:['brand','brandB','brandPx'], tier:['tiers'], svc:['svc'], buy:['buy'], r1:['r1'], r2:['r2','dx'], chan:['chan']};
+const TAB_TABLES = {brand:['brand','brandB','brandPx','brandTi','brandPull'], tier:['tiers'], svc:['svc'], buy:['buy'], r1:['r1'], r2:['r2','dx'], chan:['chan'], life:['life'], flow:['flow']};
 const fmtIn = (v) => (v===null||v===undefined||isNaN(v)) ? '' : String(Math.round(v*100)/100);
 const pinText = (p) => Object.keys(p).map(Number).sort((a,b)=>a-b).map(y=>`${y}: ${fmtIn(+p[y])}`).join(' · ');
 const effRow = (t, r) => rowAt(S, t, r, ySel);
+// where an input came from: 'pulse' = PULSE upload, 'cal' = adjusted by Calibrate to PULSE; anything else is the user's
+// flags are per input ('table/row/field', or 'volY/row/year'); a by-year value can carry its own flag as 'key@year'
+// ('user' there means the user typed that year's value)
+const srcOf = (key, y) => { if (!S.src) return null; if (y!==null && y!==undefined){ const v = S.src[key+'@'+y]; if (v!==undefined) return v==='user' ? null : v; } return S.src[key] || null; };
+const dropSrc = (key) => { if (!S.src) return; delete S.src[key]; Object.keys(S.src).forEach(k => { if (k.startsWith(key+'@')) delete S.src[k]; }); };
+const SRC_TXT = {est:'Extrapolated beyond the PULSE years (a damped trend from PULSE, or industry shipment history before PULSE starts)', pulse:'From the PULSE upload', cal:'Adjusted to fit PULSE (by Calibrate to PULSE, or years before PULSE starts rescaled to meet it)'};
+const srcTd = (key, y) => { const v = srcOf(key, y); return v ? ` class="src-${v}" title="${SRC_TXT[v]}. Type a value to replace it with your own."` : ''; };
 const cell = (t, r, k, v, step='any', ph='') => {
   const common = `id="${t}-${r}-${k}" data-t="${t}" data-r="${r}" data-k="${k}" step="${step}" aria-label="${esc(RN[r]||BNM[r]||TN[r]||r)} ${esc(k)}"`;
-  if (!PINNABLE.has(t)) return `<td><input type="number" ${common} value="${v===null||v===undefined?'':v}" ${ph!==''?`placeholder="${ph}"`:''}></td>`;
+  if (!canPin(t,k)) return `<td${srcTd(pk(t,r,k))}><input type="number" ${common} value="${v===null||v===undefined?'':v}" ${ph!==''?`placeholder="${ph}"`:''}></td>`;
   const p = pinsOf(S,t,r,k);
   if (ySel===null){
-    if (p) return `<td><input type="number" ${common} class="varies" value="" placeholder="by year" title="Set by year: ${esc(pinText(p))}" readonly></td>`;
-    return `<td><input type="number" ${common} value="${v===null||v===undefined?'':v}" ${ph!==''?`placeholder="${ph}"`:''}></td>`;
+    if (p) return `<td${srcTd(pk(t,r,k))}><input type="number" ${common} class="varies" value="" placeholder="by year" title="Set by year: ${esc(pinText(p))}" readonly></td>`;
+    return `<td${srcTd(pk(t,r,k))}><input type="number" ${common} value="${v===null||v===undefined?'':v}" ${ph!==''?`placeholder="${ph}"`:''}></td>`;
   }
   const pinned = p && p[ySel]!==undefined;
   const eff = p ? interp(p, ySel) : v;
-  return `<td><input type="number" ${common} class="${pinned?'pin':''}" value="${pinned? p[ySel] : ''}" placeholder="${fmtIn(eff)}"></td>`;
+  return `<td${srcTd(pk(t,r,k), ySel)}><input type="number" ${common} class="${pinned?'pin':''}" value="${pinned? p[ySel] : ''}" placeholder="${fmtIn(eff)}"></td>`;
 };
 function pinCount(tabId){ if (tabId==='imp') return (S.impacts||[]).filter(i=>i.on!==false).length; const ts = TAB_TABLES[tabId]; if (!ts || !S.pins) return 0; return Object.keys(S.pins).filter(k => ts.includes(k.split('/')[0]) && Object.keys(S.pins[k]).length).length; }
 function renderYearBar(){
@@ -945,24 +986,34 @@ $('yearSel').addEventListener('change', e => { ySel = e.target.value==='' ? null
 $('clearTabPins').addEventListener('click', e => {
   const b = e.currentTarget;
   if (b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent = 'Click again to clear'; setTimeout(()=>{ b.dataset.armed=''; b.textContent='Clear by-year values on this tab'; }, 3500); return; }
-  const ts = TAB_TABLES[tab]||[]; Object.keys(S.pins).forEach(k => { if (ts.includes(k.split('/')[0])) delete S.pins[k]; });
+  const ts = TAB_TABLES[tab]||[]; Object.keys(S.pins).forEach(k => { if (ts.includes(k.split('/')[0])){ delete S.pins[k]; dropSrc(k); } });
   b.dataset.armed=''; b.textContent='Clear by-year values on this tab'; renderTab(); scheduleCompute();
 });
 $('tabBody').addEventListener('focusin', e => {
-  const el = e.target; if (!el.dataset || !PINNABLE.has(el.dataset.t)) return;
+  const el = e.target; if (!el.dataset || !canPin(el.dataset.t, el.dataset.k)) return;
   const td = el.closest('td'), tr = td.parentNode, idx = [...tr.children].indexOf(td), th = td.closest('table').querySelector('thead tr').children[idx];
   const col = th ? th.childNodes[0].textContent : el.dataset.k, row = tr.children[0].childNodes[0].textContent;
   const p = pinsOf(S, el.dataset.t, el.dataset.r, el.dataset.k);
   $('pinInfo').innerHTML = `<b>${esc(row)} · ${esc(col)}</b>: ${p ? 'set by year — '+esc(pinText(p))+'. Years in between are interpolated; before the first and after the last it holds flat.' : 'same value in every year.'}${ySel===null && !p ? ' Pick a year above to make it change over time.' : ''}${p ? ` <button class="btn small" id="clearCellPins" data-key="${esc(pk(el.dataset.t,el.dataset.r,el.dataset.k))}">Clear by-year values for this cell</button>` : ''}`;
 });
-$('yearBar').addEventListener('click', e => { const b = e.target.closest('#clearCellPins'); if (!b) return; delete S.pins[b.dataset.key]; renderTab(); scheduleCompute(); });
+$('yearBar').addEventListener('click', e => { const b = e.target.closest('#clearCellPins'); if (!b) return; delete S.pins[b.dataset.key]; dropSrc(b.dataset.key); renderTab(); scheduleCompute(); });
 function simpleTable(t, cols, obj, withSum){
   let h = `<thead><tr><th>Region</th>${cols.map(c=>`<th>${c[1]}${c[2]?`<span class="u">${c[2]}</span>`:''}</th>`).join('')}${withSum?'<th>Total</th>':''}</tr></thead><tbody>`;
   RK.forEach(r => { const o = obj[r], e = PINNABLE.has(t) ? effRow(t,r) : o; h += `<tr><td>${esc(RN[r])}</td>${cols.map(c=>cell(t,r,c[0],o[c[0]])).join('')}${withSum?`<td id="sum-${t}-${r}">${sumChip(cols.reduce((a,c)=>a+num(e[c[0]],0),0))}</td>`:''}</tr>`; });
   return h + '</tbody>';
 }
+// which tab each flagged input sits on
+const SRC_TAB = {vol:'vol', volY:'vol', brand:'brand', brandB:'brand', brandPx:'brand', brandTi:'brand', brandPull:'brand', tiers:'tier', tierB:'tier', svc:'svc', buy:'buy', life:'life', r1:'r1', r2:'r2', dx:'r2', chan:'chan', flow:'flow'};
+function srcCounts(){ const o = {pulse:0, cal:0, est:0, tab:{}}; Object.entries(S.src||{}).forEach(([k, v]) => { if (v!=='pulse' && v!=='cal' && v!=='est') return; o[v]++; const tb = SRC_TAB[k.split('/')[0]]; if (tb) (o.tab[tb] || (o.tab[tb] = {}))[v] = true; }); return o; }
+function renderSrcKey(sc){ const el = $('srcKey'); if (!sc.pulse && !sc.cal && !sc.est){ el.hidden = true; return; } el.hidden = false;
+  el.innerHTML = `<b>Where inputs came from</b>${sc.pulse?`<span><span class="key-src-pulse"></span> From the PULSE upload (${sc.pulse})</span>`:''}${sc.cal?`<span><span class="key-src-cal"></span> Adjusted to fit PULSE (${sc.cal})</span>`:''}${sc.est?`<span><span class="key-src-est"></span> Extrapolated beyond PULSE (${sc.est})</span>`:''}<span>Unshaded: your inputs or the defaults. Typing in a shaded cell makes it yours. Tabs with a dot contain shaded inputs; pick a year above to see which years of a by-year input are PULSE and which are extrapolated.</span><button class="btn small" id="srcClear">Remove shading</button>`; }
+$('srcKey').addEventListener('click', e => { const b = e.target.closest('#srcClear'); if (!b) return;
+  if (b.dataset.armed!=='1'){ b.dataset.armed = '1'; b.textContent = 'Click again: values stay, only the shading goes'; setTimeout(()=>{ b.dataset.armed=''; b.textContent='Remove shading'; }, 3500); return; }
+  S.src = {}; renderTab(); lsSet(LS_CUR, {s:S, docId:cur.docId, authorId:cur.authorId}); });
 function renderTab(){
-  $('tabs').innerHTML = TABS.map(t => { const n = pinCount(t.id); return `<button role="tab" id="tab-${t.id}" aria-selected="${t.id===tab}" data-tab="${t.id}">${t.label}${n?`<span class="n" title="${n} input${n>1?'s':''} set by year">${n}</span>`:''}</button>`; }).join('');
+  const sc = srcCounts();
+  $('tabs').innerHTML = TABS.map(t => { const n = pinCount(t.id), f = sc.tab[t.id] || {}; return `<button role="tab" id="tab-${t.id}" aria-selected="${t.id===tab}" data-tab="${t.id}">${t.label}${f.pulse?`<span class="sd" title="Has inputs from the PULSE upload"></span>`:''}${f.cal?`<span class="sd cal" title="Has inputs adjusted to fit PULSE"></span>`:''}${f.est?`<span class="sd est" title="Has inputs extrapolated beyond PULSE"></span>`:''}${n?`<span class="n" title="${n} input${n>1?'s':''} set by year">${n}</span>`:''}</button>`; }).join('');
+  renderSrcKey(sc);
   renderYearBar();
   $('tabDesc').textContent = TABS.find(t=>t.id===tab).desc;
   let h = '';
@@ -972,7 +1023,7 @@ function renderTab(){
     h = `<div class="tbl"><table><thead><tr><th>Region</th><th>Units ${Y0}<span class="u">millions</span></th><th>Growth<span class="u">% a year</span></th>${ys.slice(1).map(y=>`<th>${y}<span class="u">millions</span></th>`).join('')}<th>Price trend<span class="u">% a year</span></th></tr></thead><tbody>`;
     RK.forEach(r => { const v = S.vol[r];
       h += `<tr><td>${esc(RN[r])}</td>${cell('vol',r,'base',v.base,'1')}${cell('vol',r,'growth',v.growth,'0.5')}`;
-      ys.slice(1).forEach(y => { const o = S.volY[r][y]; h += `<td><input type="number" id="vy-${r}-${y}" data-t="volY" data-r="${r}" data-k="${y}" step="1" value="${o===undefined||o===null?'':o}" placeholder="${Math.round(units(Object.assign({},S,{volY:Object.assign({},S.volY,{[r]:{}})}),r,y)*10)/10}" aria-label="${esc(RN[r])} units ${y}"></td>`; });
+      ys.slice(1).forEach(y => { const o = S.volY[r][y]; h += `<td${srcTd('volY/'+r+'/'+y)}><input type="number" id="vy-${r}-${y}" data-t="volY" data-r="${r}" data-k="${y}" step="1" value="${o===undefined||o===null?'':o}" placeholder="${Math.round(units(Object.assign({},S,{volY:Object.assign({},S.volY,{[r]:{}})}),r,y)*10)/10}" aria-label="${esc(RN[r])} units ${y}"></td>`; });
       h += `${cell('vol',r,'aspTr',v.aspTr,'0.5')}</tr>`; });
     h += `<tr class="tot"><td>Total</td>${ys.map((y,i)=>`<td id="vt-${y}">${fmtU(RK.reduce((a,r)=>a+units(S,r,y),0))}</td>${i===0?'<td></td>':''}`).join('')}<td></td></tr></tbody></table></div>`;
   }
@@ -995,6 +1046,14 @@ function renderTab(){
     h += `<h2 style="margin-top:16px;font-size:14px">How each brand behaves</h2><div class="tbl" ${on?'':'style="opacity:.55"'}><table><thead><tr><th>Brand</th>${cc.map(c=>`<th>${c[1]}<span class="u">${c[2]}</span></th>`).join('')}<th>Tier split</th></tr></thead><tbody>`;
     BRANDS.forEach(b => { const o = S.brandB[b], e = effRow('brandB',b); h += `<tr><td>${BNM[b]}<span class="foot" style="display:block">${BSUB[b]}</span></td>${cc.map(c=>cell('brandB',b,c[0],o[c[0]],['tp','tm','tb','dep'].includes(c[0])?'1':'0.05')).join('')}<td id="sum-brandB-${b}">${sumChip(num(e.tp,0)+num(e.tm,0)+num(e.tb,0))}</td></tr>`; });
     h += `</tbody></table></div>`;
+    h += `<h2 style="margin-top:16px;font-size:14px">Trade-in after first owner, by region</h2><p class="foot" style="margin:0 0 6px">Multiplies each brand’s trade-in rate in each region, on top of the brand multiplier above. 1.00 leaves it unchanged. Calibrate to PULSE sets these so each brand’s share of refurbished sales matches PULSE.</p>
+      <div class="tbl" ${on?'':'style="opacity:.55"'}><table><thead><tr><th>Region</th>${BRANDS.map(b=>`<th>${BNM[b]}<span class="u">× brand multiplier</span></th>`).join('')}</tr></thead><tbody>`;
+    RK.forEach(r => { const o = S.brandTi[r] || {}; h += `<tr><td>${esc(RN[r])}</td>${BRANDS.map(b=>cell('brandTi',r,b.toLowerCase(),o[b.toLowerCase()],'0.05')).join('')}</tr>`; });
+    h += `</tbody></table></div>`;
+    h += `<h2 style="margin-top:16px;font-size:14px">Refurbished imports, by brand</h2><p class="foot" style="margin:0 0 6px">Tilts the Refurb flows into each region towards a brand: 2.00 means that brand’s refurbished devices are twice as likely to be shipped here as the flows split says, before each row is rescaled to 100%. Only matters for regions that import. Calibrate to PULSE sets these with the multipliers above.</p>
+      <div class="tbl" ${on?'':'style="opacity:.55"'}><table><thead><tr><th>Resold in</th>${BRANDS.map(b=>`<th>${BNM[b]}<span class="u">× flow share</span></th>`).join('')}</tr></thead><tbody>`;
+    RK.forEach(r => { const o = S.brandPull[r] || {}; h += `<tr><td>${esc(RN[r])}</td>${BRANDS.map(b=>cell('brandPull',r,b.toLowerCase(),o[b.toLowerCase()],'0.05')).join('')}</tr>`; });
+    h += `</tbody></table></div>`;
   }
   if (tab==='tier'){
     const on = !!S.g.useBrands;
@@ -1013,7 +1072,7 @@ function renderTab(){
     RK.forEach(r => { const o = S.svc[r], e = effRow('svc',r); x += `<tr><td>${esc(RN[r])}</td>${cols.map(c=>cell('svc',r,c[0],o[c[0]])).join('')}<td id="sum-svcn-${r}">${sumChip(['nc','ns','np','nn'].reduce((a,k)=>a+num(e[k],0),0))}</td><td id="sum-svcs-${r}">${sumChip(['sc','ss','sp','sn'].reduce((a,k)=>a+num(e[k],0),0))}</td></tr>`; });
     return x + '</tbody>'; })()}</table></div>`;
   if (tab==='buy') h = `<div class="tbl"><table>${simpleTable('buy',[['fin','On device finance','% of sales'],['apr','Blended APR','%'],['term','Finance term','months'],['dep','Deposit','%'],['bund','Bundled contract','% of sales'],['subs','Operator subsidy','% of price']],S.buy,false)}</table></div>`;
-  if (tab==='life') h = `<div class="tbl"><table>${simpleTable('life',[['first','First owner keeps','years'],['second','Later owners keep','years'],['drawer','Time in drawer','years'],['px','Resale price index','1.00 = full'],['rsell','Trade-ins resold as refurbished','% · rest recycled'],['refurb','Refurb cost',inSym()+' per unit'],['imp','Logistics & duties in',inSym()+' per unit'],['fee','Marketplace fee','% of private sale']],S.life,false)}</table></div>`;
+  if (tab==='life') h = `<div class="tbl"><table>${simpleTable('life',[['first','First owner keeps','years'],['second','Later owners keep','years'],['drawer','Time in drawer','years'],['px','Resale price index','1.00 = full'],['ppx','Informal price index','× private-sale price'],['rsell','Trade-ins resold as refurbished','% · rest recycled'],['refurb','Refurb cost',inSym()+' per unit'],['imp','Logistics & duties in',inSym()+' per unit'],['fee','Marketplace fee','% of private sale']],S.life,false)}</table></div>`;
   const RC = [['refurb','Traded in & refurbished','%'],['private','Sold privately','%'],['passed','Passed on','%'],['drawer','Put in a drawer','%'],['recycled','Formally recycled','%'],['lost','Lost, broken or landfill','%']];
   if (tab==='r1') h = `<div class="tbl"><table>${simpleTable('r1',RC,S.r1,true)}</table></div>`;
   if (tab==='r2') h = `<div class="tbl"><table>${simpleTable('r2',RC,S.r2,true)}</table></div><h2 style="margin-top:16px;font-size:14px">When a device comes out of a drawer</h2><div class="tbl"><table>${simpleTable('dx',[['refurb','Traded in & refurbished','%'],['recycled','Formally recycled','%'],['lost','Thrown away or lost','%']],S.dx,true)}</table></div>`;
@@ -1025,7 +1084,7 @@ function renderTab(){
   }
   if (tab==='flow'){
     h = `<div class="tbl"><table><thead><tr><th>Traded in ↓ · Resold in →</th>${RK.map(d=>`<th>${esc(RN[d])}<span class="u">%</span></th>`).join('')}<th>Total</th></tr></thead><tbody>`;
-    RK.forEach(o => { h += `<tr><td>${esc(RN[o])}</td>${RK.map(d=>cell('flow',o,d,S.flow[o][d],'1')).join('')}<td id="sum-flow-${o}">${sumChip(RK.reduce((a,d)=>a+num(S.flow[o][d],0),0))}</td></tr>`; });
+    RK.forEach(o => { h += `<tr><td>${esc(RN[o])}</td>${RK.map(d=>cell('flow',o,d,S.flow[o][d],'1')).join('')}<td id="sum-flow-${o}">${sumChip(RK.reduce((a,d)=>a+num(effRow('flow',o)[d],0),0))}</td></tr>`; });
     h += '</tbody></table></div>';
   }
   if (tab==='imp') h = renderImpactsTab();
@@ -1121,10 +1180,11 @@ $('tabBody').addEventListener('input', e => {
   }
   if (t==='fx'){ S.g.fx = S.g.fx || {}; S.g.fx[k] = el.value==='' ? null : +el.value; cmpCache.key = null; scheduleCompute(); return; }
   const v = el.value==='' ? null : +el.value;
+  { const sk = t==='volY' ? 'volY/'+r+'/'+k : pk(t,r,k), yv = (t!=='volY' && canPin(t,k) && ySel!==null) ? ySel : null; if (srcOf(sk, yv)){ if (yv!==null) S.src[sk+'@'+yv] = 'user'; else dropSrc(sk); const td = el.closest('td'); if (td){ td.className = ''; td.removeAttribute('title'); } const sc = srcCounts(); renderSrcKey(sc); const tb = $('tab-'+tab); if (tb && !(sc.tab[tab]||{}).pulse) tb.querySelectorAll('.sd:not(.cal):not(.est)').forEach(x=>x.remove()); if (tb && !(sc.tab[tab]||{}).cal) tb.querySelectorAll('.sd.cal').forEach(x=>x.remove()); if (tb && !(sc.tab[tab]||{}).est) tb.querySelectorAll('.sd.est').forEach(x=>x.remove()); } }
   if (t==='g') S.g[k] = v;
   else if (t==='volY'){ if (v===null) delete S.volY[r][k]; else S.volY[r][k] = v; }
-  else if (t==='flow') S.flow[r][k] = v;
-  else if (PINNABLE.has(t) && ySel!==null){
+  else if (t==='flow' && ySel===null) S.flow[r][k] = v;
+  else if (canPin(t,k) && ySel!==null){
     const key = pk(t,r,k), Y0 = Math.round(num(S.g.firstYear,2026));
     if (v===null){ if (S.pins[key]){ delete S.pins[key][ySel]; if (!Object.keys(S.pins[key]).length) delete S.pins[key]; } el.classList.remove('pin'); el.placeholder = fmtIn(S.pins[key] ? interp(S.pins[key], ySel) : S[t][r][k]); }
     else {
@@ -1145,7 +1205,7 @@ $('tabBody').addEventListener('input', e => {
   if (t==='chan'){ const e = effRow('chan',r); $('sum-chant-'+r).innerHTML = sumChip(sumOf(e,['to','tr','tt'])); $('sum-chanr-'+r).innerHTML = sumChip(sumOf(e,['ro','rr','rt'])); }
   if (t==='brandPx' && $('bpb-'+r)) $('bpb-'+r).textContent = fmtD(blended(r));
   if (t==='dx') $('sum-dx-'+r).innerHTML = sumChip(sumOf(effRow('dx',r),['refurb','recycled','lost']));
-  if (t==='flow') $('sum-flow-'+r).innerHTML = sumChip(sumOf(S.flow[r],RK));
+  if (t==='flow') $('sum-flow-'+r).innerHTML = sumChip(sumOf(effRow('flow',r),RK));
   if (t==='svc'){ const e = effRow('svc',r); $('sum-svcn-'+r).innerHTML = sumChip(sumOf(e,['nc','ns','np','nn'])); $('sum-svcs-'+r).innerHTML = sumChip(sumOf(e,['sc','ss','sp','sn'])); }
   if (t==='vol' || t==='volY'){
     const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5)));
@@ -1591,13 +1651,13 @@ const XL = (() => {
   }
   const x = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
   const col = (n) => { let s = ''; n++; while (n > 0){ const m = (n-1) % 26; s = String.fromCharCode(65+m) + s; n = Math.floor((n-1)/26); } return s; };
-  // styles: 0 normal · 1 header · 2 number 0.0 · 3 number 0 · 4 date · 5 title · 6 bold · 7 bold number 0.0 · 8 bold number 0 · 9 wrap text · 10 group header
+  // styles: 0 normal · 1 header · 2 number 0.0 · 3 number 0 · 4 date · 5 title · 6 bold · 7 bold number 0.0 · 8 bold number 0 · 9 wrap text · 10 group header · 11 PULSE (blue) · 12 fitted to PULSE (amber) · 13 extrapolated (purple)
   const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="3"><numFmt numFmtId="164" formatCode="#,##0.0"/><numFmt numFmtId="165" formatCode="#,##0"/><numFmt numFmtId="166" formatCode="dd-mmm-yyyy"/></numFmts>
 <fonts count="4"><font><sz val="10"/><name val="Arial"/></font><font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Arial"/></font><font><b/><sz val="14"/><color rgb="FF1A3C34"/><name val="Arial"/></font><font><b/><sz val="10"/><name val="Arial"/></font></fonts>
-<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1A3C34"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEFF2F1"/></patternFill></fill></fills>
+<fills count="7"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1A3C34"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEFF2F1"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDCE9FB"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFEFC7"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEDE5FA"/></patternFill></fill></fills>
 <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="11"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment wrapText="1" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"></xf><xf numFmtId="164" fontId="3" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"></xf><xf numFmtId="165" fontId="3" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+<cellXfs count="14"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment wrapText="1" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"></xf><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"></xf><xf numFmtId="164" fontId="3" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"></xf><xf numFmtId="165" fontId="3" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"></xf><xf numFmtId="0" fontId="0" fillId="5" borderId="0" xfId="0" applyFill="1"></xf><xf numFmtId="0" fontId="0" fillId="6" borderId="0" xfId="0" applyFill="1"></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
   const serial = (d) => (d.getTime() - Date.UTC(1899,11,30))/864e5;
   function sheetXml(sh){
@@ -1643,6 +1703,8 @@ const IO_SHEETS = () => {
     {sheet:'Brands', note:'Brand split of each region’s sales, and how each brand behaves. Use “Split sales by brand” and “Handset prices from” on the Global settings sheet to switch brands and brand prices on or off. A blank brand price uses the tier prices.', tables:[
       {t:'brand', title:'Brand mix by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:BRANDS.map(b=>[b.toLowerCase(), `${BNM[b]} (% of units)`])},
       {t:'brandPx', title:`Brand prices by region (${cur})`, rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:BRANDS.map(b=>[b.toLowerCase(), `${BNM[b]} price (${cur})`])},
+      {t:'brandTi', title:'Trade-in after first owner by region (× brand multiplier)', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:BRANDS.map(b=>[b.toLowerCase(), `${BNM[b]} (×)`])},
+      {t:'brandPull', title:'Refurbished imports by brand (× flow share into the region)', rowHead:'Resold in', rows:RK, rn:(r)=>RN[r], cols:BRANDS.map(b=>[b.toLowerCase(), `${BNM[b]} (×)`])},
       {t:'brandB', title:'How each brand behaves', rowHead:'Brand', rows:BRANDS, rn:(b)=>BNM[b], cols:[['tp','Premium (% of brand)'],['tm','Mid-range (% of brand)'],['tb','Budget (% of brand)'],['px','Price index (× regional tier price)'],['dep','Resale value decline (% a year, blank = tier)'],['life','First owner keeps (× tier)'],['tradein','Trade-in after first owner (× tier)'],['fin','Bought on finance (× tier)'],['arpu','First-owner ARPU (× tier)']]}]},
     {sheet:'Price tiers', note:`Tier mix (used when brands are off) and average price per tier in ${cur}, plus how each tier behaves.`, tables:[
       {t:'tiers', title:'Tier mix and prices by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['sp','Premium (% of units)'],['sm','Mid-range (% of units)'],['sb','Budget (% of units)'],['ap',`Premium price (${cur})`],['am',`Mid-range price (${cur})`],['ab',`Budget price (${cur})`]]},
@@ -1652,7 +1714,7 @@ const IO_SHEETS = () => {
     {sheet:'Buying & finance', note:'Set for each launch year.', tables:[
       {t:'buy', title:'How new handsets are paid for', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['fin','On device finance (% of sales)'],['apr','Blended APR (%)'],['term','Finance term (months)'],['dep','Deposit (%)'],['bund','Bundled contract (% of sales)'],['subs','Operator subsidy (% of price)']]}]},
     {sheet:'Lifetimes & costs', note:`Money values in ${cur}.`, tables:[
-      {t:'life', title:'Lifetimes, resale and costs by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['first','First owner keeps (years)'],['second','Later owners keep (years)'],['drawer','Time in drawer (years)'],['px','Resale price index (1.00 = full)'],['refurb',`Refurb cost (${cs} per unit)`],['imp',`Logistics & duties in (${cs} per unit)`],['rsell','Trade-ins resold as refurbished (%, rest recycled)'],['fee','Marketplace fee (% of private sale)']]}]},
+      {t:'life', title:'Lifetimes, resale and costs by region', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:[['first','First owner keeps (years)'],['second','Later owners keep (years)'],['drawer','Time in drawer (years)'],['px','Resale price index (1.00 = full)'],['ppx','Informal price index (× private-sale price)'],['refurb',`Refurb cost (${cs} per unit)`],['imp',`Logistics & duties in (${cs} per unit)`],['rsell','Trade-ins resold as refurbished (%, rest recycled)'],['fee','Marketplace fee (% of private sale)']]}]},
     {sheet:'Routes after first owner', note:'Each row should total 100%.', tables:[
       {t:'r1', title:'What happens after the first owner', rowHead:'Region', rows:RK, rn:(r)=>RN[r], cols:IO_RC.map(c=>[c[0], c[1]+' %'])}]},
     {sheet:'Routes after later owners', note:'Each row should total 100%.', tables:[
@@ -1670,10 +1732,13 @@ const ioYears = () => { const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Mat
 function inputsWorkbook(){
   const H = (t) => ({v:t, s:1}), T = (t) => ({v:t, s:6}), TT = (t) => ({v:t, s:5}), W = (t) => ({v:t, s:9}), sheets = [], Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5))), ys = ioYears();
   const val = (v) => v===null || v===undefined || v==='' ? '' : +v;
+  // shade inputs that came from PULSE (blue) or were fitted to it (amber), as on the site
+  const sv = (key, v, y) => { const f = srcOf(key, y); return f && v!=='' ? {v, s: f==='pulse' ? 11 : f==='cal' ? 12 : 13} : v; };
   sheets.push({name:'Read me', cols:[26,100], rows:[[TT('Global Handset Value Model — inputs workbook')], [],
     [T('How to use'), W('Each input tab on the site has its own sheet. Change any white cell, keep the sheet names, titles and codes in [square brackets] as they are, then use “Load inputs from Excel” on the site. Every input is replaced by what is in this workbook.')],
     [T('Values by year'), W('Tabs whose inputs can change over time have a “Values by launch year” block (Airtime & plans: by calendar year). Leave a row blank to use the single value above in every year. Fill in any years to make it change: years in between are interpolated in a straight line, and the value holds flat before the first and after the last year set.')],
     [T('Money'), W(`Prices, ARPU and costs are in the scenario currency, ${inCode()}. Change the currency on the Global settings sheet only if the numbers are already in the new currency.`)],
+    [T('Shading'), W('Blue cells came from the FDM PULSE upload; amber cells were adjusted to fit PULSE by Calibrate to PULSE; purple cells were extrapolated beyond the PULSE years. The Input sources sheet records this; a shaded value you change here loads back as your own input.')],
     [T('Percent splits'), W('Splits that don’t total 100% are scaled to 100% by the model, as on the site.')], [],
     [H('Scenario'), H('')], [T('Name [name]'), S.name||''], [T('Notes [notes]'), S.notes||'']]});
   IO_SHEETS().forEach(sh => {
@@ -1682,12 +1747,12 @@ function inputsWorkbook(){
       const extra = tb.years ? Array.from({length:NC-1},(_,i)=>Y0+1+i) : [];
       rows.push([T(`${tb.title} [${tb.t}]`)]);
       rows.push([H(tb.rowHead), H('Code'), ...tb.cols.map(c=>H(`${c[1]} [${c[0]}]`)), ...extra.map(y=>H(`Units ${y} (millions) [${y}]`))]);
-      tb.rows.forEach(r => { const o = tb.t==='flow' ? S.flow[r] : S[tb.t][r]; rows.push([tb.rn(r), r, ...tb.cols.map(c=>val(o[c[0]])), ...extra.map(y => val((S.volY[r]||{})[y]))]); });
+      tb.rows.forEach(r => { const o = tb.t==='flow' ? S.flow[r] : S[tb.t][r]; rows.push([tb.rn(r), r, ...tb.cols.map(c=>sv(pk(tb.t,r,c[0]), val(o[c[0]]))), ...extra.map(y => sv('volY/'+r+'/'+y, val((S.volY[r]||{})[y])))]); });
       rows.push([]);
       if (PINNABLE.has(tb.t)){
         rows.push([T(`${tb.title}: values by ${tb.t==='svc'?'calendar':'launch'} year [pins:${tb.t}]`)]);
         rows.push([H(tb.rowHead), H('Code'), H('Input'), H('Field'), ...ys.map(y=>H(String(y)))]);
-        tb.rows.forEach(r => tb.cols.forEach(c => { const p = pinsOf(S, tb.t, r, c[0]) || {}; rows.push([tb.rn(r), r, c[1], c[0], ...ys.map(y => val(p[y]))]); }));
+        tb.rows.forEach(r => tb.cols.filter(c => canPin(tb.t, c[0])).forEach(c => { const p = pinsOf(S, tb.t, r, c[0]) || {}; rows.push([tb.rn(r), r, c[1], c[0], ...ys.map(y => sv(pk(tb.t,r,c[0]), val(p[y]), y))]); }));
         rows.push([]);
       }
     });
@@ -1709,14 +1774,25 @@ function inputsWorkbook(){
   g.push([T('Exchange rates [fx]')], [H('Currency'), H('Code'), H('Units per 1 USD')]);
   Object.keys(CURS).filter(c=>c!=='USD').forEach(c => g.push([`${c} · ${CURS[c].n}`, c, fxOf(S,c)]));
   sheets.push({name:'Global settings', rows:g, cols:[46,12,14], num:0});
+  // where shaded inputs came from, with the value at export so an edited value loads back as the user's own
+  const src = [[TT('Input sources')], [W('Which inputs came from PULSE or were fitted to it. Leave this sheet as it is; delete it to load every value as your own input.')], [], [T('Sources [src]')], [H('Input'), H('Key'), H('Source'), H('Value when exported')]];
+  Object.entries(S.src||{}).filter(([,v]) => ['pulse','cal','est','user'].includes(v)).sort().forEach(([k, v]) => src.push([k.split('/').slice(0,2).join(' · '), k, v, srcFp(k)]));
+  sheets.push({name:'Input sources', rows:src, cols:[22,26,10,60], num:0});
   return XL.build(sheets);
+}
+// a value's fingerprint (single value, or every by-year value) to tell whether a flagged input has since been changed
+function srcFp(key){ const [base, yy] = key.split('@'), [t, r, k] = base.split('/'); const f = (v) => v===null || v===undefined || v==='' ? '' : String(Math.round(+v*1e6)/1e6);
+  if (t==='volY') return f((S.volY[r]||{})[k]);
+  const p = pinsOf(S, t, r, k); if (p && yy) return f(p[yy]); if (p) return Object.keys(p).map(Number).sort((a,b)=>a-b).map(y => y+':'+f(p[y])).join(';');
+  const o = t==='flow' ? S.flow[r] : (S[t]||{})[r]; return o ? f(o[k]) : '';
 }
 const cellStr = (v) => v===null || v===undefined ? '' : String(v).trim();
 const cellNum = (v) => { if (v===null || v===undefined || v==='') return null; if (typeof v==='number') return isFinite(v) ? v : null; const t = String(v).replace(/[\s,£$€%]/g,''); if (t==='') return null; const n = Number(t); return isNaN(n) ? null : n; };
 const codeOf = (v) => { const m = cellStr(v).match(/\[([^\]]+)\]\s*$/); return m ? m[1] : null; };
 const listOf = (v, ok) => cellStr(v).split(/[,;]/).map(x=>x.trim()).filter(Boolean).map(x => ok.find(k => k.toLowerCase()===x.toLowerCase()) || Object.keys(ok.names||{}).find(k => ok.names[k].toLowerCase()===x.toLowerCase())).filter(Boolean);
 function applyInputs(book){
-  const known = new Set(['vol','brand','brandPx','brandB','tiers','tierB','svc','buy','life','r1','r2','dx','chan','flow']), NULLABLE = {brandB:['dep'], tierB:['dep'], brandPx:BKEYS};
+  const before = Object.fromEntries(Object.keys(S.src||{}).map(k => [k, srcFp(k)])), srcRows = [];
+  const known = new Set(['vol','brand','brandPx','brandTi','brandPull','brandB','tiers','tierB','svc','buy','life','r1','r2','dx','chan','flow']), NULLABLE = {brandB:['dep'], tierB:['dep'], brandPx:BKEYS};
   const found = new Set(), skipped = [];
   const rm = book['Read me']; if (rm) rm.forEach(r => { if (!r) return; const c = codeOf(r[0]); if (c==='name' && cellStr(r[1])) S.name = cellStr(r[1]); if (c==='notes') S.notes = cellStr(r[1]); });
   const imps = new Map();
@@ -1738,7 +1814,7 @@ function applyInputs(book){
           if (v===null){ if ((NULLABLE[t]||[]).includes(f)) tgt[code][f] = null; return; }
           tgt[code][f] = v; });
       } else if (block.startsWith('pins:')){
-        const t = block.slice(5), f = cellStr(r[3]); if (!PINNABLE.has(t) || !S[t] || !S[t][code] || !f) continue;
+        const t = block.slice(5), f = cellStr(r[3]); if (!canPin(t, f) || !S[t] || !S[t][code] || !f) continue;
         if (!found.has('pins:'+t)){ found.add('pins:'+t); Object.keys(S.pins||{}).forEach(k => { if (k.startsWith(t+'/')) delete S.pins[k]; }); }
         const p = {}; head.forEach((y, ci) => { if (ci < 4 || !/^\d{4}$/.test(String(y))) return; const v = cellNum(r[ci]); if (v!==null) p[y] = v; });
         if (Object.keys(p).length){ S.pins = S.pins || {}; S.pins[pk(t, code, f)] = p; }
@@ -1749,6 +1825,8 @@ function applyInputs(book){
         else if (code==='device'){ const d = Object.keys(DEVICES).find(k => k.toLowerCase()===cellStr(v).toLowerCase()); if (d) S.g.device = d; }
         else if (code==='cur'){ const c = cellStr(v).toUpperCase(); if (CURS[c]) S.g.cur = c; }
         else if (IO_G.some(x => x[0]===code)){ const n = cellNum(v); if (n!==null) S.g[code] = n; }
+      } else if (block==='src'){
+        const key = cellStr(r[1]), v = cellStr(r[2]); if (key && ['pulse','cal','est','user'].includes(v)) srcRows.push([key, v, cellStr(r[3])]);
       } else if (block==='fx'){
         const n = cellNum(r[2]); if (CURS[code] && n!==null && n>0){ S.g.fx = S.g.fx || {}; S.g.fx[code] = n; found.add('fx'); }
       } else if (block==='impacts'){
@@ -1763,6 +1841,9 @@ function applyInputs(book){
     }
   });
   if (found.has('impacts')) S.impacts = [...imps.values()];
+  // keep a PULSE / calibration flag only while the value is still the one that was flagged
+  if (srcRows.length){ S.src = {}; srcRows.forEach(([k, v, fp]) => { if (srcFp(k)===fp) S.src[k] = v; }); found.add('src'); }
+  else if (S.src) Object.keys(S.src).forEach(k => { if (srcFp(k)!==before[k]) delete S.src[k]; });
   return {found:[...found], skipped};
 }
 // minimal .xlsx reader: zip (stored or deflate) -> shared strings + sheet cells
@@ -1929,45 +2010,102 @@ async function xlsxSheetNames(buf){
   return [...xml.matchAll(/<sheet [^>]*name="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g,'&'));
 }
 // Put PULSE data into the scenario: volumes, brand mix and brand prices by year, channel splits, and the targets for the check.
+// Industry shipment history (millions), used only to shape the years before PULSE starts. Smartphones and tablets: IDC
+// annual worldwide shipments (smartphones with IDC's China and India figures, the rest of the world as the remainder).
+// Laptops: IDC traditional PC shipments. Smartwatches: approximate industry trend.
+const SHIP_HIST = {
+  Smartphone:{src:'IDC smartphone shipment history (China and India separately, the rest of the world together)', idx:{
+    CN:{2015:434, 2016:467, 2017:444, 2018:397, 2019:367, 2020:326, 2021:329},
+    IN:{2015:104, 2016:109, 2017:124, 2018:142, 2019:152.5, 2020:149.8, 2021:161},
+    RoW:{2015:895, 2016:897, 2017:897, 2018:866, 2019:851.5, 2020:816.2, 2021:865}}},
+  Tablet:{src:'IDC worldwide tablet shipment history', idx:{RoW:{2015:206.8, 2016:174.8, 2017:163.8, 2018:146.2, 2019:144.0, 2020:164.1, 2021:168.9}}},
+  Laptop:{src:'IDC worldwide PC shipment history', idx:{RoW:{2015:276, 2016:260, 2017:259, 2018:259, 2019:267, 2020:303, 2021:349}}},
+  Smartwatch:{src:'an approximate industry smartwatch shipment trend', idx:{RoW:{2015:21, 2016:21, 2017:33, 2018:45, 2019:68, 2020:88, 2021:120}}}
+};
+// Damped-trend extension of a by-year series: the average yearly change over the last (or, going back, the first) few
+// years, fading by 30% a year, so a trend carries on for a while and then levels off instead of running away.
+// log: trend in growth rates (prices); maxRate caps that yearly rate; lo/hi clamp the result.
+function dampedExtend(by, years, opt={}){
+  const {log=false, damp=0.7, n=3, lo=-Infinity, hi=Infinity, maxRate=Infinity} = opt;
+  const ys = Object.keys(by).map(Number).filter(y => isFinite(+by[y]) && (!log || +by[y]>0)).sort((a,b)=>a-b), out = {};
+  if (!ys.length) return out;
+  const f = log ? (v)=>Math.log(v) : (v)=>+v, g = log ? Math.exp : (v)=>v, cap = log ? Math.log(1+maxRate) : Infinity;
+  const slope = (arr) => arr.length<2 ? 0 : Math.max(-cap, Math.min(cap, (f(by[arr[arr.length-1]]) - f(by[arr[0]]))/(arr[arr.length-1]-arr[0])));
+  const sF = slope(ys.slice(-(n+1))), sB = slope(ys.slice(0, n+1)), y0 = ys[0], y1 = ys[ys.length-1];
+  years.forEach(y => { if (y>y0 && y<y1) return; const k = y>y1 ? y-y1 : y0-y; if (!(k>0)) return; let acc = 0; for (let i=1;i<=k;i++) acc += Math.pow(damp, i);
+    const v = y>y1 ? g(f(by[y1]) + sF*acc) : g(f(by[y0]) - sB*acc); out[y] = Math.max(lo, Math.min(hi, v)); });
+  return out;
+}
 function applyPulse(P){
   const fx = fxOf(S, inCode()), yrs = P.years, notes = [];
   if (!yrs.length) return ['No usable data found for this device.'];
-  S.g.device = P.device;
+  S.g.device = P.device; S.src = {}; // a fresh import replaces every PULSE / calibration flag
   const lastFull = (o, k) => { const ys = Object.keys(o||{}).filter(y => o[y] && o[y][k]).map(Number).sort((a,b)=>a-b); return ys; };
-  let nVol = 0; const Y0 = Math.round(num(S.g.firstYear,2026)), pre = []; for (let y = Y0; y < yrs[0]; y++) pre.push(y);
+  const CY = calYearsOf(), setEst = (key, ys) => ys.forEach(y => srcSet(key+'@'+y, 'est'));
+  // sales volumes: PULSE years as they are; years before PULSE starts are backcast from PULSE's first year using
+  // industry shipment history for the device (China and India separately for smartphones)
+  let nVol = 0; const pre = CY.filter(y => y < yrs[0]), H = SHIP_HIST[P.device];
   const old = Object.fromEntries(RK.map(r => [r, Object.fromEntries(pre.concat([yrs[0]]).map(y => [y, units(S, r, y)]))]));
-  RK.forEach(r => { const o = P.reg[r] || {}; lastFull(o,'newU').forEach(y => { S.volY[r][y] = Math.round(o[y].newU*1000)/1000; nVol++; });
-    // years before PULSE starts keep the shape of the old path, rescaled to meet PULSE's first year
-    const p0 = o[yrs[0]] && o[yrs[0]].newU, o0 = old[r][yrs[0]]; if (pre.length && p0 && o0 > 0) pre.forEach(y => S.volY[r][y] = Math.round(old[r][y]*p0/o0*1000)/1000); });
-  if (pre.length) notes.push(`Sales before ${yrs[0]} are not in PULSE, so ${Y0}–${yrs[0]-1} keep the shape of the previous path, rescaled to meet PULSE in ${yrs[0]}.`);
+  RK.forEach(r => { const o = P.reg[r] || {}; lastFull(o,'newU').forEach(y => { S.volY[r][y] = Math.round(o[y].newU*1000)/1000; srcSet('volY/'+r+'/'+y, 'pulse'); nVol++; });
+    const p0 = o[yrs[0]] && o[yrs[0]].newU, idx = H && (H.idx[r] || H.idx.RoW), o0 = old[r][yrs[0]];
+    if (pre.length && p0) pre.forEach(y => { let v = null;
+      if (idx && idx[y] && idx[yrs[0]]) v = p0*idx[y]/idx[yrs[0]]; else if (o0 > 0) v = old[r][y]*p0/o0;
+      if (v !== null){ S.volY[r][y] = Math.round(v*1000)/1000; srcSet('volY/'+r+'/'+y, 'est'); } }); });
+  if (pre.length) notes.push(H ? `Sales for ${pre[0]}–${pre[pre.length-1]} (before PULSE starts) are backcast from PULSE’s ${yrs[0]} figures using ${H.src}.` : `Sales before ${yrs[0]} keep the shape of the previous path, rescaled to meet PULSE in ${yrs[0]}.`);
   // brand mix and brand prices
   const hasBrand = Object.keys(P.brand||{}).length > 0;
-  const setPins = (t, r, k, byYear) => { const key = pk(t, r, k); if (!Object.keys(byYear).length){ delete S.pins[key]; return; } S.pins[key] = byYear; };
+  const setPins = (t, r, k, byYear) => { const key = pk(t, r, k); if (!Object.keys(byYear).length){ delete S.pins[key]; return; } S.pins[key] = byYear; srcSet(key, 'pulse'); };
+  // shares (brand mix, channel splits) outside the PULSE years follow each share's damped trend, then are scaled to 100%
+  const extShares = (series) => { const ks = Object.keys(series), have = new Set(ks.flatMap(k => Object.keys(series[k]).map(Number))), miss = CY.filter(y => !have.has(y)), ext = {};
+    ks.forEach(k => ext[k] = dampedExtend(series[k], miss, {lo:0, hi:100}));
+    miss.forEach(y => { const t = ks.reduce((a,k)=>a+num(ext[k][y],0),0); if (!(t>0)) return; ks.forEach(k => ext[k][y] = Math.round(num(ext[k][y],0)/t*1000)/10);
+      const drift = Math.round((100 - ks.reduce((a,k)=>a+ext[k][y],0))*10)/10; if (drift){ const big = ks.reduce((a,k)=>ext[k][y]>ext[a][y]?k:a, ks[0]); ext[big][y] = Math.round((ext[big][y]+drift)*10)/10; } });
+    return {ext, miss}; };
   if (hasBrand){
     S.g.useBrands = true; S.g.priceMode = 'brand';
     RK.forEach(r => { const by = {}; BRANDS.forEach(b => { const o = (P.brand[b]||{})[r] || {}; Object.keys(o).forEach(y => { if (o[y].newU!==undefined) (by[y] = by[y] || {})[b] = o[y]; }); });
       const bys = Object.keys(by).map(Number).sort((a,b)=>a-b); if (!bys.length) return;
       const tot = (y) => BRANDS.reduce((a,b)=>a+num(by[y][b] && by[y][b].newU,0),0);
       const tAsp = (y) => { const o = (P.reg[r]||{})[y]; return o && o.newU ? o.newV/o.newU : null; }, yLast = bys[bys.length-1];
-      BRANDS.forEach(b => { const k = b.toLowerCase(), sh = {}, px = {};
-        bys.forEach(y => { const t = tot(y), o = by[y][b]; if (t>0) sh[y] = Math.round(num(o && o.newU,0)/t*1000)/10; if (o && o.newU>0 && o.newV!==undefined) px[y] = Math.round(o.newV/o.newU*fx*100)/100; });
-        // after the last brand year, brand prices move with PULSE's total average price
-        const base = px[yLast], a0 = tAsp(yLast); if (base!==undefined && a0) yrs.filter(y => y>yLast).forEach(y => { const a = tAsp(y); if (a) px[y] = Math.round(base*a/a0*100)/100; });
-        setPins('brand', r, k, sh); setPins('brandPx', r, k, px); S.brand[r][k] = sh[yLast] ?? S.brand[r][k]; S.brandPx[r][k] = px[yLast] ?? null; }); });
+      const SH = {}, PX = {};
+      BRANDS.forEach(b => { const sh = {}, px = {};
+        bys.forEach(y => { const t = tot(y), o = by[y][b]; if (t>0) sh[y] = Math.round(num(o && o.newU,0)/t*1000)/10; if (o && o.newU>0 && o.newV!==undefined) px[y] = Math.round(o.newV/o.newU*fx); });
+        SH[b] = sh; PX[b] = px; });
+      bys.forEach(y => { const ks = BRANDS.filter(b => SH[b][y]!==undefined), d = Math.round((100 - ks.reduce((a,b)=>a+SH[b][y],0))*10)/10; if (d && ks.length && Math.abs(d)<1){ const big = ks.reduce((a,b)=>SH[b][y]>SH[a][y]?b:a, ks[0]); SH[big][y] = Math.round((SH[big][y]+d)*10)/10; } });
+      const {ext, miss} = extShares(SH);
+      BRANDS.forEach(b => { const k = b.toLowerCase(), sh = Object.assign({}, SH[b], ext[b]), px = Object.assign({}, PX[b]), pxEst = [];
+        // after the last brand year, brand prices move with PULSE's total average price; before PULSE starts they follow
+        // the brand's own price trend in PULSE, damped
+        const base = px[yLast], a0 = tAsp(yLast); if (base!==undefined && a0) CY.filter(y => y>yLast).forEach(y => { const a = tAsp(y); if (a){ px[y] = Math.round(base*a/a0); pxEst.push(y); } });
+        const back = dampedExtend(PX[b], CY.filter(y => y < bys[0]), {log:true, maxRate:0.08}); Object.keys(back).forEach(y => { px[y] = Math.round(back[y]); pxEst.push(+y); });
+        setPins('brand', r, k, sh); setEst(pk('brand', r, k), miss); setPins('brandPx', r, k, px); setEst(pk('brandPx', r, k), pxEst);
+        S.brand[r][k] = sh[yLast] ?? S.brand[r][k]; S.brandPx[r][k] = PX[b][yLast] ?? null; }); });
     if (!Object.keys(P.brand.SA||{}).length) notes.push('This device has no Samsung split in PULSE; Samsung is 0% and other makers sit in Others.');
+    const bY = [...new Set(BRANDS.flatMap(b => RK.flatMap(r => Object.keys(((P.brand[b]||{})[r])||{}).map(Number))))].sort((a,b)=>a-b);
+    notes.push(`Brand mix outside PULSE’s brand years (${bY[0]}–${bY[bY.length-1]}) follows each brand’s recent trend in PULSE, fading out over a few years; brand prices after that follow PULSE’s average price and, before it, each brand’s PULSE price trend.`);
   } else {
     S.g.useBrands = false; S.g.priceMode = 'tier';
-    RK.forEach(r => { const o = P.reg[r] || {}, px = {}; lastFull(o,'newU').forEach(y => { if (o[y].newV!==undefined && o[y].newU>0) px[y] = Math.round(o[y].newV/o[y].newU*fx*100)/100; });
-      ['ap','am','ab'].forEach(k => setPins('tiers', r, k, Object.assign({}, px))); });
-    notes.push('PULSE has no brand split for this device, so brands are off and every price tier uses PULSE’s average price.');
+    RK.forEach(r => { const o = P.reg[r] || {}, px = {}; lastFull(o,'newU').forEach(y => { if (o[y].newV!==undefined && o[y].newU>0) px[y] = Math.round(o[y].newV/o[y].newU*fx); });
+      const miss = CY.filter(y => px[y]===undefined), ext = dampedExtend(px, miss, {log:true, maxRate:0.08}); Object.keys(ext).forEach(y => px[y] = Math.round(ext[y]));
+      ['ap','am','ab'].forEach(k => { setPins('tiers', r, k, Object.assign({}, px)); setEst(pk('tiers', r, k), Object.keys(ext).map(Number)); }); });
+    notes.push('PULSE has no brand split for this device, so brands are off and every price tier uses PULSE’s average price (before PULSE starts, PULSE’s price trend, damped).');
   }
-  // channel split of trade-ins and refurbished sales, by calendar year
+  // channel split of trade-ins and refurbished sales; years outside PULSE follow the damped trend of each share
   let nCh = 0;
   RK.forEach(r => { const o = P.reg[r] || {}; const tt = {to:{}, tr:{}, tt:{}}, rr = {ro:{}, rr:{}, rt:{}};
     Object.keys(o).forEach(y => { if (o[y].chT){ tt.to[y] = Math.round(o[y].chT.o*1000)/10; tt.tr[y] = Math.round(o[y].chT.r*1000)/10; tt.tt[y] = Math.round(o[y].chT.t*1000)/10; nCh++; }
       if (o[y].chR){ rr.ro[y] = Math.round(o[y].chR.o*1000)/10; rr.rr[y] = Math.round(o[y].chR.r*1000)/10; rr.rt[y] = Math.round(o[y].chR.t*1000)/10; } });
-    Object.entries(Object.assign({}, tt, rr)).forEach(([k, by]) => { if (Object.keys(by).length){ setPins('chan', r, k, by); const ly = Math.max(...Object.keys(by).map(Number)); S.chan[r][k] = by[ly]; } }); });
+    [tt, rr].forEach(grp => { if (!Object.keys(Object.values(grp)[0]).length) return; const {ext, miss} = extShares(grp);
+      Object.entries(grp).forEach(([k, by]) => { const all = Object.assign({}, by, ext[k]); setPins('chan', r, k, all); setEst(pk('chan', r, k), miss); const ly = Math.max(...Object.keys(by).map(Number)); S.chan[r][k] = by[ly]; }); }); });
+  // PULSE reports trade-ins only for its actual years: estimate the later years from PULSE's refurbished sales forecast
+  // and each region's trade-ins-to-refurbished ratio (its damped trend), so calibration has a target there too
+  let nTe = 0;
+  RK.forEach(r => { const o = P.reg[r] || {}, ratio = {}; yrs.forEach(y => { const q = o[y]; if (q && q.ti>0 && q.orgU>0) ratio[y] = q.ti/q.orgU; });
+    if (Object.keys(ratio).length < 2) return; const miss = yrs.filter(y => o[y] && o[y].ti===undefined && o[y].orgU>0), ext = dampedExtend(ratio, miss, {lo:0.2, hi:5});
+    miss.forEach(y => { if (ext[y]){ o[y].tiE = o[y].orgU*ext[y]; nTe++; } }); });
+  if (nTe) notes.push(`PULSE has no trade-in figures after ${Math.max(...yrs.filter(y => RK.some(r => ((P.reg[r]||{})[y]||{}).ti!==undefined)))}; the check estimates them from PULSE’s refurbished sales forecast and each region’s trade-in-to-refurbished ratio (marked ≈).`);
   S.pulse = P;
+  notes.push('Inputs taken from PULSE are shaded blue on the input tabs, and values extrapolated beyond PULSE purple.');
   return notes.concat([`${P.device}: volumes for ${nVol} region-years, ${hasBrand ? 'brand mix and brand prices, ' : ''}${nCh ? 'channel splits, ' : ''}and PULSE targets for the check (${yrs[0]}–${yrs[yrs.length-1]}).`]);
 }
 $('pulseUp').addEventListener('change', async (e) => { const files = [...(e.target.files||[])], st = $('pulseStatus'); e.target.value = ''; if (!files.length) return;
@@ -1992,15 +2130,16 @@ function pulseCheck(){
   const y = chkYear, sum = (o) => RK.reduce((a,r)=>a+num(o[r],0),0);
   const cols = [['New handsets','newU',r=>num(R.trk.newU[r][y],0)],['Trade-ins','ti',r=>num(R.trk.ti[r][y],0)],['Refurbished sales','orgU',r=>num(R.trk.rs[r][y],0)],['Informal used sales','unoU',r=>num(R.trk.pv[r][y],0)]];
   const gap = (m, p) => { if (!p) return '<td>—</td>'; const d = (m/p-1)*100, cls = Math.abs(d)<=10 ? 'ok' : Math.abs(d)<=25 ? '' : 'warn'; return `<td><span class="chip ${cls}">${d>0?'+':''}${Math.round(d)}%</span></td>`; };
-  const P_ = (r, k) => num(((P.reg[r]||{})[y]||{})[k], null);
-  let h = `<thead><tr><th>Region</th>${cols.map(c=>`<th>${c[0]}<span class="u">model · PULSE · gap</span></th>`).join('')}<th>Refurb price<span class="u">model · PULSE</span></th><th>Informal price<span class="u">model · PULSE</span></th>${S.g.useBrands?'<th>Apple share of refurbished<span class="u">model · PULSE</span></th>':''}</tr></thead><tbody>`;
+  const P_ = (r, k) => { const q = (P.reg[r]||{})[y]||{}; return num(k==='ti' ? (q.ti ?? q.tiE) : q[k], null); }, estTi = (r) => { const q = (P.reg[r]||{})[y]||{}; return q.ti===undefined && q.tiE!==undefined; };
+  let h = `<thead><tr><th>Region</th>${cols.map(c=>`<th>${c[0]}<span class="u">model · PULSE · gap</span></th>`).join('')}<th>Refurb price<span class="u">model · PULSE</span></th><th>Informal price<span class="u">model · PULSE</span></th>${S.g.useBrands?'<th>Apple share of refurbished<span class="u">model · PULSE</span></th><th>Samsung share of refurbished<span class="u">model · PULSE</span></th>':''}</tr></thead><tbody>`;
   const tots = cols.map(()=>[0,0]);
   const rows = RK.map(r => ({r, m:cols.map(c=>c[2](r)), p:cols.map(c=>P_(r,c[1]))}));
   const price = (vU, vV, pU, pV) => `<td>${vU>0?fmtD(vV/vU):'—'} · ${pU>0 && pV!==null ? fmtD(pV/pU*fxU) : '—'}</td>`;
-  const apple = (r) => { const t = num(R.trk.rs[r][y],0), a = R.trkB.AP ? num(R.trkB.AP[r][y],0) : 0, pb = S.pulse.brand && S.pulse.brand.AP && S.pulse.brand.AP[r] && S.pulse.brand.AP[r][y], pt = P_(r,'orgU');
+  const bshare = (r, B) => { const t = num(R.trk.rs[r][y],0), a = R.trkB[B] ? num(R.trkB[B][r][y],0) : 0, pb = S.pulse.brand && S.pulse.brand[B] && S.pulse.brand[B][r] && S.pulse.brand[B][r][y], pt = P_(r,'orgU');
     return `<td>${t>0?pct(a/t*100):'—'} · ${pb && pb.orgU!==undefined && pt ? pct(pb.orgU/pt*100) : '—'}</td>`; };
-  rows.forEach(({r, m, p}) => { h += `<tr><td>${esc(RN[r])}</td>${m.map((v,i)=>{ if (p[i]!==null){ tots[i][0]+=v; tots[i][1]+=p[i]; } return `<td>${fmtU(v)} · ${p[i]===null?'—':fmtU(p[i])}</td>${gap(v,p[i])}`; }).join('')}${price(num(R.trk.rs[r][y],0), num(R.trk.rsV[r][y],0), P_(r,'orgU'), P_(r,'orgV'))}${price(num(R.trk.pv[r][y],0), num(R.trk.pvV[r][y],0), P_(r,'unoU'), P_(r,'unoV'))}${S.g.useBrands?apple(r):''}</tr>`; });
-  h += `<tr class="tot"><td>All regions</td>${tots.map(([m,p])=>`<td>${fmtU(m)} · ${p?fmtU(p):'—'}</td>${gap(m,p)}`).join('')}<td></td><td></td>${S.g.useBrands?'<td></td>':''}</tr></tbody>`;
+  const apple = (r) => bshare(r,'AP') + bshare(r,'SA');
+  rows.forEach(({r, m, p}) => { h += `<tr><td>${esc(RN[r])}</td>${m.map((v,i)=>{ if (p[i]!==null){ tots[i][0]+=v; tots[i][1]+=p[i]; } const e = i===1 && estTi(r); return `<td>${fmtU(v)} · ${p[i]===null?'—':(e?'<span title="Estimate: PULSE has no trade-in figure for this year">≈'+fmtU(p[i])+'</span>':fmtU(p[i]))}</td>${gap(v,p[i])}`; }).join('')}${price(num(R.trk.rs[r][y],0), num(R.trk.rsV[r][y],0), P_(r,'orgU'), P_(r,'orgV'))}${price(num(R.trk.pv[r][y],0), num(R.trk.pvV[r][y],0), P_(r,'unoU'), P_(r,'unoV'))}${S.g.useBrands?apple(r):''}</tr>`; });
+  h += `<tr class="tot"><td>All regions</td>${tots.map(([m,p])=>`<td>${fmtU(m)} · ${p?fmtU(p):'—'}</td>${gap(m,p)}`).join('')}<td></td><td></td>${S.g.useBrands?'<td></td><td></td>':''}</tr></tbody>`;
   // header cells span two columns (value + gap)
   h = h.replace(/<th>(New handsets|Trade-ins|Refurbished sales|Informal used sales)<span/g, '<th colspan="2">$1<span');
   $('chkTbl').innerHTML = h;
@@ -2010,74 +2149,190 @@ let chkCache = {key:null, R:null};
 function checkRun(){ const key = JSON.stringify(S) + '|' + curCode(); if (chkCache.key===key) return chkCache.R;
   const R = scaleResult(compute(S, null, null, null, 'K', 'all'), fxOf(S, curCode())/fxOf(S, inCode())); chkCache = {key, R}; return R; }
 $('chkYear').addEventListener('change', e => { chkYear = +e.target.value; pulseCheck(); });
-// scale a route share towards PULSE, rebalancing the other routes in the same split
-function scaleRoute(t, r, k, f){
-  const fix = (o) => { const keys = Object.keys(o).filter(x => x!==k), old = num(o[k],0), nv = Math.max(0, Math.min(95, old*f)), rest = keys.reduce((a,x)=>a+num(o[x],0),0), tot = old + rest;
-    if (rest>0){ const g = (tot - nv)/rest; keys.forEach(x => o[x] = Math.round(num(o[x],0)*g*10)/10); } o[k] = Math.round(nv*10)/10; };
-  fix(S[t][r]);
-  Object.keys(S.pins).filter(key => key.startsWith(t+'/'+r+'/')).forEach(key => { const kk = key.split('/')[2]; if (kk===k) Object.keys(S.pins[key]).forEach(y => S.pins[key][y] = Math.round(Math.max(0, Math.min(95, S.pins[key][y]*f))*10)/10); });
+// ---- calibration to PULSE, launch year by launch year ----
+// The check compares calendar years, but route shares, the share of trade-ins resold, resale prices and Apple's trade-in
+// multiplier are set by launch year. Each launch year's input is scaled by the PULSE gaps in the calendar years its
+// handsets reach, weighted by how much that launch year contributes to each of them.
+const srcSet = (key, v) => { (S.src || (S.src = {}))[key] = v; };
+const calYearsOf = () => { const Y0 = Math.round(num(S.g.firstYear,2026)), NC = Math.max(1,Math.round(num(S.g.cohorts,5))); return Array.from({length:NC},(_,i)=>Y0+i); };
+const clampR = (x, lo=0.2, hi=5) => Math.max(lo, Math.min(hi, x));
+// PULSE ÷ model by region and calendar year for one volume measure
+function ratiosOf(R, pk, mk){ const P = S.pulse, o = {};
+  RK.forEach(r => { o[r] = {}; P.years.forEach(y => { const q = (P.reg[r]||{})[y]||{}, p = pk==='ti' ? (q.ti ?? q.tiE) : q[pk], m = num(R.trk[mk][r][y],0); if (p>0.005 && m>0) o[r][y] = clampR(p/m); }); }); return o; }
+// one factor per launch year: parts = [{w, arr (by launch year: Float64Array by calendar year), rho {year: ratio}}]
+function cohortF(R, parts){
+  const NC = R.NC, f = new Array(NC).fill(null), wt = new Array(NC).fill(0);
+  for (let c=0;c<NC;c++){ let sw = 0, sr = 0;
+    parts.forEach(({w, arr, rho}) => { const a = arr && arr[c]; if (!a || !(w>0)) return; for (const y in rho){ const v = a[y-R.Y0] || 0; sw += w*v; sr += w*v*rho[y]; } });
+    wt[c] = sw; if (sw>0) f[c] = sr/sw; }
+  const mx = Math.max(0, ...wt); for (let c=0;c<NC;c++) if (wt[c] < mx*0.02) f[c] = null;
+  // launch years that barely reach the PULSE years follow the nearest launch year that does
+  const known = f.map((v,i)=>v===null?null:i).filter(i=>i!==null); if (!known.length) return new Array(NC).fill(1);
+  return f.map((v,i) => v!==null ? v : f[known.reduce((a,k)=>Math.abs(k-i)<Math.abs(a-i) || (Math.abs(k-i)===Math.abs(a-i) && k<a) ? k : a, known[0])]);
 }
-function calibrate(kind){
-  const P = S.pulse, R = checkRun(), out = [];
-  const sumY = (fn) => P.years.reduce((a,y)=>a+fn(y),0);
-  if (kind==='rs' || kind==='px'){
-    RK.forEach(r => { const pr = (y) => ((P.reg[r]||{})[y]||{});
-      // refurbished sales are counted where they are sold, so a region's resale share is moved by the gaps in every
-      // region its refurbished handsets are shipped to (weighted by the Refurb flows split)
-      if (kind==='rs'){ let wt = 0, wr = 0; const fl = S.flow[r] || {}, ft = RK.reduce((a,d)=>a+num(fl[d],0),0) || 1;
-        RK.forEach(d => { const w = num(fl[d],0)/ft; if (!(w>0)) return; const pd = P.years.reduce((a,y)=>a+num(((P.reg[d]||{})[y]||{}).orgU,0),0), md = P.years.reduce((a,y)=>a+num(R.trk.rs[d][y],0),0); if (!(pd>0 && md>0)) return; wt += w; wr += w*pd/md; });
-        if (!(wt>0)) return; const f = wr/wt; if (Math.abs(f-1)<0.02) return;
-        const o = S.life[r]; o.rsell = Math.round(Math.max(1, Math.min(100, num(o.rsell,100)*f))*10)/10; out.push(`${RN[r]} ${o.rsell}%`); }
-      else { const fxU = fxOf(S, curCode()); const pU = sumY(y => pr(y).orgV!==undefined ? num(pr(y).orgU,0) : 0), pV = sumY(y => num(pr(y).orgV,0)), mU = sumY(y => num(R.trk.rs[r][y],0)), mV = sumY(y => num(R.trk.rsV[r][y],0));
-        if (!(pU>0 && mU>0 && mV>0)) return; const f = (pV/pU*fxU)/(mV/mU); if (Math.abs(f-1)<0.02) return; const o = S.life[r]; o.px = Math.round(Math.max(0.1, Math.min(3, num(o.px,1)*f))*100)/100; out.push(`${RN[r]} ${o.px}`); } });
+// set a table row for every launch year (fn returns the fields to change for that year) and flag them as calibrated
+function pinAll(t, r, fn){ const ys = calYearsOf(), set = new Set(); S.pins = S.pins || {};
+  // read every year's current row before writing any year, so a new value doesn't leak into the years after it
+  const rows = ys.map(y => Object.assign({}, rowAt(S,t,r,y)));
+  ys.forEach((y, i) => { const nv = fn(rows[i], i, y) || {};
+    Object.keys(nv).forEach(k => { const key = pk(t,r,k); (S.pins[key] || (S.pins[key] = {}))[y] = Math.round(nv[k]*100)/100; set.add(key); }); });
+  set.forEach(key => { dropSrc(key); srcSet(key, 'cal'); }); }
+// scale one share in a split, rebalancing the others so the row keeps its total
+function shareRow(row, k, f){ const ks = Object.keys(row).filter(x => typeof row[x]==='number' || row[x]===null), tot = ks.reduce((a,x)=>a+num(row[x],0),0), old = num(row[k],0);
+  const nv = Math.max(0, Math.min(95, old*f)), rest = tot-old, g = rest>0 ? (tot-nv)/rest : 0, o = {};
+  ks.forEach(x => o[x] = Math.round((x===k ? nv : num(row[x],0)*g)*100)/100);
+  // keep the row total exact after rounding
+  const drift = Math.round((tot - ks.reduce((a,x)=>a+o[x],0))*100)/100; if (drift && ks.length){ const big = ks.reduce((a,x)=>o[x]>o[a]?x:a, ks[0]); o[big] = Math.round((o[big]+drift)*100)/100; }
+  return o; }
+function calibrate(kind, R){
+  R = R || checkRun(); const P = S.pulse, out = []; if (!P || !R.coh) return out;
+  const fxU = fxOf(S, curCode()), C = R.coh;
+  if (kind==='ti' || kind==='pv'){ const rho = ratiosOf(R, kind==='ti' ? 'ti' : 'unoU', kind==='ti' ? 'ti' : 'pv');
+    RK.forEach(r => { if (!Object.keys(rho[r]).length) return; const F = cohortF(R, [{w:1, arr:C[kind][r], rho:rho[r]}]);
+      const tabs = kind==='ti' ? ['r1','r2','dx'] : ['r1','r2'], k = kind==='ti' ? 'refurb' : 'private';
+      tabs.forEach(t => { if (S[t] && S[t][r]) pinAll(t, r, (row, i) => shareRow(row, k, F[i])); }); out.push(RN[r]); }); return out; }
+  if (kind==='rs'){ const rho = ratiosOf(R, 'orgU', 'rs');
+    // refurbished sales are counted where they are sold, so a region's resale share responds to the gaps in every
+    // region its refurbished handsets go to (weighted by the Refurb flows split)
+    RK.forEach(r => { const fl = S.flow[r] || {}, ft = RK.reduce((a,d)=>a+num(fl[d],0),0) || 1;
+      const parts = RK.filter(d => num(fl[d],0)>0 && Object.keys(rho[d]).length).map(d => ({w:num(fl[d],0)/ft, arr:C.rs[d], rho:rho[d]})); if (!parts.length) return;
+      const F = cohortF(R, parts); pinAll('life', r, (row, i) => ({rsell: Math.max(1, Math.min(100, num(row.rsell,100)*F[i]))})); out.push(RN[r]); }); return out; }
+  if (kind==='px'){ RK.forEach(d => { const rho = {}; P.years.forEach(y => { const o = ((P.reg[d]||{})[y]||{}), mU = num(R.trk.rs[d][y],0), mV = num(R.trk.rsV[d][y],0);
+      if (o.orgU>0.005 && o.orgV>0 && mU>0 && mV>0) rho[y] = clampR((o.orgV/o.orgU*fxU)/(mV/mU), 0.33, 3); });
+    if (!Object.keys(rho).length) return; const F = cohortF(R, [{w:1, arr:C.rs[d], rho}]);
+    pinAll('life', d, (row, i) => ({px: Math.max(0.05, Math.min(8, num(row.px,1)*F[i]))})); out.push(RN[d]); }); return out; }
+  // sales before PULSE starts are extrapolated; where PULSE's trade-ins and informal used sales in its early years
+  // need more old devices than the route shares can supply (a launch year's trade-in and private-sale shares together
+  // already at 90% or more), scale that launch year's sales up (at most 25% a round)
+  if (kind==='vpre'){ const y0 = P.years[0], pre = calYearsOf().filter(y => y < y0); if (!pre.length) return out;
+    const rti = ratiosOf(R, 'ti', 'ti'), rpv = ratiosOf(R, 'unoU', 'pv');
+    RK.forEach(r => { const F = cohortF(R, [{w:1, arr:C.ti[r], rho:rti[r]}, {w:1, arr:C.pv[r], rho:rpv[r]}]); let ch = false;
+      pre.forEach(y => { const i = y - R.Y0, row = rowAt(S,'r1',r,y), tot = Object.values(row).reduce((a,v)=>a+num(v,0),0) || 1;
+        if ((num(row.refurb,0)+num(row.private,0))/tot < 0.9 || !(F[i] > 1.03) || S.volY[r][y]===undefined) return;
+        S.volY[r][y] = Math.round(S.volY[r][y]*Math.min(F[i], 1.25)*1000)/1000; srcSet('volY/'+r+'/'+y, 'cal'); ch = true; });
+      if (ch) out.push(RN[r]); }); return out; }
+  // informal (private) sale price: PULSE's informal ASP against the model's, region by region
+  if (kind==='ppv'){ RK.forEach(r => { const rho = {}; P.years.forEach(y => { const o = ((P.reg[r]||{})[y]||{}), mU = num(R.trk.pv[r][y],0), mV = num(R.trk.pvV[r][y],0);
+      if (o.unoU>0.005 && o.unoV>0 && mU>0 && mV>0) rho[y] = clampR((o.unoV/o.unoU*fxU)/(mV/mU), 0.2, 5); });
+    if (!Object.keys(rho).length) return; const F = cohortF(R, [{w:1, arr:C.pv[r], rho}]);
+    pinAll('life', r, (row, i) => ({ppx: Math.max(0.05, Math.min(10, num(row.ppx,1)*F[i]))})); out.push(RN[r]); }); return out; }
+  // each brand's share of refurbished sales, region by region: sold where they are resold, so a region's brand
+  // trade-in multiplier responds to the share gaps in every region its refurbished devices go to
+  if (kind==='ab'){ if (!S.g.useBrands || !P.brand) return out;
+    ['AP','SA'].forEach(B => { if (!P.brand[B] || !R.trkB[B]) return; const rho = {};
+      RK.forEach(d => { rho[d] = {}; P.years.forEach(y => { const b = P.brand[B][d] && P.brand[B][d][y], t = ((P.reg[d]||{})[y]||{}).orgU, mb = num(R.trkB[B][d][y],0), mt = num(R.trk.rs[d][y],0);
+        if (!b || !(b.orgU>0) || !(t>0) || !(mb>0) || !(mt>0) || b.orgU>=t || mb>=mt) return; const ps = b.orgU/t, ms = mb/mt; rho[d][y] = clampR((ps/(1-ps))/(ms/(1-ms)), 0.33, 3); }); });
+      RK.forEach(r => { const fl = S.flow[r] || {}, ft = RK.reduce((a,d)=>a+num(fl[d],0),0) || 1;
+        const parts = RK.filter(d => num(fl[d],0)>0 && Object.keys(rho[d]).length).map(d => ({w:num(fl[d],0)/ft, arr:C.rs[d], rho:rho[d]})); if (!parts.length) return;
+        const F = cohortF(R, parts), k = B.toLowerCase(); pinAll('brandTi', r, (row, i) => ({[k]: Math.max(0.05, Math.min(20, num(row[k],1)*Math.pow(F[i], 0.5)))})); });
+      // and the destination's pull for the brand's refurbished imports (only moves regions that import)
+      RK.forEach(d => { if (!Object.keys(rho[d]).length || !RK.some(o => o!==d && (num((S.flow[o]||{})[d],0)>0 || Object.values(pinsOf(S,'flow',o,d)||{}).some(v => v>0)))) return;
+        const F = cohortF(R, [{w:1, arr:C.rs[d], rho:rho[d]}]), k = B.toLowerCase(); pinAll('brandPull', d, (row, i) => ({[k]: Math.max(0.05, Math.min(20, num(row[k],1)*Math.pow(F[i], 0.5)))})); });
+      out.push(BNM[B]); }); return out; }
+  if (kind==='ap'){ if (!S.g.useBrands || !P.brand || !P.brand.AP) return out; const rho = {};
+    P.years.forEach(y => { let pa = 0, pt = 0, ma = 0, mt = 0; RK.forEach(r => { const b = P.brand.AP[r] && P.brand.AP[r][y], t = ((P.reg[r]||{})[y]||{}).orgU; if (!b || b.orgU===undefined || !t) return;
+      pa += b.orgU; pt += t; ma += num(R.trkB.AP && R.trkB.AP[r][y],0); mt += num(R.trk.rs[r][y],0); });
+      if (pt>0 && mt>0 && ma>0 && pa<pt && ma<mt){ const ps = pa/pt, ms = ma/mt; rho[y] = clampR((ps/(1-ps))/(ms/(1-ms))); } });
+    if (!Object.keys(rho).length) return out; const F = cohortF(R, RK.map(r => ({w:1, arr:C.rs[r], rho})));
+    pinAll('brandB', 'AP', (row, i) => ({tradein: Math.max(0.1, Math.min(10, num(row.tradein,1)*F[i]))})); out.push('Apple'); return out; }
+  // cross-border flows (single values): move each exporter's refurbished handsets towards the destinations PULSE says
+  // are short, only along routes that already exist; each row still adds up to 100%
+  // refurb flows by launch year: move each exporter's refurbished devices towards the destinations PULSE says are short
+  // in the years those devices reach, only along routes that already exist; each row still adds up to 100%
+  if (kind==='fl'){ const rho = ratiosOf(R, 'orgU', 'rs'), FD = {};
+    RK.forEach(d => { FD[d] = Object.keys(rho[d]).length ? cohortF(R, [{w:1, arr:C.rs[d], rho:rho[d]}]).map(x => clampR(x, 0.25, 4)) : null; });
+    RK.forEach(r => { const ks = RK.filter(d => num(S.flow[r][d],0)>0 || Object.values(pinsOf(S,'flow',r,d)||{}).some(v=>v>0)); if (ks.length<2) return;
+      pinAll('flow', r, (row, i) => { const tot = ks.reduce((a,d)=>a+num(row[d],0),0); if (!(tot>0)) return {};
+        const nw = Object.fromEntries(ks.map(d => [d, num(row[d],0)*(FD[d] ? FD[d][i] : 1)])), nt = ks.reduce((a,d)=>a+nw[d],0) || 1, o = {};
+        ks.forEach(d => o[d] = Math.round(nw[d]/nt*tot*100)/100);
+        const drift = Math.round((tot - ks.reduce((a,d)=>a+o[d],0))*100)/100; if (drift){ const big = ks.reduce((a,d)=>o[d]>o[a]?d:a, ks[0]); o[big] = Math.round((o[big]+drift)*100)/100; }
+        return o; });
+      out.push(RN[r]); });
     return out; }
-  // cross-border flows: move each exporter's refurbished handsets towards the destinations PULSE says are short
-  // (only along routes that already exist in the Refurb flows split; each row still adds up to 100%)
-  if (kind==='fl'){ const ratio = {}; RK.forEach(d => { const pd = sumY(y => num(((P.reg[d]||{})[y]||{}).orgU,0)), md = sumY(y => num(R.trk.rs[d][y],0)); ratio[d] = (pd>0 && md>0) ? Math.max(0.25, Math.min(4, pd/md)) : 1; });
-    RK.forEach(r => { const o = S.flow[r]; if (!o) return; const ks = RK.filter(d => num(o[d],0)>0); if (ks.length<2) return; const tot = ks.reduce((a,d)=>a+num(o[d],0),0);
-      const nw = Object.fromEntries(ks.map(d => [d, num(o[d],0)*ratio[d]])), nt = ks.reduce((a,d)=>a+nw[d],0); let ch = 0;
-      ks.forEach(d => { const v = Math.round(nw[d]/nt*tot*10)/10; ch = Math.max(ch, Math.abs(v-num(o[d],0))); o[d] = v; });
-      const drift = Math.round((tot - ks.reduce((a,d)=>a+o[d],0))*10)/10; if (drift){ const big = ks.reduce((a,d)=>o[d]>o[a]?d:a, ks[0]); o[big] = Math.round((o[big]+drift)*10)/10; }
-      if (ch>=0.5) out.push(RN[r]); });
-    return out; }
-  if (kind==='ap'){ let pa = 0, pt = 0, ma = 0, mt = 0; RK.forEach(r => P.years.forEach(y => { const b = S.pulse.brand && S.pulse.brand.AP && S.pulse.brand.AP[r] && S.pulse.brand.AP[r][y], t = ((P.reg[r]||{})[y]||{}).orgU;
-      if (!b || b.orgU===undefined || !t) return; pa += b.orgU; pt += t; ma += num(R.trkB.AP && R.trkB.AP[r][y],0); mt += num(R.trk.rs[r][y],0); }));
-    if (!(pt>0 && mt>0 && ma>0 && pa<pt && ma<mt)) return out; const ps = pa/pt, ms = ma/mt, f = (ps/(1-ps))/(ms/(1-ms)); if (Math.abs(f-1)<0.02) return out;
-    const o = S.brandB.AP; o.tradein = Math.round(Math.max(0.1, Math.min(10, num(o.tradein,1)*f))*100)/100; out.push(`Apple trade-in multiplier ${o.tradein}`); return out; }
-  RK.forEach(r => { let m = 0, p = 0; P.years.forEach(y => { const pv = ((P.reg[r]||{})[y]||{})[kind==='ti' ? 'ti' : 'unoU']; if (pv===undefined) return; p += pv; m += num((kind==='ti' ? R.trk.ti : R.trk.pv)[r][y],0); });
-    if (!(m>0 && p>0)) return; const f = p/m; if (Math.abs(f-1) < 0.02) return;
-    if (kind==='ti'){ scaleRoute('r1', r, 'refurb', f); scaleRoute('r2', r, 'refurb', f); if (S.dx && S.dx[r]) scaleRoute('dx', r, 'refurb', f); } else { scaleRoute('r1', r, 'private', f); scaleRoute('r2', r, 'private', f); }
-    out.push(`${RN[r]} ×${f.toFixed(2)}`); });
   return out;
 }
-// regions still short of refurbished handsets even though all their own trade-ins are resold at home or exported,
-// and nothing is shipped in from elsewhere: the flows split needs a route into them
-function shortRegions(){ const P = S.pulse, R = checkRun(), sumY = (f) => P.years.reduce((a,y)=>a+f(y),0);
-  return RK.filter(d => { const pd = sumY(y => num(((P.reg[d]||{})[y]||{}).orgU,0)), md = sumY(y => num(R.trk.rs[d][y],0));
-    return pd>0 && md < pd*0.97 && !RK.some(o => o!==d && num((S.flow[o]||{})[d],0)>0); }); }
-function calShort(){ const short = shortRegions();
-  return short.length ? ` ${short.map(r=>RN[r]).join(', ')} ${short.length>1?'sell':'sells'} more refurbished devices in PULSE than the model can supply, and no other region ships refurbished devices there. Add a route into ${short.length>1?'them':'it'} on the Refurb flows tab (for example from North America or China) and calibrate again.` : ''; }
-// largest regional gap (all PULSE years together) on the three volume measures
-function calGap(){ const P = S.pulse, R = checkRun(); let w = 0;
-  RK.forEach(r => [['ti','ti'],['orgU','rs'],['unoU','pv']].forEach(([pk, mk]) => { let m = 0, p = 0; P.years.forEach(y => { const v = ((P.reg[r]||{})[y]||{})[pk]; if (v===undefined) return; p += v; m += num(R.trk[mk][r][y],0); });
-    if (p>0 && m>0) w = Math.max(w, Math.abs(m/p-1)); })); return w; }
-$('calRS').addEventListener('click', () => { const o = calibrate('rs'); $('calNote').textContent = o.length ? `Share of trade-ins resold as refurbished: ${o.join(', ')}.` : 'Refurbished sales already match PULSE within 2%.'; renderTab(); renderResults(); });
-$('calPX').addEventListener('click', () => { const o = calibrate('px'); $('calNote').textContent = o.length ? `Resale price index: ${o.join(', ')}. Informal used prices move with it.` : 'Refurbished prices already match PULSE within 2%.'; renderTab(); renderResults(); });
-$('calAP').addEventListener('click', () => { const o = calibrate('ap'); $('calNote').textContent = o.length ? `${o.join(', ')} (Brands tab).` : 'Apple’s share of refurbished sales already matches PULSE, or there is no brand data.'; renderTab(); renderResults(); });
+// regions where PULSE shows more refurbished sales than their own trade-ins could supply at home (given the share of
+// them the Refurb flows split keeps at home), with nothing shipped in from elsewhere
+// over the years PULSE reports both trade-ins and refurbished sales for that region
+const pulseSum = (r, k) => S.pulse.years.reduce((a,y)=>{ const o = (S.pulse.reg[r]||{})[y]||{}; return a + (o.ti>0 && o.orgU>0 ? num(o[k],0) : 0); },0);
+function shortRegions(){ return RK.filter(d => { const fl = S.flow[d] || {}, ft = RK.reduce((a,x)=>a+num(fl[x],0),0) || 1, self = num(fl[d],0)/ft;
+    return pulseSum(d,'orgU') > pulseSum(d,'ti')*self*1.03 && !RK.some(o => o!==d && (num((S.flow[o]||{})[d],0)>0 || Object.values(pinsOf(S,'flow',o,d)||{}).some(v => v>0))); }); }
+// every region and PULSE year on trade-ins, refurbished and informal used sales
+function calGaps(R){ const P = S.pulse, M = {ti:'Trade-ins', orgU:'Refurbished sales', unoU:'Informal used sales'}; R = R || checkRun(); const g = [];
+  RK.forEach(r => P.years.forEach(y => [['ti','ti'],['orgU','rs'],['unoU','pv']].forEach(([pk, mk]) => { const q = (P.reg[r]||{})[y]||{}, est = pk==='ti' && q.ti===undefined, p = est ? q.tiE : q[pk], m = num(R.trk[mk][r][y],0);
+    if (p>0.005) g.push({r, y, what:M[pk], gap: m/p-1, est}); }))); return g; }
+async function calibrateAll(note){
+  let opened = '', best = Infinity, stall = 0, rounds = 0;
+  // regions PULSE shows selling more refurbished devices than their own trade-ins can supply get a small import route
+  // from the two regions with the most trade-ins to spare (PULSE trade-ins less refurbished sales)
+  const sh = shortRegions(); if (sh.length) opened = openFor(sh);
+  let R = checkRun();
+  for (; rounds < 20; rounds++){
+    // supply first (trade-ins, private sales, prices, Apple), then how much is resold, then where it is resold
+    calibrate('ti', R); calibrate('pv', R); calibrate('px', R); calibrate('vpre', R);
+    // a region still short of refurbished sales with every trade-in already resold and nothing shipped in gets an
+    // import route too (checked once, after a few rounds)
+    if (rounds===3){ const add = RK.filter(d => !RK.some(o => o!==d && (num((S.flow[o]||{})[d],0)>0 || Object.values(pinsOf(S,'flow',o,d)||{}).some(v => v>0))) && calGaps(R).some(x => x.r===d && x.what==='Refurbished sales' && x.gap < -0.05) && Object.values(pinsOf(S,'life',d,'rsell')||{}).some(v => v>=99));
+      if (add.length) opened += openFor(add); }
+    R = checkRun(); calibrate('rs', R); calibrate('ppv', R); if (S.g.useBrands) calibrate('ab', R);
+    R = checkRun(); calibrate('fl', R);
+    R = checkRun(); const g = calGaps(R), w = g.reduce((a,x)=>Math.max(a, Math.abs(x.gap)), 0), in5 = g.filter(x => Math.abs(x.gap) <= 0.05).length / (g.length || 1);
+    if (note) note(`Calibrating… round ${rounds+1}: ${Math.round(in5*100)}% of region-years within 5% of PULSE, largest gap ${Math.round(w*100)}%`);
+    // good enough: nearly everything within 5% and nothing far out
+    if (w < 0.03 || (in5 >= 0.98 && w < 0.2)){ rounds++; break; }
+    // stop when a combined score (volumes, plus brand shares) has stopped improving for four rounds
+    const score = w + (S.g.useBrands ? calOther(R).bs.reduce((a,x)=>Math.max(a,x),0)/100 : 0);
+    if (score < best - 0.002){ best = score; stall = 0; } else if (++stall >= 4){ rounds++; break; }
+    await new Promise(r => setTimeout(r, 0)); }
+  return {R, rounds, opened};
+}
+function openFor(sh){
+    // for each short region, the two regions with the most trade-ins to spare (PULSE trade-ins less refurbished sales),
+    // preferring ones whose refurbished brand mix is close to the destination's (Apple share within 15 points)
+    const spare = Object.fromEntries(RK.map(r => [r, pulseSum(r,'ti') - pulseSum(r,'orgU')])), P = S.pulse;
+    const apSh = (r) => { if (!P.brand || !P.brand.AP || !P.brand.AP[r]) return null; let a = 0, t = 0; Object.entries(P.brand.AP[r]).forEach(([y, o]) => { const q = (P.reg[r]||{})[y]; if (o.orgU!==undefined && q && q.orgU>0){ a += o.orgU; t += q.orgU; } }); return t>0 ? a/t : null; };
+    const parts = [];
+    sh.forEach(d => { const ad = apSh(d), cands = RK.filter(r => !sh.includes(r) && spare[r] > 0).sort((a,b) => spare[b]-spare[a]);
+      const close = ad===null ? [] : cands.filter(r => apSh(r)!==null && Math.abs(apSh(r)-ad) <= 0.15);
+      const pick = [...close, ...cands.filter(r => !close.includes(r))].slice(0,2); pick.forEach(o => openRoute(o, d, 5)); const key = pick.map(r=>RN[r]).join(' and '), g = parts.find(x => x.from===key); if (g) g.to.push(RN[d]); else parts.push({from:key, to:[RN[d]]}); });
+    return `Opened refurb routes from ${parts.map(x => `${x.from} into ${x.to.join(', ')}`).join('; ')}, as PULSE shows ${sh.length>1?'these regions':'it'} selling more refurbished devices than ${sh.length>1?'their':'its'} own trade-ins could supply. `; }
+// add a refurb route from o to d (share taken from o's home share), in the single value and every launch year set
+function openRoute(o, d, pct){ const f = S.flow[o]; if (num(f[o],0) >= pct*2 && !(num(f[d],0)>0)){ f[d] = pct; f[o] = Math.round((num(f[o],0)-pct)*100)/100; }
+  const pd = pinsOf(S,'flow',o,d) || {}, po = pinsOf(S,'flow',o,o);
+  if (po) Object.keys(po).forEach(y => { if (num(pd[y],0)>0 || po[y] < pct*2) return; pd[y] = pct; po[y] = Math.round((po[y]-pct)*100)/100; });
+  if (po && Object.keys(pd).length) S.pins[pk('flow',o,d)] = pd;
+  srcSet(pk('flow',o,d),'cal'); srcSet(pk('flow',o,o),'cal'); }
+// prices and brand shares, region by region and year, for the summary
+function calOther(R){ const P = S.pulse, fxU = fxOf(S, curCode()), o = {rp:[], ip:[], bs:[]};
+  RK.forEach(r => P.years.forEach(y => { const q = (P.reg[r]||{})[y] || {};
+    const mU = num(R.trk.rs[r][y],0), mV = num(R.trk.rsV[r][y],0), iU = num(R.trk.pv[r][y],0), iV = num(R.trk.pvV[r][y],0);
+    if (q.orgU>0.005 && q.orgV>0 && mU>0) o.rp.push(Math.abs((mV/mU)/(q.orgV/q.orgU*fxU)-1));
+    if (q.unoU>0.005 && q.unoV>0 && iU>0) o.ip.push(Math.abs((iV/iU)/(q.unoV/q.unoU*fxU)-1));
+    if (S.g.useBrands && P.brand) ['AP','SA'].forEach(B => { const b = P.brand[B] && P.brand[B][r] && P.brand[B][r][y]; if (b && b.orgU!==undefined && q.orgU>0 && mU>0 && R.trkB[B]) o.bs.push(Math.abs(num(R.trkB[B][r][y],0)/mU - b.orgU/q.orgU)*100); }); }));
+  return o; }
+function calSummary(R, rounds, opened){
+  const g = calGaps(R), n5 = g.filter(x => Math.abs(x.gap) <= 0.05).length, n10 = g.filter(x => Math.abs(x.gap) <= 0.10).length, P = S.pulse;
+  const worst = g.reduce((a,x) => Math.abs(x.gap) > Math.abs(a.gap) ? x : a, {gap:0}), nEst = g.filter(x => x.est).length;
+  const yrs = `${P.years[0]}–${P.years[P.years.length-1]}`, o = calOther(R), cnt = (a, lim) => a.filter(x => x<=lim).length;
+  let t = `${opened}Calibrated year by year over ${rounds} round${rounds===1?'':'s'}: ${n5} of ${g.length} region-year figures for trade-ins, refurbished and informal used sales (${yrs}) are within 5% of PULSE, ${n10} within 10%${nEst?` (${nEst} of them are trade-in estimates for years PULSE doesn’t cover)`:''}.`;
+  if (Math.abs(worst.gap) > 0.05) t += ` Largest gap: ${worst.what}, ${RN[worst.r]} ${worst.y} (${worst.gap>0?'+':''}${Math.round(worst.gap*100)}%).`;
+  t += ` Prices: ${cnt(o.rp,0.05)} of ${o.rp.length} refurbished and ${cnt(o.ip,0.05)} of ${o.ip.length} informal region-years within 5%.`;
+  if (o.bs.length) t += ` Apple and Samsung shares of refurbished sales: ${cnt(o.bs,3)} of ${o.bs.length} within 3 points.`;
+  t += ` Changed (shown amber on the input tabs): route shares, share of trade-ins resold, resale and informal price indices and refurb flows by launch year${S.g.useBrands?', and brand trade-in multipliers and refurbished-import tilts by region':''}; sales before PULSE starts where PULSE’s early used-device figures needed more old devices.`;
+  // still short of refurbished sales, with every trade-in resold and nothing shipped in
+  const sh = RK.filter(d => !RK.some(o => o!==d && (num((S.flow[o]||{})[d],0)>0 || Object.values(pinsOf(S,'flow',o,d)||{}).some(v => v>0))) && g.some(x => x.r===d && x.what==='Refurbished sales' && x.gap < -0.05) && Object.values(pinsOf(S,'life',d,'rsell')||{}).some(v => v>=99));
+  if (sh.length) t += ` ${sh.map(r=>RN[r]).join(', ')} still ${sh.length>1?'sell':'sells'} more refurbished devices in PULSE than the model can supply; add a route into ${sh.length>1?'them':'it'} on the Refurb flows tab.`;
+  return t; }
 $('calAll').addEventListener('click', async () => { const btn = $('calAll'); btn.disabled = true; $('calNote').textContent = 'Calibrating…'; await new Promise(r=>setTimeout(r,30));
-  // repeat until every region is within 3% on trade-ins, refurbished and informal used sales (or 15 rounds)
-  let rounds = 0, worst = Infinity, opened = '';
-  for (; rounds < 15; rounds++){ if (S.g.useBrands) calibrate('ap'); calibrate('ti'); calibrate('pv'); calibrate('rs'); calibrate('fl'); calibrate('rs'); calibrate('px');
-    worst = calGap(); if (worst < 0.03) break;
-    // regions PULSE says sell more refurbished handsets than they could ever supply need an import route: open a
-    // small one from the two biggest trade-in markets (taken out of their home share), then carry on
-    if (rounds===3){ const sh = shortRegions(); if (sh.length){ const P = S.pulse, big = RK.filter(r => !sh.includes(r)).map(r => [r, P.years.reduce((a,y)=>a+num(((P.reg[r]||{})[y]||{}).ti,0),0)]).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]);
-      big.forEach(o => sh.forEach(d => { const f = S.flow[o]; if (num(f[d],0)>0 || num(f[o],0)<10) return; f[d] = 5; f[o] = Math.round((num(f[o],0)-5)*10)/10; }));
-      opened = `Opened refurb routes from ${big.map(r=>RN[r]).join(' and ')} into ${sh.map(r=>RN[r]).join(', ')}, which PULSE shows selling more refurbished devices than they trade in. `; } }
-    await new Promise(r=>setTimeout(r,0)); }
-  btn.disabled = false; $('calNote').textContent = opened + (worst < 0.05 ? `Matched PULSE in ${Math.min(15,rounds+1)} rounds: every region is within ${Math.max(1,Math.ceil(worst*100))}% on trade-ins, refurbished and informal used sales across the PULSE years. Changed: route shares, share of trade-ins resold, refurb flows, resale price index${S.g.useBrands?' and Apple trade-in multiplier':''}.` : `Ran ${rounds} rounds. Largest remaining regional gap is ${Math.round(worst*100)}%, which the route and price inputs can’t close on their own (usually a share has hit 0% or 95%, or refurbished resale is already 100%). Check the Lifetimes & costs, Routes and Refurb flows tabs.${calShort()}`); renderTab(); renderResults(); });
-$('calTI').addEventListener('click', () => { const o = calibrate('ti'); $('calNote').textContent = o.length ? `Trade-in shares after the first owner scaled: ${o.join(', ')}. Press again to get closer; later-life trade-ins also move.` : 'Trade-ins already match PULSE within 2%.'; renderTab(); renderResults(); });
-$('calPV').addEventListener('click', () => { const o = calibrate('pv'); $('calNote').textContent = o.length ? `Private-sale shares scaled: ${o.join(', ')}. Press again to get closer.` : 'Informal used sales already match PULSE within 2%.'; renderTab(); renderResults(); });
+  try { const {R, rounds, opened} = await calibrateAll(t => $('calNote').textContent = t); $('calNote').textContent = calSummary(R, rounds, opened); }
+  finally { btn.disabled = false; } renderTab(); renderResults(); });
+const oneLever = (kind, label) => () => { const o = calibrate(kind); $('calNote').textContent = o.length ? `${label} adjusted for each launch year in ${o.join(', ')}. Press again to get closer; Calibrate to PULSE runs every lever until the gaps stop closing.` : 'Nothing to adjust: no PULSE figures for this measure.'; renderTab(); renderResults(); };
+$('calTI').addEventListener('click', oneLever('ti', 'Trade-in shares'));
+$('calRS').addEventListener('click', oneLever('rs', 'Share of trade-ins resold as refurbished'));
+$('calPV').addEventListener('click', oneLever('pv', 'Private-sale shares'));
+$('calPX').addEventListener('click', oneLever('px', 'Resale price index'));
+$('calAP').addEventListener('click', oneLever('ab', 'Apple and Samsung trade-in multipliers by region'));
+$('calPPV').addEventListener('click', oneLever('ppv', 'Informal price index'));
 
 // ---- who captures trade-in and refurbished value ----
 function renderChannels(){
@@ -2097,7 +2352,7 @@ function renderChannels(){
   $('chanTiles').innerHTML = CH.map(([k,l]) => `<div><b>${tv?pct(tot.tiV[k]/tv*100):'—'}</b><span>of trade-in payouts via ${l.toLowerCase()} (${fmtM(tot.tiV[k])})</span></div>`).join('') + `<div><b>${rv?pct(tot.rsV.o/rv*100):'—'}</b><span>of refurbished sales revenue via OEM / carrier (${fmtM(tot.rsV.o)})</span></div>`;
 }
 $('chanYear').addEventListener('change', renderChannels);
-const PULSE_API = {readPulse, applyPulse, parseACPBF, parseFS, parseQ, checkRun, calibrate};
+const PULSE_API = {readPulse, applyPulse, parseACPBF, parseFS, parseQ, checkRun, calibrate, calGaps, shortRegions};
 
 /* ---------- scenario library ---------- */
 let db = null, user = null, myId = null, libDocs = [], localMode = true, armedDelete = null;
